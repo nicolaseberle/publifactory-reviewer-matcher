@@ -1,0 +1,72 @@
+scholar
+=======
+
+🎓 A Python module to scrape and download content from
+`springer.com <https://link.springer.com>`__
+
+Installation
+------------
+
+.. code:: shell
+
+    $ pip install scholar
+
+Example
+-------
+
+.. code:: python
+
+    from scholar import Scholar
+
+    scholar = Scholar()
+
+    articles = scholar.search(discipline='Computer Science', query='Artificial Intelligence', page=1)
+
+    for article in articles:
+        print(article.content_type)
+        print(article.title)
+        print(article.snippet)
+        print(article.pdf_link)
+        print(' ')
+
+CLI Usage
+---------
+
+::
+
+    $ scholar 'Computer Science' 'Query Optimization'
+
+This will return a table of results.
+
+::
+
+    Found 37,591 results for Query Optimization
+    +----+-----------------------------------------------------------------------------------------+-----------------------------------------------+
+    | Id | Title                                                                                   | Authors                                       |
+    +----+-----------------------------------------------------------------------------------------+-----------------------------------------------+
+    | 1  | Preference Query Analysis and Optimization                                              | Prof. Yunjun Gao, Qing Liu                    |
+    | 2  | Global Query Optimization                                                               |                                               |
+    | 3  | Query Optimization in Distributed Database Systems                                      |                                               |
+    | 4  | Optimization of DAG-Structured Query Evaluation Plans                                   |                                               |
+    | 5  | Logical Query Processing and Optimization                                               |                                               |
+    | 6  | Datalog Query Processing and Optimization                                               |                                               |
+    | 7  | Query Optimization for Multidimensional Systems                                         |                                               |
+    | 8  | Optimization of Parallel Query Plans                                                    |                                               |
+    | 9  | Adaptive Query Optimization                                                             |                                               |
+    | 10 | Multiple Query Optimization                                                             |                                               |
+    | 11 | Overview of dynamic query evaluation in intensional query optimization                  | Parke Godfrey, Jarek Gryz                     |
+    | 12 | Query Optimization                                                                      | Evaggelia Pitoura                             |
+    | 13 | Erratum to: Aging Locality Awareness in Cost Estimation for Database Query Optimization | Chihiro Kato, Yuto Hayamizu, Kazuo Goda       |
+    | 14 | Query Optimization                                                                      | Evaggelia Pitoura                             |
+    | 15 | Application of Ant Colony Optimization Algorithm to Multi-Join Query Optimization       | Nana Li, Yujuan Liu, Yongfeng Dong, Junhua Gu |
+    | 16 | Query Processing and Optimization for Pictorial Query Trees                             | Aya Soffer, Hanan Samet                       |
+    | 17 | Multi Query Optimization Using Query Pack Trees                                         |                                               |
+    | 18 | Query Processing and Optimization on the Web                                            | Mourad Ouzzani, Athman Bouguettaya            |
+    | 19 | Query Processing and Optimization in Object Relational Databases                        | Johann-Christoph Freytag                      |
+    | 20 | Semantic query optimization in distributed databases                                    | H. J. A. van Kuijk, F. H. E. Pijpers          |
+    +----+-----------------------------------------------------------------------------------------+-----------------------------------------------+
+
+You can then download a specific article by selecting its id. Run ``s``
+or ``save_all`` to download all files.
+
+
