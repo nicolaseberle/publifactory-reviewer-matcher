@@ -1,0 +1,12 @@
+# IMPORT
+
+import re  # For preprocessing
+import pandas as pd  # For data handling
+from time import time  # To time our operations
+from collections import defaultdict  # For word frequency
+import spacy  # For preprocessing
+import logging
+
+# MAIN
+
+df = pd.read_csv('datas/sample_clear.csv')
