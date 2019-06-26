@@ -1,3 +1,4 @@
 ### GITIGNORE Reviewer Matcher
 
 veille/
+.DS_STORE
