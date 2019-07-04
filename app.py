@@ -5,7 +5,7 @@
 
 from flask import Flask, render_template, flash, request
 # from flask import make_response
-from wtforms import Form, TextField, TextAreaField, validators, StringField, SubmitField
+from wtforms import Form, TextAreaField, validators, StringField, SubmitField
 
 # APP CONFIG
 
@@ -18,7 +18,7 @@ app.config['SECRET_KEY'] = '7d441f27d441f27567d441f2b6176a'
 # CLASS
 
 class RequestESForm(Form):
-    title = StringField('Title', [validators.DataRequired()])
+    title = StringField('Titre', [validators.DataRequired()])
 
 
 # ROUTES
@@ -41,8 +41,8 @@ def request_base():
     data = -1
     from scripts.fvue_get_article import get_articles_es
     if request.method == 'POST' and form.validate():
-        keyword = form.keyword.data
-        data = get_articles_es(keyword)
+        title = form.title.data
+        data = get_articles_es(title)
     return render_template('request_base.html', titre="Request Base", form=form, data=data)
 
 
@@ -57,6 +57,13 @@ def results():
     temp = [1, 2, 3]
     return render_template('results.html', titre="Results", data=temp)
 
+# API
+
+
+@app.route('/api/suggestReviewers/')
+def suggest_reviewers():
+    return "YAY"
+
 
 # ERRORS
 
@@ -65,7 +72,6 @@ def results():
 # @app.errorhandler(500)
 # def ma_page_erreur(error):
 #     return "Erreur {}".format(error.code), error.code
-
 
 # EXEC
 

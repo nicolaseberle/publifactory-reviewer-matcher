@@ -13,7 +13,7 @@
 {% from "_formhelpers.html" import render_field %}
 <form method=post>
     <dl>
-        {{ render_field(form.keyword) }}
+        {{ render_field(form.title) }}
     </dl>
     <p><input type=submit value="Chercher des articles">
     {% if (data) != -1 %}
