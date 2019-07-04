@@ -3,3 +3,4 @@
 .DS_Store
 .idea
 saves/*
+__pycache__
