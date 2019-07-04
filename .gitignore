@@ -1,4 +1,5 @@
 ### GITIGNORE Reviewer Matcher
 
-.DS_STORE
+.DS_Store
+.idea
 saves/*
