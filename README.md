@@ -12,7 +12,18 @@ The project work with 4 big steps :
 
 ## Composers
 
-In the folder 'veille', there is all the research done to set up the project.
+* app.py : Application web du projet reviewer matcher. L'application contient 4 vues situées dans le dossier *template*
+* es_implement : Dossier qui contient l'intégralité des scripts et des sources utilisées pour mettre en place notre base ElasticSearch
+    * main.py : Fichier python qui permet l'execution des différents scripts
+    * corpus : Dossier contenant la BDD utilisée initialement
+    * scripts : Dossier contenant les différents scripts
+* saves : Dossier contenant les variables stockées pour éviter de tout exécuter à chaque lancement
+* scripts : Dossier contenant les différents scripts utilisé par l'application
+    * model_scripts : Tous les scripts liés à la mise en place du model
+* static : Dossier contenant le contenu static de l'interface de l'application (images / css)
+* templates : Dossier contenant les vues de l'application
+* venv : environnement virtuel
+
 
 ## Steps
 
