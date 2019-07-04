@@ -5,16 +5,35 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
 
-  <title>Reviewer Matcher - Request Base</title>
+  <title>Reviewer Matcher - {{titre}}</title>
 
   <link href="{{ url_for('static', filename='main.css') }}" rel="stylesheet" type="text/css" />
 </head>
 <body>
-  <h1>{{titre}}</h1>
-  <ul>
-  {% for res in data %}
-    <li>{{ res }}</li>
-  {% endfor %}
-  </ul>
+{% from "_formhelpers.html" import render_field %}
+<form method=post>
+    <dl>
+        {{ render_field(form.keyword) }}
+    </dl>
+    <p><input type=submit value="Chercher des articles">
+    {% if (data) != -1 %}
+        <section>
+        {% for art in data %}
+            <article>
+                <ul>
+                    <li>Titre : {{ art["_source"]["title"] }}</li>
+                    <li>Abstract : {{ art["_source"]["paperAbstract"] }}</li>
+                    <li>Année : {{ art["_source"]["year"] }}</li>
+                    <li>Auteurs :
+                        {% for aut in art["_source"]["authors"] %}
+                            {{ aut["name"] }}
+                        {% endfor %}
+                    </li>
+                </ul>
+            </article>
+        {% endfor %}
+        </section>
+    {% endif %}
+</form>
 </body>
 </html>

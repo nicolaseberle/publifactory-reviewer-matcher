@@ -3,13 +3,23 @@
 
 # IMPORT
 
-from flask import Flask
+from flask import Flask, render_template, flash, request
 # from flask import make_response
-from flask import render_template
+from wtforms import Form, TextField, TextAreaField, validators, StringField, SubmitField
 
-# APP
+# APP CONFIG
 
+DEBUG = True
 app = Flask(__name__)
+app.config.from_object(__name__)
+app.config['SECRET_KEY'] = '7d441f27d441f27567d441f2b6176a'
+
+
+# CLASS
+
+class RequestESForm(Form):
+    title = StringField('Title', [validators.DataRequired()])
+
 
 # ROUTES
 
@@ -25,10 +35,15 @@ def model_test():
     return render_template('model_test.html', titre="Model Test", data=temp)
 
 
-@app.route('/request_base/')
+@app.route('/request_base/', methods=['GET', 'POST'])
 def request_base():
-    temp = [1, 2, 3]
-    return render_template('request_base.html', titre="Request Base", data=temp)
+    form = RequestESForm(request.form)
+    data = -1
+    from scripts.fvue_get_article import get_articles_es
+    if request.method == 'POST' and form.validate():
+        keyword = form.keyword.data
+        data = get_articles_es(keyword)
+    return render_template('request_base.html', titre="Request Base", form=form, data=data)
 
 
 @app.route('/reviewer_matcher/')
@@ -45,11 +60,11 @@ def results():
 
 # ERRORS
 
-@app.errorhandler(401)
-@app.errorhandler(404)
-@app.errorhandler(500)
-def ma_page_erreur(error):
-    return "Erreur {}".format(error.code), error.code
+# @app.errorhandler(401)
+# @app.errorhandler(404)
+# @app.errorhandler(500)
+# def ma_page_erreur(error):
+#     return "Erreur {}".format(error.code), error.code
 
 
 # EXEC

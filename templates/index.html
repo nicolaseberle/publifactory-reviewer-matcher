@@ -5,11 +5,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
 
-  <title>Reviewer Matcher - Index</title>
+  <title>Reviewer Matcher - {{titre}}</title>
 
   <link href="{{ url_for('static', filename='main.css') }}" rel="stylesheet" type="text/css" />
 </head>
 <body>
-  <h1>{{titre}}</h1>
+    <h1>{{titre}}</h1>
+    <a href="{{ url_for('index') }}">Home</a>
+    <a href="{{ url_for('model_test') }}">Test le model</a>
+    <a href="{{ url_for('request_base') }}">Requêter la base</a>
 </body>
 </html>
