@@ -16,6 +16,7 @@ MarkupSafe==1.1.1
 numpy==1.16.4
 objectpath==0.6.1
 pandas==0.24.2
+pymongo==3.8.0
 python-dateutil==2.8.0
 pytz==2019.1
 requests==2.22.0
