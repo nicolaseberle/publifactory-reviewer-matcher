@@ -2,7 +2,7 @@
 
 import pandas as pd
 import logging
-
+from pymongo import MongoClient
 
 # CONSTS
 
@@ -12,7 +12,7 @@ logging.basicConfig(filename=LOG_FILENAME, level=logging.DEBUG, filemode='w')
 # MAIN
 
 
-def authors2mongo(coll_get, coll_add):
+def authors2mongo(coll_get):
     cursor = coll_get.find({}, {"_id": 1, "title": 1, "entities": 1, "year": 1, "authors": 1})
     df = pd.DataFrame(list(cursor))
 
@@ -20,6 +20,9 @@ def authors2mongo(coll_get, coll_add):
 
     for index, row in df.iterrows():
         logging.info('Iter : {}'.format(k))
+        db_temp = MongoClient(host="localhost", port=27017)
+        db = db_temp.reviewer_matcher
+        coll_add = db.authors
         try:
             int(row['year'])
         except ValueError:
@@ -39,8 +42,12 @@ def authors2mongo(coll_get, coll_add):
             for entitie in row['entities']:
                 coll_add.update(
                     {'auth_id': final_ids, 'name': final_name},
-                    {"$set": {'auth_id': final_ids, 'name': final_name},
-                     "$addToSet": {'entities': [entitie, int(year), row['_id']]}},
+                    {"$set":
+                         {'auth_id': final_ids,
+                          'name': final_name},
+                     "$addToSet":
+                         {'entities': [entitie, int(year), row['_id']]}
+                     },
                     upsert=True)
-
         k += 1
+

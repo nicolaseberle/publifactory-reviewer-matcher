@@ -10,9 +10,10 @@ def articles2mongo_file(coll, path_name, file_name, iterid):
     for line in fd:
         data = json.loads(line)
         data['_id'] = data.pop('id')
+        coll.create_index([('title', 'text')])
         coll.update(data, data, upsert=True)
         k += 1
-        if k > 10000:
+        if k > 20000:
             break
 
 

@@ -46,6 +46,17 @@ def request_base():
     return render_template('request_base.html', titre="Request Base", form=form, data=data)
 
 
+@app.route('/request_base_mongo/', methods=['GET', 'POST'])
+def request_base_mongo():
+    form = RequestESForm(request.form)
+    data = -1
+    from scripts.fvue_get_article import get_articles_mongo
+    if request.method == 'POST' and form.validate():
+        title = form.title.data
+        data = get_articles_mongo(title)
+    return render_template('request_mongo.html', titre="Request Mongo", form=form, data=data)
+
+
 @app.route('/reviewer_matcher/')
 def reviewer_matcher():
     temp = [1, 2, 3]
