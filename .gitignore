@@ -2,7 +2,6 @@
 
 .DS_Store
 .idea
-saves/*
+web/app/mongo_implement/
+/web/app/saves/*
 __pycache__
-*/l.log
-/mongo_implement/corpus/true_s2-corpus-00
