@@ -2,6 +2,6 @@
 
 .DS_Store
 .idea
-web/app/mongo_implement/
 /web/app/saves/*
 __pycache__
+/mongodb/

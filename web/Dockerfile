@@ -1,11 +1,10 @@
-# base image
 FROM python:3-onbuild
-
-# execute everyone's favorite pip command, pip install -r
-RUN pip install --trusted-host pypi.python.org -r requirements.txt
-
-# unblock port 80 for the Flask app to run on
+RUN apt-get update -y
+RUN apt-get install -y python-pip python-dev build-essential
+RUN pip install --upgrade pip
+COPY . /app
+WORKDIR /app
+RUN pip install -r requirements.txt
 EXPOSE 5000
-
-# execute the Flask app
-CMD ["python", "app.py"]
+ENTRYPOINT ["python"]
+CMD ["app/app.py"]
