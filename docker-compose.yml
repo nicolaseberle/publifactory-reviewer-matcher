@@ -7,7 +7,6 @@ services:
         - ./elasticsearch/config/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
       ports:
         - "9200:9200"
-        - "9300:9300"
       environment:
         ES_JAVA_OPTS: "-Xmx256m -Xms256m"
       networks:
@@ -19,9 +18,14 @@ services:
     ports:
       - "5000:5000"
     environment:
-      - "DOCKER_MACHINE_IP=${DOCKER_MACHINE_IP}"
+      - DOCKER_MACHINE_IP=${DOCKER_MACHINE_IP}
+    links:
+      - elasticsearch
     depends_on:
       - elasticsearch
+    volumes:
+      - "./web:/app"
+    networks:
+      - elk
 networks:
   elk:
-    driver: bridge

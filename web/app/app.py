@@ -3,9 +3,11 @@
 
 # IMPORT
 
-from flask import Flask, render_template, flash, request
+from flask import Flask, render_template, flash, request, jsonify
 # from flask import make_response
 from wtforms import Form, TextAreaField, validators, StringField, SubmitField
+from elasticsearch import Elasticsearch
+import os
 
 # APP CONFIG
 
@@ -14,8 +16,12 @@ app = Flask(__name__)
 app.config.from_object(__name__)
 app.config['SECRET_KEY'] = '7d441f27d441f27567d441f2b6176a'
 
+# es_host = os.environ['DOCKER_MACHINE_IP']
+es_host = 'elasticsearch:9200'
+es = Elasticsearch(hosts=[es_host])
 
 # CLASS
+
 
 class RequestESForm(Form):
     title = StringField('Titre', [validators.DataRequired()])
@@ -75,6 +81,10 @@ def results():
 def suggest_reviewers():
     return "YAY"
 
+
+@app.route('/api/es_info')
+def es_info():
+    return jsonify(es.info())
 
 # ERRORS
 
