@@ -48,7 +48,7 @@ es = Elasticsearch(hosts=[ES_HOST])
 # Add authors in new ES index
 
 # from scripts.authors2es import authors2es
-# authors2es(es, ES_HOST, INDEX_NAME_ART, INDEX_NAME_AUT, DOC_TYPE_AUT)
+# authors2es(es, INDEX_NAME_ART, INDEX_NAME_AUT, DOC_TYPE_AUT)
 
 
 # Create a fake authors base with redundancy of information

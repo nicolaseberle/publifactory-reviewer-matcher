@@ -4,63 +4,80 @@ from elasticsearch import Elasticsearch
 from elasticsearch import helpers
 import objectpath
 import pandas as pd
+import logging
 
+
+# CONSTS
+
+LOG_FILENAME = 'l.log'
+logging.basicConfig(filename=LOG_FILENAME, level=logging.DEBUG, filemode='w')
+logging.getLogger("requests").setLevel(logging.WARNING)
 
 # MAIN
 
-def authors2es(es, es_host, index_name_art, index_name_aut, doc_type_aut):
+def authors2es(es, index_name_art, index_name_aut, doc_type_aut):
+
 
     data = es.search(index=index_name_art, body={
-        "size": 10,
+        "size": 5000,
         "query": {"match_all": {}},
-        "_source": ["id", "title", "entities", "year", "authors"]
+        "_source": ["id", "title", "entities", "year", "authors", "journalName"]
     })
+
 
     json_tree = objectpath.Tree(data['hits'])
     df = pd.DataFrame.from_records(tuple(json_tree.execute('$..hits')))
-    final = pd.DataFrame(columns=["id", "name", "entities"])
 
     for source in df["_source"]:
+        authors = source['authors']
         try:
             source['year']
         except KeyError:
             year = -1
         else:
             year = source['year']
-        if source['entities'] == []:
-            source['entities'] = ["-1"]
-        entities = [(x, str(year), source['title']) for x in source['entities']]
-        authors = source['authors']
+        if source['journalName'] == "":
+            journal = -1
+        else:
+            journal = source['journalName']
         for author in list(authors):
             if dict(author)['ids'] == []:
                 final_ids = -1
             else:
-                final_ids = dict(author)['ids'][0]
+                final_ids = int(dict(author)['ids'][0])
+            if source['entities'] == []:
+                source['entities'] = ["-1"]
             final_name = dict(author)['name']
-            temp = False
-
-            for index, row in final.iterrows():
-                if final_name == row[1]:
-                    row[2] += entities
-                    temp = True
-
-            if temp == False:
-                final = final.append({'id': final_ids, 'name': final_name, 'entities': entities}, ignore_index=True)
-
-    use_these_keys = ['id', 'name', 'entities']
-
-    def filterKeys(document):
-        return {key: document[key] for key in use_these_keys }
-
-    es_client = Elasticsearch(hosts=[es_host], http_compress=True)
-
-    def doc_generator(df):
-        df_iter = df.iterrows()
-        for index, document in df_iter:
-            yield {
+            for line in source['entities']:
+                entitie = [line, str(year), source['id']]
+                action = {
+                    "_op_type": "update",
                     "_index": index_name_aut,
                     "_type": doc_type_aut,
-                    "_id" : f"{document['id']}",
-                    "_source": filterKeys(document),
+                    "_id": int(final_ids),
+                    "_source": {
+                        "script": {
+                            "inline": "if (!ctx._source.entities.contains(params.ent)) "
+                                      "{ctx._source.entities.add(params.ent)}"
+                                        
+                                      "if (!ctx._source.articles.contains(params.art)) "
+                                      "{ctx._source.articles.add(params.art);"
+                                      "if (params.jrnl != '-1')"
+                                      "{ctx._source.journals.add(params.jrnl)}}",
+                            "params": {
+                                "ent": entitie,
+                                "art": str(source['id']),
+                                "jrnl": str(journal)
+                            }
+                        },
+                        "upsert": {
+                            "auth_id": final_ids,
+                            "name": final_name,
+                            "entities": [entitie],
+                            "articles": [str(source['id'])],
+                            "journals": [str(journal)]
+                        }
+                    }
                 }
-    helpers.bulk(es_client, doc_generator(final))
+
+                helpers.bulk(es, [action])
