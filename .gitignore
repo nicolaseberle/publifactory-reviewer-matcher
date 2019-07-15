@@ -5,3 +5,5 @@
 /web/app/saves/*
 __pycache__
 /mongodb/
+/elasticsearch/esdata/
+l.log

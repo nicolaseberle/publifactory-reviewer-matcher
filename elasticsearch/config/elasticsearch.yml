@@ -23,3 +23,7 @@ xpack.monitoring.enabled: false
 xpack.ml.enabled: false
 xpack.graph.enabled: false
 xpack.watcher.enabled: false
+
+## Add scripting
+script.allowed_types: inline
+script.allowed_contexts: update

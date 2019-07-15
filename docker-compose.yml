@@ -5,6 +5,7 @@ services:
       build: elasticsearch/
       volumes:
         - ./elasticsearch/config/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
+        - ./elasticsearch/esdata:/usr/share/elasticsearch/data
       ports:
         - "9200:9200"
       environment:
@@ -29,3 +30,5 @@ services:
       - elk
 networks:
   elk:
+volumes:
+  esdata:

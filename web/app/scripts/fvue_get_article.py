@@ -11,7 +11,7 @@ from bson.json_util import dumps
 def get_articles_es(value):
     es_host = 'elasticsearch'
     es = Elasticsearch(hosts=[es_host])
-    index_name = 'articles_small'
+    index_name = 'articles_large'
 
     res = es.search(index=index_name, body={
         "query": {"match": {"title": str(value)}},
