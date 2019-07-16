@@ -9,9 +9,9 @@ import logging
 
 # CONSTS
 
-LOG_FILENAME = 'l.log'
-logging.basicConfig(filename=LOG_FILENAME, level=logging.DEBUG, filemode='w')
-logging.getLogger("requests").setLevel(logging.WARNING)
+#LOG_FILENAME = 'l.log'
+#logging.basicConfig(filename=LOG_FILENAME, level=logging.DEBUG, filemode='w')
+#logging.getLogger("requests").setLevel(logging.WARNING)
 
 # MAIN
 
@@ -19,7 +19,7 @@ def authors2es(es, index_name_art, index_name_aut, doc_type_aut):
 
 
     data = es.search(index=index_name_art, body={
-        "size": 5000,
+        "size": 50000,
         "query": {"match_all": {}},
         "_source": ["id", "title", "entities", "year", "authors", "journalName"]
     })

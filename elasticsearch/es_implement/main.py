@@ -36,7 +36,7 @@ es = Elasticsearch(hosts=[ES_HOST])
 # Add 1 articles file in new ES index
 
 # from scripts.articles2es import articles2es_file
-# articles2es_file(es, PATH_NAME, FILE_NAME, INDEX_NAME_ART, DOC_TYPE_ART, "00")
+# articles2es_file(es, PATH_NAME, FILE_NAME, INDEX_NAME_ART, DOC_TYPE_ART, "02")
 
 
 # Add multiple articles files in new ES index
@@ -47,8 +47,8 @@ es = Elasticsearch(hosts=[ES_HOST])
 
 # Add authors in new ES index
 
-# from scripts.authors2es import authors2es
-# authors2es(es, INDEX_NAME_ART, INDEX_NAME_AUT, DOC_TYPE_AUT)
+from scripts.authors2es import authors2es
+authors2es(es, INDEX_NAME_ART, INDEX_NAME_AUT, DOC_TYPE_AUT)
 
 
 # Create a fake authors base with redundancy of information
