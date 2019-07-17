@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+  <title>Reviewer Matcher - {{titre}}</title>
+
+  <link href="{{ url_for('static', filename='normalize.css') }}" rel="stylesheet" type="text/css" />
+  <link href="{{ url_for('static', filename='main.css') }}" rel="stylesheet" type="text/css" />
+  
+</head>
+<body>
+
+{% if (data) != -1 %}
+
+<h1>Article id n°{{id_art}}</h1>
+
+{% for art in data %}  
+
+<article>
+    <ul>
+      <li>Titre : {{ art["_source"]["title"] }}</li>
+      <li>Abstract : {{ art["_source"]["paperAbstract"] }}</li>
+      <li>Keywords :
+	{% for ent in art["_source"]["entities"] %}
+	{{ ent }},
+	{% endfor %}
+      </li>
+      <li>Année : {{ art["_source"]["year"] }}</li>
+      <li>Auteurs :
+        {% for aut in art["_source"]["authors"] %}
+        {{ aut["name"] }}, 
+        {% endfor %}
+      </li>
+      <li>Journal : {{ art["_source"]["journalName"] }} </li>
+    </ul>
+  </article>
+  {% endfor %}
+{% endif %}
+</body>
+</html>

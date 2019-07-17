@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+  <title>Reviewer Matcher - {{titre}}</title>
+
+  <link href="{{ url_for('static', filename='normalize.css') }}" rel="stylesheet" type="text/css" />
+  <link href="{{ url_for('static', filename='main.css') }}" rel="stylesheet" type="text/css" />
+  
+</head>
+<body>
+
+<h1>Recherche d'auteur</h1>
+  
+{% from "_formhelpers.html" import render_field %}
+<form method=post>
+    <dl>
+      {{ render_field(form.name) }}
+      {{ render_field(form.keywords) }}
+      {{ render_field(form.journal) }}
+    </dl>
+    <p><input type=submit value="Chercher des auteurs">
+</form>
+      {% if (data) != -1 %}
+        <section>
+        {% for aut in data %}
+            <article>
+                <ul>
+		    <li>Score : {{aut["_explanation"]["value"]}}</li>
+		    <li>Name : {{aut["_source"]["name"]}}</li>
+		    <li>Keywords :
+		        {% for ent in aut["_source"]["entities"] %}
+		           {{ ent[0] }},
+		        {% endfor %}
+		    </li>
+		    <li>Journals :
+		        {% for jou in aut["_source"]["journals"] %}
+		            {{ jou }},
+		        {% endfor %}
+		    </li>
+		    <li>Articles :
+		        {% for art in aut["_source"]["articles"] %}
+		           <a href="{{url_for('get_one_article', id_art=art)}}">{{art}}</a>
+		        {% endfor %}
+		    </li>
+                </ul>
+            </article>
+        {% endfor %}
+        </section>
+    {% endif %}
+</body>
+</html>

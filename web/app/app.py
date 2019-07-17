@@ -30,9 +30,16 @@ class RequestESForm(Form):
     abstract = StringField('Abstract', (validators.Optional(),))
     authors = StringField('Auteurs', (validators.Optional(),))
     keywords = StringField('Keywords', (validators.Optional(),))
+    journal = StringField('Journal', (validators.Optional(),))
     year_alone = IntegerField('Année précise', (validators.Optional(),))
     year_range1 = IntegerField('Année de début', (validators.Optional(),))
     year_range2 = IntegerField('Année de fin', (validators.Optional(),))
+
+
+class RequestESAuthors(Form):
+    name = StringField('Nom', (validators.Optional(),))
+    keywords = StringField('Keywords', (validators.Optional(),))
+    journal = StringField('Journal', (validators.Optional(),))
     
 # ROUTES
 
@@ -40,12 +47,6 @@ class RequestESForm(Form):
 @app.route('/')
 def index():
     return render_template('index.html', titre="Reviewer Matcher !")
-
-
-@app.route('/model_test/')
-def model_test():
-    temp = [1, 2, 3]
-    return render_template('model_test.html', titre="Model Test", data=temp)
 
 
 @app.route('/request_base/', methods=['GET', 'POST'])
@@ -59,6 +60,7 @@ def request_base():
         abstract = form.abstract.data
         authors = form.authors.data
         keywords = form.keywords.data
+        journal = form.journal.data
         if form.year_alone.data :
             year1 = form.year_alone.data
             year2 = form.year_alone.data
@@ -68,32 +70,29 @@ def request_base():
         else :
             year1 = 1800
             year2 = now.year
-        data = get_articles_es(title, abstract, authors, keywords, year1, year2)
+        data = get_articles_es(title, abstract, authors, keywords, journal, year1, year2)
     return render_template('request_base.html', titre="Request Base", form=form, data=data)
 
 
-@app.route('/request_base_mongo/', methods=['GET', 'POST'])
-def request_base_mongo():
-    form = RequestESForm(request.form)
+@app.route('/request_base_authors', methods=['GET', 'POST'])
+def request_base_authors():
+    form = RequestESAuthors(request.form)
     data = -1
-    from scripts.fvue_get_article import get_articles_mongo
+    from scripts.fvue_get_authors import get_authors_es
     if request.method == 'POST' and form.validate():
-        title = form.title.data
-        abstract = form.abstract.data
-        data = get_articles_mongo(title, abstract)
-    return render_template('request_mongo.html', titre="Request Mongo", form=form, data=data)
+        name = form.name.data
+        keywords = form.keywords.data
+        journal = form.journal.data
+        data = get_authors_es(name, keywords, journal)
+    return render_template('request_base_authors.html', titre="Request Authors", form=form, data=data)
 
 
-@app.route('/reviewer_matcher/')
-def reviewer_matcher():
-    temp = [1, 2, 3]
-    return render_template('reviewer_matcher.html', titre="Reviewer Matcher", data=temp)
+@app.route('/get_one_article/<id_art>')
+def get_one_article(id_art):
+    from scripts.fvue_get_article import get_article_es
+    data = get_article_es(id_art)
+    return render_template('show_article.html', titre="Article", data=data, id_art=id_art)
 
-
-@app.route('/results/')
-def results():
-    temp = [1, 2, 3]
-    return render_template('results.html', titre="Results", data=temp)
 
 # API
 
@@ -107,13 +106,6 @@ def suggest_reviewers():
 def es_info():
     return jsonify(es.info())
 
-# ERRORS
-
-# @app.errorhandler(401)
-# @app.errorhandler(404)
-# @app.errorhandler(500)
-# def ma_page_erreur(error):
-#     return "Erreur {}".format(error.code), error.code
 
 # EXEC
 
