@@ -35,17 +35,19 @@ def get_articles_es(title, abstract, authors, keywords, journal, year1, year2):
                         {
                             "match": {
                                 "entities": str(keywords)
-                            },
+                            }
+                        },
+                        {
                             "match": {
                                 "journalName": str(journal)
                             }
                         }
                     ],
                     "must": {
-                        "range" : {
-                            "year" : {
-                                "gte" : str(year1),
-                                "lte" : str(year2)
+                        "range": {
+                            "year": {
+                                "gte": str(year1),
+                                "lte": str(year2)
                             }
                         }
                     }

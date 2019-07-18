@@ -35,21 +35,22 @@
         {% for art in data %}
             <article>
                 <ul>
-		    <li>Score : {{art["_explanation"]["value"]}}</li>
+		            <li>Score : {{art["_explanation"]["value"]}}</li>
+                    <li>Moyenne : {{ mean }}</li>
                     <li>Titre : {{ art["_source"]["title"] }}</li>
                     <li>Abstract : {{ art["_source"]["paperAbstract"] }}</li>
-		    <li>Keywords :
-		        {% for ent in art["_source"]["entities"] %}
-		            {{ ent }},
-		        {% endfor %}
-		    </li>
+                    <li>Keywords :
+                        {% for ent in art["_source"]["entities"] %}
+                            {{ ent }},
+                        {% endfor %}
+                    </li>
                     <li>Année : {{ art["_source"]["year"] }}</li>
                     <li>Auteurs :
                         {% for aut in art["_source"]["authors"] %}
                             {{ aut["name"] }}, 
                         {% endfor %}
                     </li>
-		    <li>Journal : {{ art["_source"]["journalName"] }} </li>
+		            <li>Journal : {{ art["_source"]["journalName"] }} </li>
                 </ul>
             </article>
         {% endfor %}
