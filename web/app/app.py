@@ -34,10 +34,13 @@ es = Elasticsearch(hosts=[es_host])
 
 
 class RequestESForm(Form):
-    title = StringField('Titre', (validators.Optional(),))
-    abstract = TextAreaField('Abstract', (validators.Optional(),))
+    title = StringField('Titre Non Ordonné', (validators.Optional(),))
+    title_ord = StringField('Titre Ordonné', (validators.Optional(),))
+    abstract = TextAreaField('Abstract Non Ordonné', (validators.Optional(),))
+    abstract_ord = TextAreaField('Abstract Ordonné', (validators.Optional(),))
     authors = StringField('Auteurs', (validators.Optional(),))
-    keywords = StringField('Keywords', (validators.Optional(),))
+    keywords = StringField('Keywords Non Ordonné', (validators.Optional(),))
+    keywords_ord = StringField('Keywords Ordonné', (validators.Optional(),))
     journal = StringField('Journal', (validators.Optional(),))
     year_alone = IntegerField('Année précise', (validators.Optional(),))
     year_range1 = IntegerField('Année de début', (validators.Optional(),))
@@ -79,23 +82,27 @@ def request_base():
     data = -1
     results = -1
     now = datetime.datetime.now()
+
     from scripts.fvue_get_article import get_articles_es
     if request.method == 'POST' and form1.validate() and form1.submit1.data:
         title = form1.title.data
+        title_ord = form1.title_ord.data
         abstract = form1.abstract.data
+        abstract_ord = form1.abstract_ord.data
         authors = form1.authors.data
         keywords = form1.keywords.data
+        keywords_ord = form1.keywords_ord.data
         journal = form1.journal.data
-        if form1.year_alone.data :
+        if form1.year_alone.data:
             year1 = form1.year_alone.data
             year2 = form1.year_alone.data
-        elif (form1.year_range1.data) and (form1.year_range2.data) :
+        elif form1.year_range1.data and form1.year_range2.data:
             year1 = form1.year_range1.data
             year2 = form1.year_range2.data
-        else :
+        else:
             year1 = 1800
             year2 = now.year
-        data = get_articles_es(title, abstract, authors, keywords, journal, year1, year2)
+        data = get_articles_es(title, title_ord, abstract, abstract_ord, authors, keywords, keywords_ord, journal, year1, year2)
 
     if request.method == 'POST' and form2.validate() and form2.submit2.data:
         if 'pdf' not in request.files:

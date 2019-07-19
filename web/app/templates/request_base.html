@@ -19,9 +19,12 @@
 <form method=post>
     <dl>
       {{ render_field(form1.title) }}
+      {{ render_field(form1.title_ord) }}
       {{ render_field(form1.abstract) }}
+      {{ render_field(form1.abstract_ord) }}
       {{ render_field(form1.authors) }}
       {{ render_field(form1.keywords) }}
+      {{ render_field(form1.keywords_ord) }}
       {{ render_field(form1.journal) }}
       {{ render_field(form1.year_alone) }}
       <p>Range Année</p>

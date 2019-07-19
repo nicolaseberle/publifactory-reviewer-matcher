@@ -7,7 +7,7 @@ from bson.json_util import dumps
 # REQUESTS ES
 
 
-def get_articles_es(title, abstract, authors, keywords, journal, year1, year2):
+def get_articles_es(title, title_ord, abstract, abstract_ord, authors, keywords, keywords_ord, journal, year1, year2):
     es_host = 'elasticsearch'
     es = Elasticsearch(hosts=[es_host])
     index_name = 'articles_large'
@@ -23,8 +23,18 @@ def get_articles_es(title, abstract, authors, keywords, journal, year1, year2):
                             }
                         },
                         {
+                            "match_phrase": {
+                                "title": str(title_ord)
+                            }
+                        },
+                        {
                             "match": {
                                 "paperAbstract": str(abstract)
+                            }
+                        },
+                        {
+                            "match_phrase": {
+                                "paperAbstract": str(abstract_ord)
                             }
                         },
                         {
@@ -35,6 +45,11 @@ def get_articles_es(title, abstract, authors, keywords, journal, year1, year2):
                         {
                             "match": {
                                 "entities": str(keywords)
+                            }
+                        },
+                        {
+                            "match_phrase": {
+                                "entities": str(keywords_ord)
                             }
                         },
                         {
