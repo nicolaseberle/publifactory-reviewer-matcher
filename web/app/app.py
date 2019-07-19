@@ -110,6 +110,7 @@ def request_base():
             file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
             from scripts.upload_pdf import get_infos_pdf
             results = get_infos_pdf(filename, app.config['UPLOAD_FOLDER'])
+            os.remove(os.path.join(app.config['UPLOAD_FOLDER'], filename))
 
     if results != -1:
         if "title" in results:
