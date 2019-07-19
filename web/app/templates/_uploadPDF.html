@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+{% from "_formhelpers.html" import render_field %}
+<form method=post enctype=multipart/form-data>
+    <dl>
+      {{ render_field(form.pdf) }}
+    </dl>
+    <p><input type=submit value="Upload le pdf">
+</form>
+
+{% if (data) != -1 %}
+    {{ data }}
+{% endif %}
+
+
+
+</body>
+</html>

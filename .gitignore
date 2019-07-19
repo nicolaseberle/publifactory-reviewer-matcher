@@ -8,3 +8,4 @@ __pycache__
 /elasticsearch/esdata/
 l.log
 /elasticsearch/es_implement/corpus/s2-corpus-02
+/grobid/

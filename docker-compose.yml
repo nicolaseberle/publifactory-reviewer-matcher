@@ -1,6 +1,15 @@
 version: '2'
 
 services:
+  grobid:
+      image: lfoppiano/grobid:0.5.5
+      ports:
+        - "8070:8070"
+      environment:
+        - JAVA_OPTS=-Xmx1g
+      networks:
+        - elk
+
   elasticsearch:
       build: elasticsearch/
       volumes:

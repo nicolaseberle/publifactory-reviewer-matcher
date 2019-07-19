@@ -4,38 +4,19 @@ html {
     font-family: 'Open Sans', sans-serif;
 }
 
-/*
+/* FORM */
 
-body {
-    width: 80%;
-    margin: 0 auto;
+form textarea {
+    height: 300px;
+    resize: none;
 }
 
-h1 {
-    text-align: center;
-    font-size: 3rem;
+button, input, optgroup, select, textarea {
+    width: 600px;
+    padding: 10px;
 }
 
-form {
-    display: flex;
-    width: 50%;
-    min-width: 300px;
-    margin: 0 auto;
-    box-shadow: 0px 0px 10px lightgrey;
-    padding: 20px 30px;
-    flex-direction: column;
-    text-align: center;
-    font-size: 1.6rem;
+#formPDF {
+    /*border: 1px solid black;
+    #padding: 10px;*/
 }
-
-dd {
-    margin: 0;
-}
-
-input {
-    width: 100%;
-    padding: 3px 6px;
-    margin: 5px 0px 20px;
-}
-
-*/
