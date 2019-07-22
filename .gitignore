@@ -9,3 +9,4 @@ __pycache__
 l.log
 /elasticsearch/es_implement/corpus/s2-corpus-02
 /grobid/
+/elasticsearch/es_implement/corpus/000/

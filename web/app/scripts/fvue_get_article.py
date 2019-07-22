@@ -1,8 +1,6 @@
 # IMPORT
 
-import pandas as pd
 from elasticsearch import Elasticsearch
-from bson.json_util import dumps
 
 # REQUESTS ES
 
@@ -82,7 +80,7 @@ def get_article_es(id_art):
     index_name = 'articles_large'
 
     res = es.search(index=index_name, body={
-        "query": { "match": {"id": str(id_art)} },
+        "query": {"match": {"id": str(id_art)}},
         "_source": ["title", "paperAbstract", "authors.name", "entities", "journalName", "year"]
     })
     res = res["hits"]["hits"]
