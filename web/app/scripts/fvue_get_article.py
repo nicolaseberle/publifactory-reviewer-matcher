@@ -67,7 +67,7 @@ def get_articles_es(title, title_ord, abstract, abstract_ord, authors, keywords,
                 }
             },
             "size": 10,
-            "_source": ["title", "paperAbstract", "authors.name", "entities", "journalName", "year"]
+            "_source": ["title", "paperAbstract", "authors.name", "entities", "journalName", "year", "pmid", "doi"]
         })
     res = res['hits']['hits']
 

@@ -3,17 +3,20 @@
 
 # IMPORT
 
-from flask import Flask, render_template, flash, request, jsonify, redirect, url_for
+from flask import Flask, Response, render_template, flash, request, jsonify, redirect, url_for
 from wtforms import Form, TextAreaField, validators, StringField, SubmitField, IntegerField, FileField
 from wtforms.validators import InputRequired
 from elasticsearch import Elasticsearch
 import os
 import datetime
 from werkzeug.utils import secure_filename
+import requests
+import json
+import time
+
 
 # APP CONFIG
 
-# UPLOAD_FOLDER = '/uploads_pdf'
 APP_ROOT = os.path.dirname(os.path.abspath(__file__))
 UPLOAD_FOLD = 'uploads_pdf'
 UPLOAD_FOLDER = os.path.join(APP_ROOT, UPLOAD_FOLD)
@@ -25,7 +28,6 @@ app.config.from_object(__name__)
 app.config['SECRET_KEY'] = '7d441f27d441f27567d441f2b6176a'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
-# es_host = os.environ['DOCKER_MACHINE_IP']
 es_host = 'elasticsearch:9200'
 es = Elasticsearch(hosts=[es_host])
 
@@ -51,13 +53,18 @@ class RequestESForm(Form):
 class RequestESAuthors(Form):
     name = StringField('Nom', (validators.Optional(),))
     keywords = StringField('Keywords', (validators.Optional(),))
-    journal = StringField('Journal', (validators.Optional(),))
-
+    article = StringField('Article', (validators.Optional(),))
+    affil = StringField('Affiliation', (validators.Optional(),))
 
 class UploadPDF(Form):
     pdf = FileField('Pdf')
     submit2 = SubmitField('Envoyer')
 
+
+class SummarizeText(Form):
+    text = TextAreaField('Texte', [validators.DataRequired()])
+    nb_sent = IntegerField('Nombre de phrases', [validators.DataRequired()])
+    submit = SubmitField('Résumer le texte')
 
 # FUNCTIONS
 
@@ -133,19 +140,27 @@ def request_base():
         if "keywords" in results:
             form1.keywords.data = ' '.join(results["keywords"])
 
-    return render_template('request_base.html', titre="Request Base", form1=form1, form2=form2, data=data, results=results)
+    verified_auth = []
+    if data != -1 :
+        from scripts.fvue_get_authors import get_authors_by_id
+        for art in data :
+            temp = get_authors_by_id(art["_source"]["doi"])
+            verified_auth.append(temp)
+            
+    return render_template('request_base.html', titre="Request Base", form1=form1, form2=form2, data=data, results=results, doi=verified_auth)
 
 
 @app.route('/request_base_authors', methods=['GET', 'POST'])
 def request_base_authors():
     form = RequestESAuthors(request.form)
     data = -1
-    from scripts.fvue_get_authors import get_authors_es
+    from scripts.fvue_get_authors import get_authors_es_v2
     if request.method == 'POST' and form.validate():
         name = form.name.data
         keywords = form.keywords.data
-        journal = form.journal.data
-        data = get_authors_es(name, keywords, journal)
+        article = form.article.data
+        affil = form.affil.data
+        data = get_authors_es_v2(name, keywords, article, affil)
     return render_template('request_base_authors.html', titre="Request Authors", form=form, data=data)
 
 
@@ -155,6 +170,26 @@ def get_one_article(id_art):
     data = get_article_es(id_art)
     return render_template('show_article.html', titre="Article", data=data, id_art=id_art)
 
+
+@app.route('/get_one_author/<orcid>')
+def get_one_author(orcid):
+    from scripts.fvue_get_authors import get_author_es
+    data = get_author_es(orcid)
+    return render_template('show_author.html', titre="Auteur", data=data, orcid=orcid)
+
+
+@app.route('/summarize_text', methods=['GET', 'POST'])
+def summarize_text():
+    form = SummarizeText(request.form)
+    data = -1
+    from scripts.summarize_text import multiple_summary, generate_summary
+    if request.method == 'POST' and form.validate():
+        text = form.text.data
+        nb_sent = form.nb_sent.data
+        #data = generate_summary(text, nb_sent)
+        data = multiple_summary(text, nb_sent)
+
+    return render_template('summarize_text.html', titre="Summarize Text", form=form, data=data)
 
 # API
 
@@ -169,6 +204,106 @@ def es_info():
     return jsonify(es.info())
 
 
+@app.route('/api/request_reviewer')
+def request_reviewer():
+    abstr = request.args.get('abstract')
+    title = request.args.get('title')
+    keywords = request.args.get('keywords')
+    temp = [
+        {"name": "authors1", "orcid": "0000-0001-1234-1234", "affiliation": "univ1", "conflit": "90%", "score":"0.982467", "keywords":[{"name": "key1", "score": "0.876543"}, {"name": "key2", "score": "0.345678"}], "email": ["email@example.com", "email2@example.com"], "rs": ["https://linkedin.com", "https://blognul.com"]},
+        {"name":"authors2", "orcid": "", "affiliation": "univ2", "conflit": "12%","score":"0.912345", "keywords":[{"name": "key2", "score": "0.456543"}, {"name": "key3", "score": "0.645678"}], "email": ["email3@example.com"], "rs": []}
+    ]
+    return json.dumps(temp)
+
+
+@app.route('/api/suggest_ae')
+def suggest_ae():
+    id_article = request.args.get('id_article')
+    data = [
+        {"name": "associate_editor1", "affiliation": "univ2", "conflit": "32%", "score": "0.853425", "email": ["email@example.com", "email2@example.com"], "rs": ["https://linkedin.com", "https://blognul.com"]}
+    ]
+    data = json.dumps(data)
+    return Response(response=data, status=200, mimetype="application/json")
+
+
+@app.route('/api/suggest_pertinent_art')
+def suggest_pertient_art():
+    domain = request.args.get('domain')
+    keywords = request.args.get('keywords')
+    rec_or_acc = request.args.get('recent_or_accurate') 
+    data = [
+        {
+            "title": "art1",
+            "abstract": "abs1",
+            "authors": ["aut1", "aut2", "aut3"],
+            "keywords": ["key1", "key2"],
+            "journal": "journal1", 
+            "year": "1996"
+        }
+        
+    ]
+    data = json.dumps(data)
+    return Response(response=data, status=200, mimetype="application/json")
+    
+@app.route('/api/extract_infos_pdf', methods=['GET', 'POST'])
+def extract_infos_pdf():
+    file = request.files['pdf_file']
+    if file.filename == '':
+        return "empty file"
+    if file and allowed_file(file.filename):
+        filename = secure_filename(file.filename)
+        file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+        from scripts.upload_pdf import get_infos_pdf
+        results = get_infos_pdf(filename, app.config['UPLOAD_FOLDER'])
+        os.remove(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+
+        if not "title" in results:
+            results["title"] = ""
+        if not "abstract" in results:
+            results["abstract"] = ""
+        if not "keywords" in results or results["keywords"] == []:
+            results["keywords"] = ""
+        data = [{"title": results["title"], "abstract": results["abstract"], "keywords": results["keywords"]}]
+        data = json.dumps(data)
+        return Response(response=data, status=200, mimetype="application/json")
+
+        
+@app.route('/api/get_articles')
+def get_articles():
+    now = datetime.datetime.now()
+    from scripts.fvue_get_article import get_articles_es
+    title = request.args.get('title')
+    title_ord = request.args.get('title_ord')
+    abstract = request.args.get('abstract')
+    abstract_ord = request.args.get('abstract_ord')
+    authors = request.args.get('authors')
+    keywords = request.args.get('keywords')
+    keywords_ord = request.args.get('keywords_ord')
+    journal = request.args.get('journal')
+    if request.args.get('year_alone'):
+        year1 = request.args.get('year_alone')
+        year2 = request.args.get('year_alone')
+    elif request.args.get('year_range1') and request.args.get('year_range2'):
+        year1 = request.args.get('year_range1')
+        year2 = request.args.get('year_range2')
+    else:
+        year1 = 1800
+        year2 = now.year
+    data = get_articles_es(title, title_ord, abstract, abstract_ord, authors, keywords, keywords_ord, journal, year1, year2)
+    return json.dumps(data)
+
+
+@app.route('/api/summary_generator', methods=['GET', 'POST'])
+def summary_generator():
+    from scripts.summarize_text import multiple_summary
+    text = request.args.get('text')
+    nb_sent = int(request.args.get('nb_sent'))
+    data = multiple_summary(text, nb_sent)
+
+    data = json.dumps(data)
+    return Response(response=data, status=200, mimetype="application/json")
+
+    
 # EXEC
 
 if __name__ == '__main__':

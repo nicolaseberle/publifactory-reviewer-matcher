@@ -40,13 +40,12 @@
     </dl>
     <p>{{ render_field(form2.submit2) }}
 </form>
-
       {% if (data) != -1 %}
-        <section>
+      <section>
         {% for art in data %}
             <article>
                 <ul>
-		            <li>Score : {{art["_explanation"]["value"]}}</li>
+		    <li>Score : {{art["_explanation"]["value"]}}</li>
                     <li>Moyenne : {{ mean }}</li>
                     <li>Titre : {{ art["_source"]["title"] }}</li>
                     <li>Abstract : {{ art["_source"]["paperAbstract"] }}</li>
@@ -61,7 +60,25 @@
                             {{ aut["name"] }}, 
                         {% endfor %}
                     </li>
-		            <li>Journal : {{ art["_source"]["journalName"] }} </li>
+		    <li>Auteurs vérifiés :
+		      <ul>
+			{% for aut in doi[loop.index - 1] %}
+			{% if "person:person" in aut["_source"]["record:record"] %}
+
+			{% if "common:source" in aut["_source"]["record:record"]["person:person"]["researcher-url:researcher-urls"]["researcher-url:researcher-url"] %}
+			{% set orc = aut["_source"]["record:record"]["person:person"]["researcher-url:researcher-urls"]["researcher-url:researcher-url"] %}
+			{% else %}
+			{% set orc = aut["_source"]["record:record"]["person:person"]["researcher-url:researcher-urls"]["researcher-url:researcher-url"][0] %}
+			{% endif %}
+			
+			  <li><a href={{ url_for('get_one_author', orcid=orc["common:source"]["common:source-orcid"]["common:path"]) }}>{{ orc["common:source"]["common:source-name"] }} ({{ orc["common:source"]["common:source-orcid"]["common:path"] }}) </a></li>
+			{% endif %}
+			{% endfor %}
+		      </ul>
+		    </li>
+		    <li>Journal : {{ art["_source"]["journalName"] }} </li>
+		    <li>DOI : {{ art["_source"]["doi"] }} </li>	    
+		    <li>PMID : {{ art["_source"]["pmid"] }}
                 </ul>
             </article>
         {% endfor %}

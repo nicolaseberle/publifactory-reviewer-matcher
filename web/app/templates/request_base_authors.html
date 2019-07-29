@@ -20,36 +20,183 @@
     <dl>
       {{ render_field(form.name) }}
       {{ render_field(form.keywords) }}
-      {{ render_field(form.journal) }}
+      {{ render_field(form.article) }}
+      {{ render_field(form.affil) }}
     </dl>
     <p><input type=submit value="Chercher des auteurs">
 </form>
       {% if (data) != -1 %}
-        <section>
+      <section>
         {% for aut in data %}
-            <article>
-                <ul>
-		    <li>Score : {{aut["_explanation"]["value"]}}</li>
-		    <li>Name : {{aut["_source"]["name"]}}</li>
-		    <li>Keywords :
-		        {% for ent in aut["_source"]["entities"] %}
-		           {{ ent[0] }},
-		        {% endfor %}
-		    </li>
-		    <li>Journals :
-		        {% for jou in aut["_source"]["journals"] %}
-		            {{ jou }},
-		        {% endfor %}
-		    </li>
-		    <li>Articles :
-		        {% for art in aut["_source"]["articles"] %}
-		           <a href="{{url_for('get_one_article', id_art=art)}}">{{art}}</a>
-		        {% endfor %}
-		    </li>
-                </ul>
-            </article>
-        {% endfor %}
-        </section>
+	{% set score = aut["_explanation"]["value"] %}
+	{% set person = aut["_source"]["record:record"]["person:person"] %}
+	{% set keywords = person["keyword:keywords"] %}
+	{% set name = person["person:name"] %}
+	{% set acti = aut["_source"]["record:record"]["activities:activities-summary"] %}
+	{% set externid = person["external-identifier:external-identifiers"]["external-identifier:external-identifier"] %}
+	{% set employ = acti["activities:employments"]["employment:employment-summary"] %}
+	<article>
+	  <ul>
+	    <li>Score : {{ score }}</li>
+
+	    <li>ORCID : {{ name["@path"] }}</li>
+	    
+	    {% if "researcher-url:researcher-url" in person["researcher-url:researcher-urls"] %}
+	    {% set research = person["researcher-url:researcher-urls"]["researcher-url:researcher-url"] %}
+	    {% if "common:source" in research %}
+	    <li>Name : {{ research["common:source"]["common:source-name"] }}</li>
+	    {% else %}
+	    <li>Name : {{ research[0]["common:source"]["common:source-name"] }}</li>
+	    {% endif %}
+	    {% else %}
+	    <li>Name :  Non renseigné</li>
+	    {% endif %}
+
+	    <li>Given Name : {{ name["personal-details:given-names"] }} </li>
+	    <li>Family Name : {{ name["personal-details:family-name"] }} </li>
+
+	    {% if "email:emails" in person %}
+	    <li>Email : {{ person["email:emails"]["email:email"]["email:email"] }}</li>
+	    {% else %}
+	    <li>Email : pas d'email renseignés </li>
+	    {% endif %}
+
+	    {% if "activities:group" in acti["activities:works"] %}
+	    <li>Works<br>
+	      {% if "work:work-summary" in acti["activities:works"]["activities:group"] %}
+	      {% set act = acti["activities:works"]["activities:group"] %}
+	      <ul>
+		{% if "work:title" in act["work:work-summary"] %}
+		<li>Titre : {{ act["work:work-summary"]["work:title"]["common:title"] }}</li>
+		{% else %}
+		<li>Titre : Non renseigné</li>
+		{% endif %}
+		{% if act["common:external-ids"] %}
+		{% set id = act["common:external-ids"]["common:external-id"] %}
+		<li>
+		  {% if id["common:external-id-type"] %}
+		  ID ({{ id["common:external-id-type"] }}) : {{ id["common:external-id-value"] }}
+		  {% else %}
+		  IDS :
+		  <ul>
+		    {% for extid in id %}
+		    <li>({{ extid["common:external-id-type"] }}) : {{ extid["common:external-id-value"] }}
+		      {% endfor %}
+		  </ul>
+		  {% endif %}
+		  {% else %}
+		<li>ID : Non renseigné
+		  {% endif %}
+		</li>
+		{% if "common:publication-date" in act["work:work-summary"] %}
+		<li>Année : {{ act["work:work-summary"]["common:publication-date"]["common:year"] }}</li>
+		{% else %}
+		<li>Année : Non renseigné</li>
+		{% endif %}
+	      </ul>
+	      {% else %}
+	      {% for act in acti["activities:works"]["activities:group"] %}
+	      <ul>
+		{% if "work:title" in act["work:work-summary"] %}
+		<li>Titre : {{ act["work:work-summary"]["work:title"]["common:title"] }}</li>
+		{% else %}
+		<li>Titre : Non renseigné</li>
+		{% endif %}
+		{% if act["common:external-ids"] %}
+		{% set id = act["common:external-ids"]["common:external-id"] %}
+		<li>
+		  {% if id["common:external-id-type"] %}
+		  ID ({{ id["common:external-id-type"] }}) : {{ id["common:external-id-value"] }}
+		  {% else %}
+		  IDS :
+		  <ul>
+		    {% for extid in id %}
+		    <li>({{ extid["common:external-id-type"] }}) : {{ extid["common:external-id-value"] }}
+		      {% endfor %}
+		  </ul>
+		  {% endif %}
+		  {% else %}
+		<li>ID : Non renseigné
+		  {% endif %}
+		</li>
+		{% if "common:publication-date" in act["work:work-summary"] %}
+		<li>Année : {{ act["work:work-summary"]["common:publication-date"]["common:year"] }}</li>
+		{% else %}
+		<li>Année : Non renseigné</li>
+		{% endif %}
+	      </ul>
+	      <br>
+	      {% endfor %}
+	      {% endif %}
+	    </li>
+	    {% else %}
+	    <li>Works : Non renseigné</li>
+	    {% endif %}
+
+	    {% if externid %}
+	    <li>ID External :
+	      {% if "common:external-id-type" in externid %}
+	      <ul><li>
+	      {{ externid["common:external-id-type"] }} : {{ externid["common:external-id-url"] }}
+	      </li></ul>
+	      {% else %}
+	      <ul>
+		{% for extid in externid %}
+		<li>{{ extid["common:external-id-type"] }} : {{ extid["common:external-id-url"] }}</li>
+		{% endfor %}
+	      </ul>
+	      {% endif %}
+	    </li>
+	    {% else %}
+	    <li>ID External : Non renseigné</li>
+	    {% endif %}
+
+	    {% if "researcher-url:researcher-url" in person["researcher-url:researcher-urls"] %}
+	    {% set researchurl = person["researcher-url:researcher-urls"]["researcher-url:researcher-url"] %}
+	    {% if researchurl %}
+	    <li>Personals links :
+	      {% if "researcher-url:url-name" in  researchurl  %}
+	      <ul><li>
+	      {{  researchurl["researcher-url:url-name"] }} : {{ researchurl["researcher-url:url"] }}
+	      </ul></li>
+	      {% else %}
+	      <ul>
+		{% for res in researchurl %}
+		<li>{{ res["researcher-url:url-name"] }} : {{ res["researcher-url:url"] }}</li>
+		{% endfor %}
+	      </ul>
+	      {% endif %}
+	    </li>
+	    {% else %}
+	    <li>Personals links : Non renseigné</li>
+	    {% endif %}
+	    {% else %}
+	    <li>Personals links : Non renseigné</li>
+	    {% endif %}
+
+	    {% if "keyword:content" in keywords["keyword:keyword"] %}
+	    <li>Keywords : {{ keywords["keyword:keyword"]["keyword:content"] }} </li>
+	    {% else %}
+	    <li>Keywords : Non renseigné</li>
+	    {% endif %}
+
+
+	    {% if "employment:employment-summary" in acti["activities:employments"] %}
+	      {% if "employment:organization" in employ %}
+	      {% set addr = employ["employment:organization"]["common:address"] %}
+	      <li>Affiliation : {{ employ["employment:organization"]["common:name"] }}, {{ addr["common:city"] }} ({{ addr["common:country"] }}) </li>
+	      {% else %}
+	      {% set addr = employ[0]["employment:organization"]["common:address"] %}
+	      <li>Affiliation : {{ employ[0]["employment:organization"]["common:name"] }}, {{ addr["common:city"] }} ({{ addr["common:country"] }})
+              {% endif %}
+	    {% else %}
+	    <li>Affiliation : Non renseigné</li>
+	    {% endif %}
+	    
+	  </ul>
+	</article>
+	{% endfor %}
+      </section>
     {% endif %}
 </body>
 </html>

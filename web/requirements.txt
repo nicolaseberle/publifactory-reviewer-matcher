@@ -13,6 +13,8 @@ itsdangerous==1.1.0
 Jinja2==2.10.1
 jmespath==0.9.4
 MarkupSafe==1.1.1
+networkx==2.2
+nltk==3.4.3
 numpy==1.16.4
 objectpath==0.6.1
 pandas==0.24.2

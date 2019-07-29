@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+  <title>Reviewer Matcher - {{titre}}</title>
+
+  <link href="{{ url_for('static', filename='normalize.css') }}" rel="stylesheet" type="text/css" />
+  <link href="{{ url_for('static', filename='main.css') }}" rel="stylesheet" type="text/css" />
+  
+</head>
+<body>
+
+{% if (data) != -1 %}
+
+<h1>Auteur orcid n°{{orcid}}</h1>
+
+<section>
+{% for aut in data %}
+<article>
+  <ul>
+    {% if "common:source" in aut["_source"]["record:record"]["person:person"]["researcher-url:researcher-urls"]["researcher-url:researcher-url"] %}
+    <li>Name : {{ aut["_source"]["record:record"]["person:person"]["researcher-url:researcher-urls"]["researcher-url:researcher-url"]["common:source"]["common:source-name"] }}</li>
+    {% else %}
+    <li>Name : {{ aut["_source"]["record:record"]["person:person"]["researcher-url:researcher-urls"]["researcher-url:researcher-url"][0]["common:source"]["common:source-name"] }}</li>
+    {% endif %}
+
+    <li>Given Name : {{ aut["_source"]["record:record"]["person:person"]["person:name"]["personal-details:given-names"] }} </li>
+    <li>Family Name : {{ aut["_source"]["record:record"]["person:person"]["person:name"]["personal-details:family-name"] }} </li>
+
+    {% if "email:emails" in aut["_source"]["record:record"]["person:person"] and "email:email" in aut["_source"]["record:record"]["person:person"]["email:emails"]  %}
+    <li>Email : {{ aut["_source"]["record:record"]["person:person"]["email:emails"]["email:email"]["email:email"] }}</li>
+    {% else %}
+    <li>Email : pas d'email renseignés </li>
+    {% endif %}
+
+    {% if "activities:group" in aut["_source"]["record:record"]["activities:activities-summary"]["activities:works"] %}
+    <li>Works<br>
+      {% for act in aut["_source"]["record:record"]["activities:activities-summary"]["activities:works"]["activities:group"] %}
+      <ul>
+	{% if "work:title" in act["work:work-summary"] %}
+	<li>Titre : {{ act["work:work-summary"]["work:title"]["common:title"] }}</li>
+	{% else %}
+	<li>Titre : Non renseigné</li>
+	{% endif %}
+	{% if act["common:external-ids"] %}
+	<li>
+	  {% if act["common:external-ids"]["common:external-id"]["common:external-id-type"] %}
+	  ID ({{ act["common:external-ids"]["common:external-id"]["common:external-id-type"] }}) : {{ act["common:external-ids"]["common:external-id"]["common:external-id-value"] }}
+	  {% else %}
+	  IDS :
+	  <ul>
+	    {% for extid in act["common:external-ids"]["common:external-id"] %}
+	    <li>({{ extid["common:external-id-type"] }}) : {{ extid["common:external-id-value"] }}
+	      {% endfor %}
+	  </ul>
+	  {% endif %}
+	  {% else %}
+	<li>ID : Non renseigné
+	  {% endif %}
+	</li>
+	{% if "common:publication-date" in act["work:work-summary"] %}
+	<li>Année : {{ act["work:work-summary"]["common:publication-date"]["common:year"] }}</li>
+	{% else %}
+	<li>Année : Non renseigné</li>
+	{% endif %}
+      </ul>
+      <br>
+      {% endfor %}
+    </li>
+    {% endif %}
+
+    {% if aut["_source"]["record:record"]["person:person"]["external-identifier:external-identifiers"]["external-identifier:external-identifier"] %}
+    <li>ID External :
+      {% if "common:external-id-type" in aut["_source"]["record:record"]["person:person"]["external-identifier:external-identifiers"]["external-identifier:external-identifier"] %}
+      {{ aut["_source"]["record:record"]["person:person"]["external-identifier:external-identifiers"]["external-identifier:external-identifier"]["common:external-id-type"] }} : {{ aut["_source"]["record:record"]["person:person"]["external-identifier:external-identifiers"]["external-identifier:external-identifier"]["common:external-id-url"] }}
+      {% else %}
+      <ul>
+	{% for extid in aut["_source"]["record:record"]["person:person"]["external-identifier:external-identifiers"]["external-identifier:external-identifier"] %}
+	<li>{{ extid["common:external-id-type"] }} : {{ extid["common:external-id-url"] }}</li>
+	{% endfor %}
+      </ul>
+      {% endif %}
+    </li>
+    {% else %}
+    <li>ID External : Non renseigné</li>
+    {% endif %}
+
+    {% if aut["_source"]["record:record"]["person:person"]["researcher-url:researcher-urls"]["researcher-url:researcher-url"] %}
+    <li>Personals links :
+      {% if "researcher-url:url-name" in aut["_source"]["record:record"]["person:person"]["researcher-url:researcher-urls"]["researcher-url:researcher-url"]  %}
+      {{ aut["_source"]["record:record"]["person:person"]["researcher-url:researcher-urls"]["researcher-url:researcher-url"]["researcher-url:url-name"] }} : {{ aut["_source"]["record:record"]["person:person"]["researcher-url:researcher-urls"]["researcher-url:researcher-url"]["researcher-url:url"] }}
+      {% else %}
+      <ul>
+	{% for res in aut["_source"]["record:record"]["person:person"]["researcher-url:researcher-urls"]["researcher-url:researcher-url"] %}
+	<li>{{ res["researcher-url:url-name"] }} : {{ res["researcher-url:url"] }}</li>
+	{% endfor %}
+      </ul>
+      {% endif %}
+    </li>
+    {% else %}
+    <li>Personals links : Non renseigné</li>
+    {% endif %}
+
+  </ul>
+</article>
+{% endfor %}
+</section>
+
+{% endif %}
+</body>
+</html>
