@@ -119,7 +119,7 @@ def get_author_es(orcid):
                 "should": [
                     {
                         "match_phrase": {
-                            "record:record.person:person.researcher-url:researcher-urls.researcher-url:researcher-url.common:source.common:source-orcid.common:path": str(orcid)
+                            "record:record.person:person.person:name.@path": str(orcid)
                         }
                     }
                 ]

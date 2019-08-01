@@ -86,3 +86,51 @@ def get_article_es(id_art):
     res = res["hits"]["hits"]
     
     return res
+
+
+def get_article_async(title, title_end):
+    es_host = 'elasticsearch'
+    es = Elasticsearch(hosts=[es_host])
+    index_name = 'articles_large'
+    '''
+    res = es.search(index=index_name, body={
+        "query":{
+            "match_phrase": {
+                "title" : {
+                    "query" : title,
+                    "analyzer" : "pattern"
+                }
+            }
+        },
+        "_source": ["title"]
+    })
+    '''
+
+    res = es.search(index=index_name, body={
+        "size": 5,
+        "query": {
+            "bool": {
+                "should": [
+                    {
+                        "match":{
+                            "title": title
+                        }
+                    }
+                ],
+                "must":[
+                    {
+                        "regexp": {
+                            "title":{
+                                "value": title_end+".*"
+                            }
+                        }
+                    }
+                ]
+            }
+        },
+        "_source": ["journalVolume", "journalPages", "journalName", "authors.name", "title", "year"]
+    })
+    
+    res = res["hits"]["hits"]
+
+    return res

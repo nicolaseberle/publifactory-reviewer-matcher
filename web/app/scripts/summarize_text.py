@@ -87,16 +87,19 @@ def generate_summary(file_name, top_n=5):
 def multiple_summary(txt, nb_sent):
     txt = txt.replace('\n', '')
     txt = txt.replace('\r', '')
-    #txt = txt.replace('"', ' ')
-    #txt = txt.replace("'", ' ')
-    #txt = txt.replace(";", ',')
+    txt = txt.replace('"', ' ')
+    txt = txt.replace("'", ' ')
+    txt = txt.replace(";", ',')
     txt = re.sub('\[.*?\]', ' ', txt)
-    #txt = re.sub('\(.*?\)', ' ', txt)
+    #txt = re.sub(r'\(.*([\.]).*\)', r'', txt)
+    #txt = re.sub(r'(\(.*)([\.])(.*\))', r'\1\3', txt)
     txt = re.sub('\{.*?\}', ' ', txt)
     txt = re.sub(' [a-zA-Z]\. ', ' ', txt)
+    
     if len(txt) > 1000:
         data = generate_summary(txt, nb_sent)
     else:
         data = "text too short"
+ 
     return data
 

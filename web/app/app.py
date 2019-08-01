@@ -13,6 +13,7 @@ from werkzeug.utils import secure_filename
 import requests
 import json
 import time
+from markupsafe import Markup
 
 
 # APP CONFIG
@@ -56,6 +57,7 @@ class RequestESAuthors(Form):
     article = StringField('Article', (validators.Optional(),))
     affil = StringField('Affiliation', (validators.Optional(),))
 
+    
 class UploadPDF(Form):
     pdf = FileField('Pdf')
     submit2 = SubmitField('Envoyer')
@@ -66,6 +68,11 @@ class SummarizeText(Form):
     nb_sent = IntegerField('Nombre de phrases', [validators.DataRequired()])
     submit = SubmitField('Résumer le texte')
 
+
+class ArticleAsync(Form):
+    title = StringField('Titre')
+
+    
 # FUNCTIONS
 
 
@@ -190,6 +197,42 @@ def summarize_text():
         data = multiple_summary(text, nb_sent)
 
     return render_template('summarize_text.html', titre="Summarize Text", form=form, data=data)
+
+
+@app.route('/synchro_ref', methods=['GET', 'POST'])
+def synchro_ref():
+    form = ArticleAsync(request.form)
+    data = -1    
+    
+    return render_template('synchro_ref.html', titre="Synchro References", form=form, data=data)
+
+
+# ASYNC FONCTIONS
+
+
+@app.route('/api/sync_ref')
+def sync_ref():
+    data = request.args.get('title', '', type=str)
+    if data != '':
+        from scripts.fvue_get_article import get_article_async
+        temp = data.split(' ')
+        if len(temp) > 1:
+            last = temp[-1]
+            data = ' '.join(temp[0:-1])
+        else:
+            last = data
+            data = ''
+        try:
+            data = get_article_async(data, last)
+            result = []
+            for temp in data:
+                result.append({"title": temp["_source"]["title"], "authors": temp["_source"]["authors"], "year": temp["_source"]["year"], "journalName": temp["_source"]["journalName"], "journalVolume": temp["_source"]["journalVolume"], "journalPages": temp["_source"]["journalPages"]})
+            data = result
+        except:
+            data = ''
+            
+    return Markup(json.dumps(data))
+
 
 # API
 
