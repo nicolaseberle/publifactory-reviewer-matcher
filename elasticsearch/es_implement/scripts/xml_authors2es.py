@@ -6,7 +6,7 @@ import json
 import os
 import io
 from time import sleep
-import csv
+# import csv
 import shutil
 
 # CONSTS
@@ -22,7 +22,7 @@ FILE_PATH = "../orcid/"
 
 # MAIN
 
-files_done = open("temp.csv","a+")
+files_done = open("temp.csv", "a+")
 with open('temp.csv', 'r') as fp:
     temp = fp.read()
 
@@ -39,4 +39,3 @@ for folder in os.listdir(FILE_PATH):
             k += 1
         files_done.write(folder+",")
         shutil.rmtree(FILE_PATH + folder)
-        

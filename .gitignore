@@ -2,10 +2,18 @@
 
 .DS_Store
 .idea
-/web/app/saves/*
 __pycache__
-/mongodb/
 /elasticsearch/esdata/
 l.log
 /elasticsearch/es_implement/corpus/*
-/grobid/
+/elasticsearch/es_implement/orcid/*
+/web/app/scripts/side_dev/
+temp.csv
+
+/web/app/models/saves_test/
+/web/app/models/saves_v2/
+/web/app/models/saves/*
+/web/app/models/model_v2.py
+/web/app/models/model_test.py
+/web/app/models/model_scripts_test/
+

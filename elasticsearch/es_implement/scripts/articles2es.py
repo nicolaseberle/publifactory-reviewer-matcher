@@ -1,7 +1,7 @@
 # IMPORTS
 
-import logging
-import io
+# import logging
+# import io
 import os
 import gzip
 
@@ -20,7 +20,7 @@ def articles2es_file(es, path_name, file_name, index_name, doc_type, iterid):
 
 def articles2es_files(es, path_name, file_name, index_name, doc_type):
 
-    for it in range(21, 47):
+    for it in range(4, 5):
         if it < 10:
             iterid = "0"+str(it)
         else:
