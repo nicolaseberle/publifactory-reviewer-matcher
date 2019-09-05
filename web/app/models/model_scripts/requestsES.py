@@ -39,18 +39,18 @@ def get_abstracts():
 def get_abstract(id):
     value = es.search(index=INDEX_NAME, body={
         "query": {"terms": {"_id": [id]}},
-        "_source": ["paperAbstract"]
+        "_source": ["paperAbstract", "authors", "title", "doi"]
     })
     value = value['hits']['hits']
 
-    return value[0]["_source"]["paperAbstract"]
+    return value[0]["_source"]
 
 
 ## ADD NEW VALUE
 
 def add_value_es(id, title, keywords, abstract):
     line = {
-        "id": "XX-1",
+        "id": id,
         "title": title,
         "entities": keywords,
         "paperAbstract": abstract

@@ -8,9 +8,8 @@ from gensim.similarities import Similarity
 ## CREATE NEW LSI MODEL
 
 def getModel(corpus, index, dictionary):
-    model = Similarity(index, corpus, num_features=len(dictionary), num_best=5)
+    model = Similarity(index, corpus, num_features=len(dictionary), num_best=30)
     return model
-
 
 ## ADDING NEW DOCS AND UPDATE MODEL
 

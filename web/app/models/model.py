@@ -15,24 +15,24 @@ from model_scripts.lsi_model import updateModel
 
 # REQUEST ES
 
-df_temp = get_abstracts()
-pickle.dump(df_temp, open("../models/saves/dfES.p", "wb"))
+#df_temp = get_abstracts()
+#pickle.dump(df_temp, open("../models/saves/dfES.p", "wb"))
 
-df_temp = pickle.load(open("../models/saves/dfES.p", "rb"))
+#df_temp = pickle.load(open("../models/saves/dfES.p", "rb"))
 print("Requests ES Done")
 
 
 # PREPROCESS
 
-corpus, index, dictionary, list_id = getCorpus(df_temp)
+#corpus, index, dictionary, list_id = getCorpus(df_temp)
 
-pickle.dump(corpus, open("../models/saves/corpus.p", "wb"))
-pickle.dump(index, open("../models/saves/index.p", "wb"))
-pickle.dump(dictionary, open("../models/saves/dictionary.p", "wb"))
-pickle.dump(list_id, open("../models/saves/list_id.p", "wb"))
+#pickle.dump(corpus, open("../models/saves/corpus.p", "wb"))
+#pickle.dump(index, open("../models/saves/index.p", "wb"))
+#pickle.dump(dictionary, open("../models/saves/dictionary.p", "wb"))
+#pickle.dump(list_id, open("../models/saves/list_id.p", "wb"))
 
-corpus = pickle.load(open("../models/saves/corpus.p", "rb"))
-index = pickle.load(open("../models/saves/index.p", "rb"))
+#corpus = pickle.load(open("../models/saves/corpus.p", "rb"))
+#index = pickle.load(open("../models/saves/index.p", "rb"))
 dictionary = pickle.load(open("../models/saves/dictionary.p", "rb"))
 list_id = pickle.load(open("../models/saves/list_id.p", "rb"))
 print("Corpus Done")
@@ -40,16 +40,14 @@ print("Corpus Done")
 
 # LSI Model
 
-model = getModel(corpus, index, dictionary)
-pickle.dump(model, open("../models/saves/lsi_model.p", "wb"))
+#model = getModel(corpus, index, dictionary)
+#pickle.dump(model, open("../models/saves/lsi_model.p", "wb"))
 
 model = pickle.load(open("../models/saves/lsi_model.p", "rb"))
 print("Model Done")
 
 
 # UPDATE LSI MODEL
-
-'''
 
 new_value = {
     "id": "XX-1",
@@ -58,6 +56,7 @@ new_value = {
     "keywords": ["Antihypertensive Agents"]
 }
 
+'''
 
 temp = sorted(list_id.keys())[-1]+1
 list_id[int(temp)] = new_value["id"]
@@ -67,8 +66,10 @@ model, dictionary = updateModel(model, value, dictionary)
 
 add_value_es(new_value["id"], new_value["title"], new_value["keywords"], new_value["abstract"])
 
+'''
 
 # TESTING
+'''
 
 test = [preprocess(new_value['abstract'])]
 test2 = [dictionary.doc2bow(doc) for doc in test]
@@ -76,9 +77,12 @@ result = model.__getitem__(test2)
 
 
 print(result)
+list_authors = []
 
 for i in result[0]:
-    print(i, get_abstract(list_id[i[0]]))
-    print(" ")
+    res = get_abstract(list_id[i[0]])["authors"]
+    for auth in res:
+        list_authors.append({"name": auth["name"], "score": i[1]})
 
+print(list_authors)
 '''
