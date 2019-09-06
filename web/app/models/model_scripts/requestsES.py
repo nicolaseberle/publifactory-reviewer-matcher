@@ -9,7 +9,7 @@ from elasticsearch import Elasticsearch
 ES_HOST = 'localhost'
 ES_PORT = '9200'
 
-es = Elasticsearch(hosts=[ES_HOST])
+#es = Elasticsearch(hosts=[ES_HOST])
 
 INDEX_NAME = 'articles_large'
 DOC_TYPE = 'articles_large'
@@ -22,12 +22,12 @@ DOC_TYPE = 'articles_large'
 
 ## REQUESTS ES
 
-def get_abstracts():
+def get_abstracts(es):
     res = es.search(index=INDEX_NAME, body={
         "query": {"match_all": {}},
-        "size": 1000000,
+        "size": 1000,
         "_source": ["paperAbstract"]
-    }, request_timeout=500)
+    }, request_timeout=50)
     res = res['hits']['hits']
 
     df_temp = pd.DataFrame(res)
@@ -36,7 +36,7 @@ def get_abstracts():
 
 ## GET ABSTRACT WITH ID
 
-def get_abstract(id):
+def get_abstract(es, id):
     value = es.search(index=INDEX_NAME, body={
         "query": {"terms": {"_id": [id]}},
         "_source": ["paperAbstract", "authors", "title", "doi"]

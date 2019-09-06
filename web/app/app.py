@@ -14,6 +14,7 @@ import requests
 import json
 import time
 from markupsafe import Markup
+import pickle
 
 
 # APP CONFIG
@@ -242,6 +243,13 @@ def suggest_reviewers():
     return "YAY"
 
 
+@app.route('/api/buildModel/')
+def buildLSI():
+    from models.model import buildModel
+    buildModel(es)
+    return "YAY"
+
+
 @app.route('/api/es_info')
 def es_info():
     return jsonify(es.info())
@@ -249,14 +257,21 @@ def es_info():
 
 @app.route('/api/request_reviewer')
 def request_reviewer():
+    from models.model import getReviewers
+
     abstr = request.args.get('abstract')
-    title = request.args.get('title')
-    keywords = request.args.get('keywords')
+    # title = request.args.get('title')
+    # keywords = request.args.get('keywords')
+
+    result = getReviewers(es, abstr)
+
+    '''
     temp = [
         {"name": "authors1", "orcid": "0000-0001-1234-1234", "affiliation": "univ1", "conflit": "90%", "score":"0.982467", "keywords":[{"name": "key1", "score": "0.876543"}, {"name": "key2", "score": "0.345678"}], "email": ["email@example.com", "email2@example.com"], "rs": ["https://linkedin.com", "https://blognul.com"]},
-        {"name":"authors2", "orcid": "", "affiliation": "univ2", "conflit": "12%","score":"0.912345", "keywords":[{"name": "key2", "score": "0.456543"}, {"name": "key3", "score": "0.645678"}], "email": ["email3@example.com"], "rs": []}
-    ]
-    return json.dumps(temp)
+        {"name": "authors2", "orcid": "", "affiliation": "univ2", "conflit": "12%","score":"0.912345", "keywords":[{"name": "key2", "score": "0.456543"}, {"name": "key3", "score": "0.645678"}], "email": ["email3@example.com"], "rs": []}
+    ]'''
+
+    return json.dumps(result)
 
 
 @app.route('/api/suggest_ae')
@@ -342,6 +357,8 @@ def summary_generator():
     text = request.args.get('text')
     nb_sent = int(request.args.get('nb_sent'))
     data = multiple_summary(text, nb_sent)
+
+
 
     data = json.dumps(data)
     return Response(response=data, status=200, mimetype="application/json")
