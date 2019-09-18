@@ -73,6 +73,10 @@ class SummarizeText(Form):
 class ArticleAsync(Form):
     title = StringField('Titre')
 
+
+class RevMatcher(Form):
+    abstract = TextAreaField('Abstract', [validators.DataRequired()])
+    submit = SubmitField('Envoyer')
     
 # FUNCTIONS
 
@@ -169,7 +173,19 @@ def request_base_authors():
         article = form.article.data
         affil = form.affil.data
         data = get_authors_es_v2(name, keywords, article, affil)
-    return render_template('request_base_authors.html', titre="Request Authors", form=form, data=data)
+    #return render_template('request_base_authors.html', titre="Request Authors", form=form, data=data)
+    return data
+
+@app.route('/test_reviewer_matcher', methods=['GET', 'POST'])
+def test_reviewer_matcher():
+    form = RevMatcher(request.form)
+    data = -1
+    from models.model import getReviewers
+    if request.method == 'POST' and form.validate():
+        abstract = form.abstract.data
+        data = getReviewers(es, abstract)
+        data = sorted(data, key = lambda i: i['score'], reverse=True)
+    return render_template('test_reviewer_matcher.html', titre="Reviewer Matcher Alpha", form=form, data=data)
 
 
 @app.route('/get_one_article/<id_art>')
@@ -250,6 +266,14 @@ def buildLSI():
     return "YAY"
 
 
+@app.route('/api/updateModel/')
+def updateLSI():
+    from models.model import updateModel
+    for i in range(0, 15):
+        updateModel(es)
+    return "YAY"
+
+
 @app.route('/api/es_info')
 def es_info():
     return jsonify(es.info())
@@ -265,12 +289,16 @@ def request_reviewer():
 
     result = getReviewers(es, abstr)
 
-    '''
-    temp = [
-        {"name": "authors1", "orcid": "0000-0001-1234-1234", "affiliation": "univ1", "conflit": "90%", "score":"0.982467", "keywords":[{"name": "key1", "score": "0.876543"}, {"name": "key2", "score": "0.345678"}], "email": ["email@example.com", "email2@example.com"], "rs": ["https://linkedin.com", "https://blognul.com"]},
-        {"name": "authors2", "orcid": "", "affiliation": "univ2", "conflit": "12%","score":"0.912345", "keywords":[{"name": "key2", "score": "0.456543"}, {"name": "key3", "score": "0.645678"}], "email": ["email3@example.com"], "rs": []}
-    ]'''
+    return json.dumps(result)
 
+
+@app.route('/api/request_reviewer_test')
+def request_reviewer_test():
+    from models.model import getReviewers_test
+
+    abstr = request.args.get('abstract')
+    result = getReviewers_test(es, abstr)
+    
     return json.dumps(result)
 
 
@@ -302,7 +330,8 @@ def suggest_pertient_art():
     ]
     data = json.dumps(data)
     return Response(response=data, status=200, mimetype="application/json")
-    
+
+
 @app.route('/api/extract_infos_pdf', methods=['GET', 'POST'])
 def extract_infos_pdf():
     file = request.files['pdf_file']

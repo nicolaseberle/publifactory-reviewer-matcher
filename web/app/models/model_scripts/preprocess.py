@@ -29,7 +29,7 @@ def preprocess(text):
 def getCorpus(df):
 
     #index_temp = get_tmpfile("index")
-    index_temp = "app/models/saves/index"
+    index_temp = "app/models/saves/indices/index"
     corpus = []
     y = {}
 
@@ -37,6 +37,6 @@ def getCorpus(df):
         corpus.append(preprocess(row["_source"]["paperAbstract"]))
         y[index] = row["_id"]
 
-    dictionary = corpora.Dictionary(corpus)
+    dictionary = corpora.Dictionary(corpus, prune_at=None)
     corpus_gensim = [dictionary.doc2bow(doc) for doc in corpus]
     return corpus_gensim, index_temp, dictionary, y

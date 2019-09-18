@@ -1,17 +1,64 @@
 def getReviewers(es, abstract):
 
     import pickle
-    from models.model_scripts.testing_rm import getRev
+    from models.model_scripts.testing_rm import getRev_v3
 
     list_id = pickle.load(open("app/models/saves/list_id.p", "rb"))
     dictionary = pickle.load(open("app/models/saves/dictionary.p", "rb"))
     model = pickle.load(open("app/models/saves/lsi_model.p", "rb"))
 
-    result = getRev(es, abstract, dictionary, list_id, model)
+    result = getRev_v3(es, abstract, dictionary, list_id, model)
 
     return result
 
 
+def getReviewers_test(es, abstract):
+
+    import pickle
+    from models.model_scripts.testing_rm import getRev_test
+
+    list_id = pickle.load(open("app/models/saves/list_id.p", "rb"))
+    dictionary = pickle.load(open("app/models/saves/dictionary.p", "rb"))
+    model = pickle.load(open("app/models/saves/lsi_model.p", "rb"))
+    
+    result = getRev_test(es, abstract, dictionary, list_id, model)
+    
+    return result
+
+
+def updateModel(es):
+
+    # REQUEST ES
+    import pickle
+    from models.model_scripts.requestsES import get_abstracts
+    start = pickle.load(open("app/models/saves/start.p", "rb"))
+    
+    df_temp = get_abstracts(es, start, 200000)
+    
+    # PREPROCESS
+    from models.model_scripts.preprocess import preprocess
+    corpus = []
+    list_id = pickle.load(open("app/models/saves/list_id.p", "rb"))
+    temp = int(sorted(list_id.keys())[-1])+1
+    
+    for index, row in df_temp.iterrows():
+        corpus.append(preprocess(row["_source"]["paperAbstract"]))
+        list_id[temp + index] = row["_id"]
+
+    pickle.dump(list_id, open("app/models/saves/list_id.p", "wb"))
+    
+    # UPDATE MODEL
+    from models.model_scripts.lsi_model import updateModel
+    
+    model = pickle.load(open("app/models/saves/lsi_model.p", "rb"))
+    dictionary = pickle.load(open("app/models/saves/dictionary.p", "rb"))
+    
+    model, dictionary = updateModel(model, corpus, dictionary)
+    
+    pickle.dump(dictionary, open("app/models/saves/dictionary.p", "wb"))
+    pickle.dump(model, open("app/models/saves/lsi_model.p", "wb"))
+    
+    
 def buildModel(es):
 
     # IMPORT
@@ -31,22 +78,22 @@ def buildModel(es):
 
     # REQUEST ES
 
-    df_temp = get_abstracts(es)
-    pickle.dump(df_temp, open("app/models/saves/dfES.p", "wb"))
+    df_temp = get_abstracts(es, 0, 200000)
+    #pickle.dump(df_temp, open("app/models/saves/dfES.p", "wb"))
 
-    df_temp = pickle.load(open("app/models/saves/dfES.p", "rb"))
+    #df_temp = pickle.load(open("app/models/saves/dfES.p", "rb"))
     print("Requests ES Done")
 
 
     # PREPROCESS
 
     corpus, index, dictionary, list_id = getCorpus(df_temp)
-    pickle.dump(corpus, open("app/models/saves/corpus.p", "wb"))
+    #pickle.dump(corpus, open("app/models/saves/corpus.p", "wb"))
     pickle.dump(index, open("app/models/saves/index.p", "wb"))
     pickle.dump(dictionary, open("app/models/saves/dictionary.p", "wb"))
     pickle.dump(list_id, open("app/models/saves/list_id.p", "wb"))
 
-    corpus = pickle.load(open("app/models/saves/corpus.p", "rb"))
+    #corpus = pickle.load(open("app/models/saves/corpus.p", "rb"))
     index = pickle.load(open("app/models/saves/index.p", "rb"))
     dictionary = pickle.load(open("app/models/saves/dictionary.p", "rb"))
     list_id = pickle.load(open("app/models/saves/list_id.p", "rb"))
@@ -76,7 +123,7 @@ def buildModel(es):
     temp = sorted(list_id.keys())[-1]+1
     list_id[int(temp)] = new_value["id"]
     
-    value = preprocess(new_value["abstract"])
+    value = [preprocess(new_value["abstract"])]
     model, dictionary = updateModel(model, value, dictionary)
     
     add_value_es(new_value["id"], new_value["title"], new_value["keywords"], new_value["abstract"])
