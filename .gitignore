@@ -17,3 +17,5 @@ temp.csv
 /web/app/models/model_test.py
 /web/app/models/model_scripts_test/
 
+*.zip
+*~
