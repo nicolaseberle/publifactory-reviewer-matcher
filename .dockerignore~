@@ -1,4 +1,0 @@
-**/java_pid1.hprof
-.dockerignore
-.git
-./elasticsearch/es_implement/**
