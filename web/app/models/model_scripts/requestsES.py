@@ -44,7 +44,7 @@ def get_abstract(es, id):
     #es = Elasticsearch(hosts=[ES_HOST])
     value = es.search(index=INDEX_NAME, body={
         "query": {"terms": {"_id": [id]}},
-        "_source": ["paperAbstract", "authors", "title", "doi"]
+        "_source": ["paperAbstract", "authors", "title", "doi", "year"]
     })
     value = value['hits']['hits']
 
@@ -79,7 +79,7 @@ def get_authors_doi(es, doi):
                 ]
             }
         },
-        "_source": ["record:record.person:person", "record:record.common:orcid-identifier"]
+        "_source": ["record:record.person:person", "record:record.common:orcid-identifier", "record:record.activities:activities-summary"]
     })
     
     res = res["hits"]["hits"]

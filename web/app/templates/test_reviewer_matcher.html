@@ -28,8 +28,9 @@
 {% for sent in data %}
 <li>
   <ul>
-    <li>{{sent["name"]}} ({{sent["id"]}})</li>
+    <li>({{sent["verification"]}}) {{sent["name"]}} ({{sent["id"]}})</li>
     <li>Score: {{sent["score"]}}</li>
+    <li>Score with year: {{sent["scorePond"]}}</li>
     <li>Affiliation: {{sent["affiliation"]}}</li>
     <li>Conflit d'intérêt: {{sent["conflit"]}}</li> 
     <li>Articles :
@@ -49,7 +50,9 @@
     <li>Contacts :
       <ul>
 	{% for con in sent["contact"] %}
-	<li>{{con}}</li>
+	{% for key, value in con.items() %}
+	<li><a href={{value}}>{{key}}</a></li>
+	{% endfor %}
 	{% endfor %}
       </ul>
     </li>
