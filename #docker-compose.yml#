@@ -2,7 +2,7 @@ version: '2'
 
 services:
   nginx:
-    image: nginx:1.15-alpine
+    image: nginx
     command: "/bin/sh -c 'while :; do sleep 6h & wait $${!}; nginx -s reload; done & nginx -g \"daemon off;\"'"
     build:
       context: ./
