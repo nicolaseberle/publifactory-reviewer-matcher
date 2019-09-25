@@ -2,21 +2,18 @@ version: '2'
 
 services:
   nginx:
-    image: nginx:1.15-alpine
+    image: nginx
+    build: nginx/
     command: "/bin/sh -c 'while :; do sleep 6h & wait $${!}; nginx -s reload; done & nginx -g \"daemon off;\"'"
-    build:
-      context: ./
-      dockerfile: nginx.dockerfile
     volumes:
       - ./:/src/app
-      - /src/app/node_modules
       - ./certbot/conf:/etc/letsencrypt
       - ./certbot/www:/var/www/certbot
     ports:
       - "80:80"
       - "443:443"
-    environment:
-      - NGINX_PORT=80
+    links:
+      - web
     networks:
       - elk
 

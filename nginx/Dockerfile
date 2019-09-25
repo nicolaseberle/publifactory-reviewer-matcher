@@ -8,7 +8,8 @@ RUN mkdir -p /etc/nginx/snippets/
 RUN rm -rf /etc/nginx/conf.d/*
 
 # Copy all the files necessary to dump nginx server
-COPY ./nginx/nginx_RevMatcher.conf /etc/nginx/conf.d/nginx.conf
+COPY ./nginx_RevMatcher.conf /etc/nginx/conf.d/nginx.conf
+#COPY ./index.html /usr/share/nginx/html/index.html
 
 # Expose the port 80 for HTTP and port 443 for HTTPS
 # The HTTP's port will redirect automatically on HTTPS from NGiNX

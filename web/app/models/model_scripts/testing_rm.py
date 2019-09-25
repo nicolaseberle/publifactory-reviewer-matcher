@@ -366,13 +366,14 @@ def getRev_v3(es, value, dictionary, list_id, model):
                     auth["name"] = name
                     auth["affiliation"] = affil
                     auth["verif"] = 1
-                    auth["contact"] = [{"Personal ORCID": "https://orcid.org/"+orcid}]
+                    auth["contact"] = [{"Personal ORCID": "https://orcid.org/"+orc}]
                     
                     # Check and add the mail
                     if list(find("email:email", au)):
                         tempMail = list(find("email:email", au))[0]
-                        for m in list(find("email:email", tempMail)):
-                            auth["contact"].append({"mail": m})
+                        if type(tempMail) == type({}):
+                            for m in list(find("email:email", tempMail)):
+                                auth["contact"].append({"mail": m})
                             
                     # Check and add website
                     if list(find("researcher-url:researcher-url", au)):
