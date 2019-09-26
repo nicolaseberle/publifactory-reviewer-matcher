@@ -1,6 +1,7 @@
 def getReviewers(es, abstract):
 
     import pickle
+    import pickletools
     from models.model_scripts.testing_rm import getRev_v3
 
     list_id = pickle.load(open("app/models/saves/list_id.p", "rb"))
@@ -9,6 +10,10 @@ def getReviewers(es, abstract):
 
     result = getRev_v3(es, abstract, dictionary, list_id, model)
 
+    del model
+    del list_id
+    del dictionary
+    
     return result
 
 
@@ -22,6 +27,10 @@ def getReviewers_test(es, abstract):
     model = pickle.load(open("app/models/saves/lsi_model.p", "rb"))
     
     result = getRev_test(es, abstract, dictionary, list_id, model)
+
+    del model
+    del dictionary
+    del list_id
     
     return result
 
@@ -57,6 +66,11 @@ def updateModel(es):
     
     pickle.dump(dictionary, open("app/models/saves/dictionary.p", "wb"))
     pickle.dump(model, open("app/models/saves/lsi_model.p", "wb"))
+
+    del start
+    del list_id
+    del model
+    del dictionary
     
     
 def buildModel(es):
@@ -77,40 +91,36 @@ def buildModel(es):
 
 
     # REQUEST ES
-
     df_temp = get_abstracts(es, 0, 200000)
-    #pickle.dump(df_temp, open("app/models/saves/dfES.p", "wb"))
-
-    #df_temp = pickle.load(open("app/models/saves/dfES.p", "rb"))
     print("Requests ES Done")
 
-
+   
     # PREPROCESS
-
     corpus, index, dictionary, list_id = getCorpus(df_temp)
-    #pickle.dump(corpus, open("app/models/saves/corpus.p", "wb"))
     pickle.dump(index, open("app/models/saves/index.p", "wb"))
     pickle.dump(dictionary, open("app/models/saves/dictionary.p", "wb"))
     pickle.dump(list_id, open("app/models/saves/list_id.p", "wb"))
 
-    #corpus = pickle.load(open("app/models/saves/corpus.p", "rb"))
     index = pickle.load(open("app/models/saves/index.p", "rb"))
     dictionary = pickle.load(open("app/models/saves/dictionary.p", "rb"))
     list_id = pickle.load(open("app/models/saves/list_id.p", "rb"))
     print("Corpus Done")
 
-
+    
     # LSI Model
-
     model = getModel(corpus, index, dictionary)
     pickle.dump(model, open("app/models/saves/lsi_model.p", "wb"))
 
     model = pickle.load(open("app/models/saves/lsi_model.p", "rb"))
     print("Model Done")
 
-
+    del corpus
+    del index
+    del dictionary
+    del list_id
+    del model
+    
     # UPDATE LSI MODEL
-
     new_value = {
         "id": "XX-1",
         "title": "The article describes the control of the 2-axis electrohydraulic manipulator by the human-hand motion. To recognition of skeleton points the Kinect sensor was used. In this application the information about coordinates of shoulder, elbow and hand was used to compute of inverse kinematic in manipulator. In investigation the accuracy of control by human's hand motion was tested. The aim of study was to find a new of control method without commonly used joysticks to create human-machine interface.",

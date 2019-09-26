@@ -6,16 +6,21 @@
 from flask import Flask, Response, render_template, flash, request, jsonify, redirect, url_for
 from wtforms import Form, TextAreaField, validators, StringField, SubmitField, IntegerField, FileField
 from wtforms.validators import InputRequired
+from werkzeug.utils import secure_filename
+
 from elasticsearch import Elasticsearch
+
 import os
 import datetime
-from werkzeug.utils import secure_filename
 import requests
 import json
 import time
+
 from markupsafe import Markup
 import pickle
 
+#import gevent
+#from gevent.wsgi import WSGIServer
 
 # APP CONFIG
 
@@ -34,7 +39,7 @@ es_host = 'elasticsearch:9200'
 es = Elasticsearch(hosts=[es_host])
 
 
-# CLASS
+# CLASS (pour les formulaires)
 
 
 class RequestESForm(Form):
@@ -77,23 +82,27 @@ class ArticleAsync(Form):
 class RevMatcher(Form):
     abstract = TextAreaField('Abstract', [validators.DataRequired()])
     submit = SubmitField('Envoyer')
+
     
 # FUNCTIONS
 
 
+# Verification de l'intégrité du fichier (GROBID) 
 def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 
-# ROUTES
+# ROUTES (vues)
 
 
+# Index
 @app.route('/')
 def index():
     return render_template('index.html', titre="Reviewer Matcher !")
 
 
+# Vue Get Abstract
 @app.route('/request_base/', methods=['GET', 'POST'])
 def request_base():
     form1 = RequestESForm(request.form)
@@ -162,6 +171,7 @@ def request_base():
     return render_template('request_base.html', titre="Request Base", form1=form1, form2=form2, data=data, results=results, doi=verified_auth)
 
 
+# Vue Get Authors
 @app.route('/request_base_authors', methods=['GET', 'POST'])
 def request_base_authors():
     form = RequestESAuthors(request.form)
@@ -176,7 +186,9 @@ def request_base_authors():
     #return render_template('request_base_authors.html', titre="Request Authors", form=form, data=data)
     return data
 
-@app.route('/test_reviewer_matcher', methods=['GET', 'POST'])
+
+# Vue reviewer matcher
+@app.route('/api/test_reviewer_matcher', methods=['GET', 'POST'])
 def test_reviewer_matcher():
     form = RevMatcher(request.form)
     data = -1
@@ -188,6 +200,7 @@ def test_reviewer_matcher():
     return render_template('test_reviewer_matcher.html', titre="Reviewer Matcher Alpha", form=form, data=data)
 
 
+# Vue Show article
 @app.route('/get_one_article/<id_art>')
 def get_one_article(id_art):
     from scripts.fvue_get_article import get_article_es
@@ -195,6 +208,7 @@ def get_one_article(id_art):
     return render_template('show_article.html', titre="Article", data=data, id_art=id_art)
 
 
+# Vue Show author
 @app.route('/get_one_author/<orcid>')
 def get_one_author(orcid):
     from scripts.fvue_get_authors import get_author_es
@@ -202,6 +216,7 @@ def get_one_author(orcid):
     return render_template('show_author.html', titre="Auteur", data=data, orcid=orcid)
 
 
+# Vue Summarize text
 @app.route('/summarize_text', methods=['GET', 'POST'])
 def summarize_text():
     form = SummarizeText(request.form)
@@ -216,16 +231,16 @@ def summarize_text():
     return render_template('summarize_text.html', titre="Summarize Text", form=form, data=data)
 
 
+# Vue Synchro references
 @app.route('/synchro_ref', methods=['GET', 'POST'])
 def synchro_ref():
     form = ArticleAsync(request.form)
-    data = -1    
+    data = -1
     
     return render_template('synchro_ref.html', titre="Synchro References", form=form, data=data)
 
 
 # ASYNC FONCTIONS
-
 
 @app.route('/api/sync_ref')
 def sync_ref():
@@ -254,11 +269,13 @@ def sync_ref():
 # API
 
 
-@app.route('/api/suggestReviewers/')
-def suggest_reviewers():
+# API test
+@app.route('/api/ping/')
+def pingAPI():
     return "YAY"
 
 
+# API Build Model
 @app.route('/api/buildModel/')
 def buildLSI():
     from models.model import buildModel
@@ -287,8 +304,9 @@ def request_reviewer():
     # title = request.args.get('title')
     # keywords = request.args.get('keywords')
 
-    result = getReviewers(es, abstr)
-
+    data = getReviewers(es, abstr)
+    result = sorted(data, key = lambda i: i['score'], reverse=True)
+    
     return json.dumps(result)
 
 
@@ -387,8 +405,6 @@ def summary_generator():
     nb_sent = int(request.args.get('nb_sent'))
     data = multiple_summary(text, nb_sent)
 
-
-
     data = json.dumps(data)
     return Response(response=data, status=200, mimetype="application/json")
 
@@ -397,3 +413,6 @@ def summary_generator():
 
 if __name__ == '__main__':
     app.run("0.0.0.0", port=5000, debug=True)
+    #app.debug = True
+    #server = WSGIServer(("", 5000), app)
+    #server.serve_forever()

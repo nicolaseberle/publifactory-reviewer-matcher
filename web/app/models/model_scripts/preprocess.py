@@ -28,7 +28,6 @@ def preprocess(text):
 
 def getCorpus(df):
 
-    #index_temp = get_tmpfile("index")
     index_temp = "app/models/saves/indices/index"
     corpus = []
     y = {}

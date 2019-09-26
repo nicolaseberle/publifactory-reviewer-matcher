@@ -9,6 +9,7 @@ elasticsearch==7.0.2
 Flask==1.0.3
 flask-socketio==4.2.0
 gensim==3.7.3
+gevent==1.4.0
 idna==2.8
 itsdangerous==1.1.0
 Jinja2==2.10.1

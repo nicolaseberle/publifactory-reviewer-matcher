@@ -49,4 +49,6 @@ def get_infos_pdf(filename, upload_folder):
     results["authors"] = list_authors
     results["keywords"] = list_keywords
 
+    del rep
+    
     return results

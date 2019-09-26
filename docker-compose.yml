@@ -14,6 +14,8 @@ services:
       - "443:443"
     links:
       - web
+    depends_on:
+      - web  
     networks:
       - elk
 
