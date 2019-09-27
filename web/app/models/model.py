@@ -54,7 +54,7 @@ def updateModel(es):
         corpus.append(preprocess(row["_source"]["paperAbstract"]))
         list_id[temp + index] = row["_id"]
 
-    pickle.dump(list_id, open("app/models/saves/list_id.p", "wb"))
+    pickle.dump(list_id, open("app/models/saves/list_id.p", "wb"), protocol=pickle.HIGHEST_PROTOCOL)
     
     # UPDATE MODEL
     from models.model_scripts.lsi_model import updateModel
@@ -64,8 +64,8 @@ def updateModel(es):
     
     model, dictionary = updateModel(model, corpus, dictionary)
     
-    pickle.dump(dictionary, open("app/models/saves/dictionary.p", "wb"))
-    pickle.dump(model, open("app/models/saves/lsi_model.p", "wb"))
+    pickle.dump(dictionary, open("app/models/saves/dictionary.p", "wb"), protocol=pickle.HIGHEST_PROTOCOL)
+    pickle.dump(model, open("app/models/saves/lsi_model.p", "wb"), protocol=pickle.HIGHEST_PROTOCOL)
 
     del start
     del list_id
@@ -97,9 +97,9 @@ def buildModel(es):
    
     # PREPROCESS
     corpus, index, dictionary, list_id = getCorpus(df_temp)
-    pickle.dump(index, open("app/models/saves/index.p", "wb"))
-    pickle.dump(dictionary, open("app/models/saves/dictionary.p", "wb"))
-    pickle.dump(list_id, open("app/models/saves/list_id.p", "wb"))
+    pickle.dump(index, open("app/models/saves/index.p", "wb"), protocol=pickle.HIGHEST_PROTOCOL)
+    pickle.dump(dictionary, open("app/models/saves/dictionary.p", "wb"), protocol=pickle.HIGHEST_PROTOCOL)
+    pickle.dump(list_id, open("app/models/saves/list_id.p", "wb"), protocol=pickle.HIGHEST_PROTOCOL)
 
     index = pickle.load(open("app/models/saves/index.p", "rb"))
     dictionary = pickle.load(open("app/models/saves/dictionary.p", "rb"))
@@ -109,7 +109,7 @@ def buildModel(es):
     
     # LSI Model
     model = getModel(corpus, index, dictionary)
-    pickle.dump(model, open("app/models/saves/lsi_model.p", "wb"))
+    pickle.dump(model, open("app/models/saves/lsi_model.p", "wb"), protocol=pickle.HIGHEST_PROTOCOL)
 
     model = pickle.load(open("app/models/saves/lsi_model.p", "rb"))
     print("Model Done")

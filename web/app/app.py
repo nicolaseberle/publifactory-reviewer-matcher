@@ -15,12 +15,12 @@ import datetime
 import requests
 import json
 import time
+import gc
 
 from markupsafe import Markup
 import pickle
 
-#import gevent
-#from gevent.wsgi import WSGIServer
+from waitress import serve
 
 # APP CONFIG
 
@@ -29,9 +29,9 @@ UPLOAD_FOLD = 'uploads_pdf'
 UPLOAD_FOLDER = os.path.join(APP_ROOT, UPLOAD_FOLD)
 ALLOWED_EXTENSIONS = {'pdf'}
 
-DEBUG = True
 app = Flask(__name__)
 app.config.from_object(__name__)
+app.debug = True
 app.config['SECRET_KEY'] = '7d441f27d441f27567d441f2b6176a'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
@@ -91,6 +91,21 @@ class RevMatcher(Form):
 def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+
+# Libérer de la RAM
+def free_memory():
+    for name in dir():
+        if not name.startswith('_'):
+            del globals()[name]
+
+    for name in dir():
+        if not name.startswith('_'):
+            del locals()[name]
+                        
+    gc.collect()
+    gc.garbage[:]
+    return "YAY"
 
 
 # ROUTES (vues)
@@ -193,12 +208,11 @@ def test_reviewer_matcher():
     form = RevMatcher(request.form)
     data = -1
     from models.model import getReviewers
-    if request.method == 'POST' and form.validate():
+    if request.method == 'POST' and form.validate():            
         abstract = form.abstract.data
         data = getReviewers(es, abstract)
         data = sorted(data, key = lambda i: i['score'], reverse=True)
     return render_template('test_reviewer_matcher.html', titre="Reviewer Matcher Alpha", form=form, data=data)
-
 
 # Vue Show article
 @app.route('/get_one_article/<id_art>')
@@ -242,6 +256,7 @@ def synchro_ref():
 
 # ASYNC FONCTIONS
 
+
 @app.route('/api/sync_ref')
 def sync_ref():
     data = request.args.get('title', '', type=str)
@@ -275,19 +290,29 @@ def pingAPI():
     return "YAY"
 
 
+@app.route('/api/clear_memory')
+def clear_memory():
+    result = free_memory()
+    return result
+
+    
 # API Build Model
 @app.route('/api/buildModel/')
 def buildLSI():
     from models.model import buildModel
     buildModel(es)
+
+    free_memory()
     return "YAY"
 
 
 @app.route('/api/updateModel/')
 def updateLSI():
     from models.model import updateModel
-    for i in range(0, 15):
+    for i in range(0, 1):
         updateModel(es)
+        free_memory()
+    
     return "YAY"
 
 
@@ -305,9 +330,10 @@ def request_reviewer():
     # keywords = request.args.get('keywords')
 
     data = getReviewers(es, abstr)
-    result = sorted(data, key = lambda i: i['score'], reverse=True)
+    _result = sorted(data, key = lambda i: i['score'], reverse=True)
+    free_memory()
     
-    return json.dumps(result)
+    return json.dumps(_result)
 
 
 @app.route('/api/request_reviewer_test')
@@ -315,9 +341,10 @@ def request_reviewer_test():
     from models.model import getReviewers_test
 
     abstr = request.args.get('abstract')
-    result = getReviewers_test(es, abstr)
+    _result = getReviewers_test(es, abstr)
+    free_memory()
     
-    return json.dumps(result)
+    return json.dumps(_result)
 
 
 @app.route('/api/suggest_ae')
@@ -361,7 +388,8 @@ def extract_infos_pdf():
         from scripts.upload_pdf import get_infos_pdf
         results = get_infos_pdf(filename, app.config['UPLOAD_FOLDER'])
         os.remove(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-
+        if not "title" in results and not "abstract" in results and not "keywords" in results:
+            results["abstract"] = "We can't extract values from your PDF"
         if not "title" in results:
             results["title"] = ""
         if not "abstract" in results:
@@ -413,6 +441,4 @@ def summary_generator():
 
 if __name__ == '__main__':
     app.run("0.0.0.0", port=5000, debug=True)
-    #app.debug = True
-    #server = WSGIServer(("", 5000), app)
-    #server.serve_forever()
+    #serve(app, host='0.0.0.0', port=5000)
