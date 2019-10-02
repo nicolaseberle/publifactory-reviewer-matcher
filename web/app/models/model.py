@@ -1,4 +1,4 @@
-def getReviewers(es, abstract):
+def getReviewers(es, abstract, authors):
 
     import pickle
     import pickletools
@@ -8,7 +8,7 @@ def getReviewers(es, abstract):
     dictionary = pickle.load(open("app/models/saves/dictionary.p", "rb"))
     model = pickle.load(open("app/models/saves/lsi_model.p", "rb"))
 
-    result = getRev_v3(es, abstract, dictionary, list_id, model)
+    result = getRev_v3(es, abstract, authors, dictionary, list_id, model)
 
     del model
     del list_id

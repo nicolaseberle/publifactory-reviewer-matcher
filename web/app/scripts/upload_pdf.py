@@ -8,9 +8,9 @@ import os
 
 
 def get_infos_pdf(filename, upload_folder):
-    rep = requests.post('http://grobid:8070/api/processHeaderDocument',
+    req = requests.post('http://grobid:8070/api/processHeaderDocument',
                         files=dict(input=open(os.path.join(upload_folder, filename), 'rb')))
-    rep = fromstring(rep.text)
+    rep = fromstring(req.text)
 
     ns = {'d': 'http://www.tei-c.org/ns/1.0'}
 
@@ -33,10 +33,13 @@ def get_infos_pdf(filename, upload_folder):
                     for analytic in biblStruct.iterfind("d:analytic", ns):
                         for author in analytic.iterfind("d:author", ns):
                             for persName in author.iterfind("d:persName", ns):
+                                temp_name = ""
                                 for forename in persName.iterfind("d:forename", ns):
-                                    list_authors.append(forename.text)
+                                    temp_name += forename.text
+                                    temp_name += " "
                                 for surname in persName.iterfind("d:surname", ns):
-                                    list_authors.append(surname.text)
+                                    temp_name += surname.text
+                                list_authors.append(temp_name)
         for profileDesc in rep[0].iterfind("d:profileDesc", ns):
             for textClass in profileDesc.iterfind("d:textClass", ns):
                 for keywords in textClass.iterfind("d:keywords", ns):
@@ -49,6 +52,7 @@ def get_infos_pdf(filename, upload_folder):
     results["authors"] = list_authors
     results["keywords"] = list_keywords
 
+    del req
     del rep
     
     return results

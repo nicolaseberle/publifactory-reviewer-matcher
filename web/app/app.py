@@ -326,10 +326,13 @@ def request_reviewer():
     from models.model import getReviewers
 
     abstr = request.args.get('abstract')
+    auth = request.args.getlist('authors')
+    auth = auth[0].split(",")
+    auth = [x.lower() for x in auth]
     # title = request.args.get('title')
     # keywords = request.args.get('keywords')
 
-    data = getReviewers(es, abstr)
+    data = getReviewers(es, abstr, auth)
     _result = sorted(data, key = lambda i: i['score'], reverse=True)
     free_memory()
     
@@ -388,7 +391,7 @@ def extract_infos_pdf():
         from scripts.upload_pdf import get_infos_pdf
         results = get_infos_pdf(filename, app.config['UPLOAD_FOLDER'])
         os.remove(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-        if not "title" in results and not "abstract" in results and not "keywords" in results:
+        if not "title" in results and not "abstract" in results and results["keywords"] == [] and results["authors"] == []:
             results["abstract"] = "We can't extract values from your PDF"
         if not "title" in results:
             results["title"] = ""
@@ -396,9 +399,12 @@ def extract_infos_pdf():
             results["abstract"] = ""
         if not "keywords" in results or results["keywords"] == []:
             results["keywords"] = ""
-        data = [{"title": results["title"], "abstract": results["abstract"], "keywords": results["keywords"]}]
-        data = json.dumps(data)
-        return Response(response=data, status=200, mimetype="application/json")
+        if not "authors" in results or results["authors"] == []:
+            results["authors"] = ""
+        data = [{"title": results["title"], "abstract": results["abstract"], "keywords": results["keywords"], "authors": results["authors"]}]
+        _data = json.dumps(data)
+        free_memory()
+        return Response(response=_data, status=200, mimetype="application/json")
 
         
 @app.route('/api/get_articles')
