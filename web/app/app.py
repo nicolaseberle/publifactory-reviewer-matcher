@@ -10,6 +10,9 @@ from werkzeug.utils import secure_filename
 
 from elasticsearch import Elasticsearch
 
+import redis
+from rq import Queue
+
 import os
 import datetime
 import requests
@@ -38,6 +41,8 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 es_host = 'elasticsearch:9200'
 es = Elasticsearch(hosts=[es_host])
 
+r = redis.Redis()
+q = Queue(connection=r)
 
 # CLASS (pour les formulaires)
 
@@ -289,6 +294,18 @@ def sync_ref():
 def pingAPI():
     return "YAY"
 
+def background_task(n):
+    delay = 2
+    time.sleep(delay)
+    return len(n)
+
+@app.route('/api/task')
+def task():
+    if request.args.get("n"):
+        job = q.enqueue(background_task, request.args.get("n"))
+        return job
+    return "No valu for count provided"
+
 
 @app.route('/api/clear_memory')
 def clear_memory():
@@ -321,6 +338,19 @@ def es_info():
     return jsonify(es.info())
 
 
+def request_reviewer_func(auth, abstr):
+    auth = auth[0].split(",")
+    auth = [x.lower() for x in auth]
+    # title = request.args.get('title')
+    # keywords = request.args.get('keywords')
+
+    data = getReviewers(es, abstr, auth)
+    result = sorted(data, key = lambda i: i['score'], reverse=True)
+    free_memory()
+
+    return result
+    
+
 @app.route('/api/request_reviewer')
 def request_reviewer():
     from models.model import getReviewers
@@ -335,6 +365,7 @@ def request_reviewer():
     data = getReviewers(es, abstr, auth)
     _result = sorted(data, key = lambda i: i['score'], reverse=True)
     free_memory()
+    #_result = q.enqueue(request_reviewer_func, [abstr, auth])
     
     return json.dumps(_result)
 
@@ -442,7 +473,11 @@ def summary_generator():
     data = json.dumps(data)
     return Response(response=data, status=200, mimetype="application/json")
 
-    
+
+@app.route('/api/build_tags_model')
+def build_tags_model():
+    return 'YAY'
+
 # EXEC
 
 if __name__ == '__main__':

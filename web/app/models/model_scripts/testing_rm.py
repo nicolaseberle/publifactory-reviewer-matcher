@@ -79,8 +79,9 @@ def getRev_v3(es, value, auth_input, dictionary, list_id, model):
                     # Check and add the mail
                     if list(find("email:email", a)):
                         tempMail = list(find("email:email", a))[0]
-                        for m in list(find("email:email", tempMail)):
-                            authors[-1]["contact"].append({"mail": m})
+                        if type(tempMail) == type({}):
+                            for m in list(find("email:email", tempMail)):
+                                authors[-1]["contact"].append({"mail": m})
 
                     # Check and add website
                     if list(find("researcher-url:researcher-url", a)):
@@ -198,14 +199,16 @@ def getRev_v3(es, value, auth_input, dictionary, list_id, model):
 
                 # Calcul the ponderation
                 newScore = 0
+                year = "?"
                 if "year" in article:
                     now = datetime.datetime.now()
+                    year = article["year"]
                     diff = now.year - int(article["year"])
                     if diff > 2:
                         pondYear = np.sqrt(np.log(2) / np.log(now.year - int(article["year"])))
-                    elif diff == 2:
+                    elif diff > 2 and diff <= 4:
                         pondYear = 0.9
-                    elif diff == 1:
+                    elif diff == 2:
                         pondYear = 0.95
                     else:
                         pondYear = 1
@@ -228,7 +231,7 @@ def getRev_v3(es, value, auth_input, dictionary, list_id, model):
                         res["scorePond"] += (newScore*0.8)
                         res["scorePond"] = round(res["scorePond"], 3)
 
-                        res["article"].append({"title": article["title"], "abstract": article["paperAbstract"], "year": str(article["year"]), "co_auth": co_auth, "score": round(score_temp, 3), "doi": article["doi"]})
+                        res["article"].append({"title": article["title"], "abstract": article["paperAbstract"], "year": str(year), "co_auth": co_auth, "score": round(score_temp, 3), "doi": article["doiUrl"]})
 
                         temp = True                
                     
@@ -245,10 +248,10 @@ def getRev_v3(es, value, auth_input, dictionary, list_id, model):
                          "article": [{
                              "title": article["title"],
                              "abstract": article["paperAbstract"],
-                             "year": str(article["year"]),
+                             "year": str(year),
                              "co_auth": co_auth,
                              "score": round(score_temp, 3),
-                             "doi": str(article["doi"])
+                             "doi": str(article["doiUrl"])
                          }],
                          "contact": auth["contact"]})
                     co +=1 
