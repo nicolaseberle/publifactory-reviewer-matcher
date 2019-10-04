@@ -13,6 +13,7 @@ temp.csv
 /web/app/models/saves_test/
 /web/app/models/saves_v2/
 /web/app/models/saves/*
+/web/app/models/saves_index/*
 /web/app/models/model_v2.py
 /web/app/models/model_test.py
 /web/app/models/model_scripts_test/

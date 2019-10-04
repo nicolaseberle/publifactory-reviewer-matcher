@@ -6,6 +6,7 @@ chardet==3.0.4
 Click==7.0
 docutils==0.14
 elasticsearch==7.0.2
+flair==0.4.3
 Flask==1.0.3
 flask-socketio==4.2.0
 gensim==3.7.3
