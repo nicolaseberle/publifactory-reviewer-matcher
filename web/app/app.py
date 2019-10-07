@@ -11,13 +11,14 @@ from werkzeug.utils import secure_filename
 from elasticsearch import Elasticsearch
 
 import redis
-from rq import Queue
+from rq import Worker, Queue, Connection
+from rq.job import Job
 
+import time
 import os
 import datetime
 import requests
 import json
-import time
 import gc
 
 from markupsafe import Markup
@@ -41,8 +42,14 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 es_host = 'elasticsearch:9200'
 es = Elasticsearch(hosts=[es_host])
 
-r = redis.Redis()
-q = Queue(connection=r)
+# r = redis.Redis()
+# r = redis.Redis(host='redis', port=6379)
+# q = Queue(connection=r)
+
+listen = ['default']
+redis_url = os.getenv('REDISTOGO_URL', 'redis://redis:6379')
+conn = redis.from_url(redis_url)
+q = Queue(connection=conn, is_async=False)
 
 # CLASS (pour les formulaires)
 
@@ -294,18 +301,6 @@ def sync_ref():
 def pingAPI():
     return "YAY"
 
-def background_task(n):
-    delay = 2
-    time.sleep(delay)
-    return len(n)
-
-@app.route('/api/task')
-def task():
-    if request.args.get("n"):
-        job = q.enqueue(background_task, request.args.get("n"))
-        return job
-    return "No valu for count provided"
-
 
 @app.route('/api/clear_memory')
 def clear_memory():
@@ -338,36 +333,25 @@ def es_info():
     return jsonify(es.info())
 
 
-def request_reviewer_func(auth, abstr):
-    auth = auth[0].split(",")
-    auth = [x.lower() for x in auth]
-    # title = request.args.get('title')
-    # keywords = request.args.get('keywords')
-
-    data = getReviewers(es, abstr, auth)
-    result = sorted(data, key = lambda i: i['score'], reverse=True)
-    free_memory()
-
-    return result
-    
-
 @app.route('/api/request_reviewer')
 def request_reviewer():
-    from models.model import getReviewers
-
+    from scripts.queue_scripts import request_reviewer_func
     abstr = request.args.get('abstract')
     auth = request.args.getlist('authors')
-    auth = auth[0].split(",")
-    auth = [x.lower() for x in auth]
-    # title = request.args.get('title')
-    # keywords = request.args.get('keywords')
-
-    data = getReviewers(es, abstr, auth)
-    _result = sorted(data, key = lambda i: i['score'], reverse=True)
+    _result = q.enqueue(request_reviewer_func, abstr, auth)
     free_memory()
-    #_result = q.enqueue(request_reviewer_func, [abstr, auth])
-    
-    return json.dumps(_result)
+    return json.dumps(_result.id)
+
+
+@app.route("/api/results_rev/<job_key>", methods=['GET'])
+def get_results(job_key):
+    if conn:
+        job = Job.fetch(job_key, connection=conn)
+        while not job.is_finished:
+            time.sleep(1)
+        _result = job.result
+        free_memory()
+        return json.dumps(_result)
 
 
 @app.route('/api/request_reviewer_test')
@@ -413,29 +397,25 @@ def suggest_pertient_art():
 
 @app.route('/api/extract_infos_pdf', methods=['GET', 'POST'])
 def extract_infos_pdf():
+    from scripts.queue_scripts import extract_pdf_func
     file = request.files['pdf_file']
     if file.filename == '':
         return "empty file"
     if file and allowed_file(file.filename):
-        filename = secure_filename(file.filename)
-        file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-        from scripts.upload_pdf import get_infos_pdf
-        results = get_infos_pdf(filename, app.config['UPLOAD_FOLDER'])
-        os.remove(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-        if not "title" in results and not "abstract" in results and results["keywords"] == [] and results["authors"] == []:
-            results["abstract"] = "We can't extract values from your PDF"
-        if not "title" in results:
-            results["title"] = ""
-        if not "abstract" in results:
-            results["abstract"] = ""
-        if not "keywords" in results or results["keywords"] == []:
-            results["keywords"] = ""
-        if not "authors" in results or results["authors"] == []:
-            results["authors"] = ""
-        data = [{"title": results["title"], "abstract": results["abstract"], "keywords": results["keywords"], "authors": results["authors"]}]
-        _data = json.dumps(data)
+        _result = q.enqueue(extract_pdf_func, file)
         free_memory()
-        return Response(response=_data, status=200, mimetype="application/json")
+        return json.dumps(_result.id)
+
+
+@app.route("/api/results_pdf/<job_key>", methods=['GET'])
+def get_results_pdf(job_key):
+    if conn:
+        job = Job.fetch(job_key, connection=conn)
+        while not job.is_finished:
+            time.sleep(1)
+        _result = job.result
+        free_memory()
+        return Response(response=_result, status=200, mimetype="application/json")
 
         
 @app.route('/api/get_articles')
@@ -483,3 +463,6 @@ def build_tags_model():
 if __name__ == '__main__':
     app.run("0.0.0.0", port=5000, debug=True)
     #serve(app, host='0.0.0.0', port=5000)
+    with Connection(conn):
+        worker = Worker(list(map(Queue, listen)))
+        worker.work()

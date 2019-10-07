@@ -15,7 +15,15 @@ services:
     links:
       - web
     depends_on:
-      - web  
+      - web
+      - redis
+    networks:
+      - elk
+
+  redis:
+    image: redis
+    ports:
+      - "6379:6379"
     networks:
       - elk
 
