@@ -42,14 +42,18 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 es_host = 'elasticsearch:9200'
 es = Elasticsearch(hosts=[es_host])
 
-# r = redis.Redis()
-# r = redis.Redis(host='redis', port=6379)
-# q = Queue(connection=r)
-
 listen = ['default']
 redis_url = os.getenv('REDISTOGO_URL', 'redis://redis:6379')
 conn = redis.from_url(redis_url)
 q = Queue(connection=conn, is_async=False)
+
+
+# PRELOAD
+
+list_id = pickle.load(open("app/models/saves/list_id.p", "rb"))
+dictionary = pickle.load(open("app/models/saves/dictionary.p", "rb"))
+model = pickle.load(open("app/models/saves/lsi_model.p", "rb"))
+
 
 # CLASS (pour les formulaires)
 
@@ -321,7 +325,7 @@ def buildLSI():
 @app.route('/api/updateModel/')
 def updateLSI():
     from models.model import updateModel
-    for i in range(0, 1):
+    for i in range(0, 10):
         updateModel(es)
         free_memory()
     

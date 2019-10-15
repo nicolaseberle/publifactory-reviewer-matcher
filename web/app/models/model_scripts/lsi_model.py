@@ -8,7 +8,7 @@ from gensim.similarities import Similarity
 ## CREATE NEW LSI MODEL
 
 def getModel(corpus, index, dictionary):
-    model = Similarity(index, corpus, num_features=20000000, num_best=50)
+    model = Similarity(index, corpus, num_features=100000000, num_best=50)
     model.close_shard()
     return model
 

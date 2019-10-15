@@ -7,7 +7,6 @@ from nltk.corpus import stopwords
 from gensim.test.utils import get_tmpfile
 from gensim import corpora
 
-
 # DOWNLOADS
 
 download('punkt')
@@ -18,7 +17,7 @@ stop_words = stopwords.words('english')
 # FUNCTIONS
 
 def preprocess(text):
-
+    
     text = text.lower()
     doc = word_tokenize(text)
     doc = [word for word in doc if word not in stop_words]
@@ -28,7 +27,7 @@ def preprocess(text):
 
 def getCorpus(df):
 
-    index_temp = "app/models/saves/indices/index"
+    index_temp = "app/models/saves_v2/indices/index"
     corpus = []
     y = {}
 
