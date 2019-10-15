@@ -302,7 +302,7 @@ def sync_ref():
 
 # API test
 @app.route('/api/ping/')
-def pingAPI():
+def ping_api():
     return "YAY"
 
 
@@ -342,7 +342,7 @@ def request_reviewer():
     from scripts.queue_scripts import request_reviewer_func
     abstr = request.args.get('abstract')
     auth = request.args.getlist('authors')
-    _result = q.enqueue(request_reviewer_func, abstr, auth)
+    _result = q.enqueue(request_reviewer_func, abstr, auth, list_id, dictionary, model)
     free_memory()
     return json.dumps(_result.id)
 
