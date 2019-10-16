@@ -23,8 +23,9 @@ def find(key, dictionary):
 def getRev_v3(es, value, auth_input, dictionary, list_id, model):
     preprocess_value = [preprocess(value)]
     new_dict = [dictionary.doc2bow(doc) for doc in preprocess_value]
+
     result = model.__getitem__(new_dict)
-        
+
     resultats = []
     
     y = 0

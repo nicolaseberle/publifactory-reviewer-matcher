@@ -81,6 +81,7 @@ def authors2es(es, df):
                         "upsert": {
                             "id": str(final_ids),
                             "name": str(final_name),
+                            "mail": '',
                             "citations": citations,
                             "keywords": final_keys,
                             "auth_conflit": final_conflit
