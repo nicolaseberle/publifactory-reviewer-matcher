@@ -50,9 +50,9 @@ q = Queue(connection=conn, is_async=False)
 
 # PRELOAD
 
-list_id = pickle.load(open("app/models/saves/list_id.p", "rb"))
-dictionary = pickle.load(open("app/models/saves/dictionary.p", "rb"))
-model = pickle.load(open("app/models/saves/lsi_model.p", "rb"))
+# list_id = pickle.load(open("app/models/saves/list_id.p", "rb"))
+# dictionary = pickle.load(open("app/models/saves/dictionary.p", "rb"))
+# model = pickle.load(open("app/models/saves/lsi_model.p", "rb"))
 
 
 # CLASS (pour les formulaires)
@@ -342,7 +342,7 @@ def request_reviewer():
     from scripts.queue_scripts import request_reviewer_func
     abstr = request.args.get('abstract')
     auth = request.args.getlist('authors')
-    _result = q.enqueue(request_reviewer_func, abstr, auth, list_id, dictionary, model)
+    _result = q.enqueue(request_reviewer_func, abstr, auth)
     free_memory()
     return json.dumps(_result.id)
 

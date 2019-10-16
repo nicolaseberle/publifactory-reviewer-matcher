@@ -3,14 +3,14 @@ import json
 from app import es, app, secure_filename
 
 
-def request_reviewer_func(abstr, auth, list_id, dictionary, model):
+def request_reviewer_func(abstr, auth):
     from models.model import getReviewers
     auth = auth[0].split(",")
     auth = [x.lower() for x in auth]
     # title = request.args.get('title')
     # keywords = request.args.get('keywords')
 
-    data = getReviewers(es, abstr, auth, list_id, dictionary, model)
+    data = getReviewers(es, abstr, auth)
     result = sorted(data, key=lambda i: i['score'], reverse=True)
     return result
 
