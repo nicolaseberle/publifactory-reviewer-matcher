@@ -451,6 +451,12 @@ def get_articles():
 def summary_generator():
     from scripts.summarize_text import multiple_summary
     text = request.args.get('text')
+    text = text.replace("{", " ")
+    text = text.replace("}", " ")
+    text = text.replace("[", " ")
+    text = text.replace("]", " ")
+    text = text.replace('"', " ")
+    text = text.replace("'", " ")
     nb_sent = int(request.args.get('nb_sent'))
     data = multiple_summary(text, nb_sent)
 
