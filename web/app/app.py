@@ -406,7 +406,13 @@ def extract_infos_pdf():
     if file.filename == '':
         return "empty file"
     if file and allowed_file(file.filename):
-        _result = q.enqueue(extract_pdf_func, file)
+        filename = secure_filename(file.filename)
+        file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+        from scripts.upload_pdf import get_infos_pdf
+        results = get_infos_pdf(filename, app.config['UPLOAD_FOLDER'])
+        os.remove(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+
+        _result = q.enqueue(extract_pdf_func, results)
         free_memory()
         return json.dumps(_result.id)
 
