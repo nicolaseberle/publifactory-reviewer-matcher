@@ -276,7 +276,8 @@ def getRev_v3(es, value, auth_input, dictionary, list_id, model):
                              "year": str(year),
                              "co_auth": co_auth,
                              "score": round(score_temp, 3),
-                             "doi": str(article["doiUrl"])
+                             "doi": str(article["doiUrl"]),
+                             "inCitations": len(article["inCitations"])
                          }],
                          "contact": auth["contact"]})
                     co += 1
