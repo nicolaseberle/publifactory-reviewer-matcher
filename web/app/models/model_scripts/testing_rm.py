@@ -60,8 +60,10 @@ def getRev_v3(es, value, auth_input, dictionary, list_id, model):
                 if not name:
                     name1 = list(find("personal-details:given-names", a))
                     name2 = list(find("personal-details:family-name", a))
-                    if name1 and name2:
+                    if name1[0] and name2[0]:
                         name = name1[0]+" "+name2[0]
+                    else:
+                        name = "Unknown"
 
                 # Get the affiliation
                 affil = list(find("employment:employment-summary", a))
@@ -261,26 +263,27 @@ def getRev_v3(es, value, auth_input, dictionary, list_id, model):
 
                 # Else we add a new author
                 if not temp:
-                    resultats.append(
-                        {"verification": auth["verif"],
-                         "name": auth["name"],
-                         "id": auth["ids"][0],
-                         "affiliation": auth["affiliation"],
-                         "conflit": "soon",
-                         "score": round(score_temp, 3),
-                         "scorePond": round(newScore, 3),
-                         "article": [{
-                             "title": article["title"],
-                             "abstract": article["paperAbstract"],
-                             "journal": article["venue"],
-                             "year": str(year),
-                             "co_auth": co_auth,
+                    if int(year) > 2014:
+                        resultats.append(
+                            {"verification": auth["verif"],
+                             "name": auth["name"],
+                             "id": auth["ids"][0],
+                             "affiliation": auth["affiliation"],
+                             "conflit": "soon",
                              "score": round(score_temp, 3),
-                             "doi": str(article["doiUrl"]),
-                             "inCitations": len(article["inCitations"])
-                         }],
-                         "contact": auth["contact"]})
-                    co += 1
+                             "scorePond": round(newScore, 3),
+                             "article": [{
+                                 "title": article["title"],
+                                 "abstract": article["paperAbstract"],
+                                 "journal": article["venue"],
+                                 "year": str(year),
+                                 "co_auth": co_auth,
+                                 "score": round(score_temp, 3),
+                                 "doi": str(article["doiUrl"]),
+                                 "inCitations": len(article["inCitations"])
+                             }],
+                             "contact": auth["contact"]})
+                        co += 1
 
     del dictionary
     del list_id
