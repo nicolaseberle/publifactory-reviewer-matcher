@@ -15,12 +15,12 @@ def request_reviewer_func(abstr, auth):
     return result
 
 
-def extract_pdf_func(file):
-    filename = secure_filename(file.filename)
-    file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-    from scripts.upload_pdf import get_infos_pdf
-    results = get_infos_pdf(filename, app.config['UPLOAD_FOLDER'])
-    os.remove(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+def extract_pdf_func(results):
+    #filename = secure_filename(file.filename)
+    #file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+    #from scripts.upload_pdf import get_infos_pdf
+    #results = get_infos_pdf(filename, app.config['UPLOAD_FOLDER'])
+    #os.remove(os.path.join(app.config['UPLOAD_FOLDER'], filename))
     if not "title" in results and not "abstract" in results and results["keywords"] == [] and results["authors"] == []:
         results["abstract"] = "We can't extract values from your PDF"
     if not "title" in results:
