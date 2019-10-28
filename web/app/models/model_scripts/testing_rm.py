@@ -251,6 +251,7 @@ def getRev_v3(es, value, auth_input, dictionary, list_id, model):
                         res["article"].append({
                             "title": article["title"],
                             "abstract": article["paperAbstract"],
+                            "journal": article["venue"],
                             "year": str(year),
                             "co_auth": co_auth,
                             "score": round(score_temp, 3),
@@ -271,6 +272,7 @@ def getRev_v3(es, value, auth_input, dictionary, list_id, model):
                          "article": [{
                              "title": article["title"],
                              "abstract": article["paperAbstract"],
+                             "journal": article["venue"],
                              "year": str(year),
                              "co_auth": co_auth,
                              "score": round(score_temp, 3),
