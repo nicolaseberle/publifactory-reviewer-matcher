@@ -11,16 +11,17 @@ es = Elasticsearch(hosts=[ES_HOST])
 
 # GET ABSTRACTS
 
-from index_scripts.requestsES import get_abstracts
-start = pickle.load(open("saves_index/start.p", "rb"))
+for i in range(0, 10):
+    from index_scripts.requestsES import get_abstracts
+    start = pickle.load(open("saves_index/start.p", "rb"))
 
-df = get_abstracts(es, start, 10000)
+    df = get_abstracts(es, start, 10000)
 
-# from index_scripts.implementDB import authors2es
+    from index_scripts.implementDB import authors2es
+    authors2es(es, df)
+    i += 1
 
-# authors2es(es, df)
+# from index_scripts.requestsES import get_authors
 
-from index_scripts.requestsES import get_authors
-
-res = get_authors(es, "Database")
-print(res)
+# res = get_authors(es, "Database")
+# print(res)
