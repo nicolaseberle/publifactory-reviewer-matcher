@@ -3,7 +3,7 @@ from ..model_scripts.requestsES import get_abstract
 from ..model_scripts.requestsES import get_authors_doi
 from ..model_scripts.requestsES import get_authors_name
 # from ..model_scripts.requestsES import get_authors_orcid
-# from ..model_scripts.requestsES import get_authors_id
+from ..model_scripts.requestsES import get_authors_id
 import datetime
 import numpy as np
 
@@ -272,8 +272,13 @@ def getRev_v3(es, value, auth_input, dictionary, list_id, model):
                 # Else we add a new author
                 if not temp:
                     if int(year) > 2014:
-                        if not "orig_id" in auth:
+
+                        if "orig_id" not in auth:
                             auth["orig_id"] = auth["ids"]
+                        cita = get_authors_id(es, auth["orig_id"])
+                        if not cita:
+                            cita = "Unknown"
+
                         resultats.append(
                             {"verification": auth["verif"],
                              "name": auth["name"],
@@ -285,7 +290,7 @@ def getRev_v3(es, value, auth_input, dictionary, list_id, model):
                              "pos": co,
                              "score": round(score_temp, 3),
                              "scorePond": round(newScore, 3),
-                             "citations": 0,
+                             "citations": cita,
                              "article": [{
                                  "title": article["title"],
                                  "abstract": article["paperAbstract"],

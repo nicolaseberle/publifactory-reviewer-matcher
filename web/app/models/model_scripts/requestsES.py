@@ -146,13 +146,10 @@ def get_authors_orcid(es, orcid):
 
 def get_authors_id(es, id):
     index_name = 'authors_large'
-
     res = es.search(index=index_name, body={
-        {
-            "query": {
-                "match": {
-                   "id": id
-                }
+        "query": {
+            "match": {
+               "id": str(id)
             }
         }
     })
