@@ -184,6 +184,7 @@ def getRev_v3(es, value, auth_input, dictionary, list_id, model):
                             else:
                                 affil = []
 
+                    auth["orig_id"] = auth["ids"]
                     auth["ids"] = [orc]
                     auth["name"] = name
                     auth["affiliation"] = affil
@@ -272,11 +273,11 @@ def getRev_v3(es, value, auth_input, dictionary, list_id, model):
                 if not temp:
                     if int(year) > 2014:
                         if not "orig_id" in auth:
-                            auth["orig_id"] = auth["ids"][0]
+                            auth["orig_id"] = auth["ids"]
                         resultats.append(
                             {"verification": auth["verif"],
                              "name": auth["name"],
-                             "original_id": auth["orig_id"],
+                             "original_id": auth["orig_id"][0],
                              "id": auth["ids"][0],
                              "affiliation": auth["affiliation"],
                              "conflit": "soon",
