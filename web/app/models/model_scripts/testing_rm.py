@@ -90,6 +90,7 @@ def getRev_v3(es, value, auth_input, dictionary, list_id, model):
                     authors.append({
                         "name": name,
                         "ids": [orcid],
+                        "orig_id": -1,
                         "affiliation": affil,
                         "contact": [{"Personal ORCID": "https://orcid.org/"+orcid}],
                         "verif": 2})
@@ -123,12 +124,18 @@ def getRev_v3(es, value, auth_input, dictionary, list_id, model):
                             if "common:external-id-type" in tempExt and "common:external-id-url" in tempExt:
                                 authors[-1]["contact"].append({tempExt["common:external-id-type"]: tempExt["common:external-id-url"]})
 
+                for x in article["authors"]:
+                    for y in authors:
+                        if y["name"].split()[-1] == x["name"].split()[-1]:
+                            y["orig_id"] = x["ids"]
+
         # If not, get authors from the article
         else:
             authors = article["authors"]
         co = 0
+        auth_last = [x.split()[-1] for x in auth_input]
         for auth in authors:
-            if len(auth["ids"]) > 0 and auth["name"].lower() not in auth_input:
+            if len(auth["ids"]) > 0 and auth["name"].split()[-1].lower() not in auth_last and auth["name"].lower() not in auth_input:
 
                 # Check if contact exist
                 if "contact" not in auth:
@@ -264,14 +271,20 @@ def getRev_v3(es, value, auth_input, dictionary, list_id, model):
                 # Else we add a new author
                 if not temp:
                     if int(year) > 2014:
+                        if not "orig_id" in auth:
+                            auth["orig_id"] = auth["ids"][0]
                         resultats.append(
                             {"verification": auth["verif"],
                              "name": auth["name"],
+                             "original_id": auth["orig_id"],
                              "id": auth["ids"][0],
                              "affiliation": auth["affiliation"],
                              "conflit": "soon",
+                             "list_auth": authors,
+                             "pos": co,
                              "score": round(score_temp, 3),
                              "scorePond": round(newScore, 3),
+                             "citations": 0,
                              "article": [{
                                  "title": article["title"],
                                  "abstract": article["paperAbstract"],
@@ -283,7 +296,7 @@ def getRev_v3(es, value, auth_input, dictionary, list_id, model):
                                  "inCitations": len(article["inCitations"])
                              }],
                              "contact": auth["contact"]})
-                        co += 1
+            co += 1
 
     del dictionary
     del list_id
