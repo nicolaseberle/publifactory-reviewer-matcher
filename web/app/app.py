@@ -3,9 +3,8 @@
 
 # IMPORT
 
-from flask import Flask, Response, render_template, flash, request, jsonify, redirect, url_for
+from flask import Flask, Response, render_template, flash, request, jsonify, redirect
 from wtforms import Form, TextAreaField, validators, StringField, SubmitField, IntegerField, FileField
-from wtforms.validators import InputRequired
 from werkzeug.utils import secure_filename
 
 from elasticsearch import Elasticsearch
@@ -332,11 +331,6 @@ def updateLSI():
     return "YAY"
 
 
-@app.route('/api/es_info')
-def es_info():
-    return jsonify(es.info())
-
-
 @app.route('/api/request_reviewer')
 def request_reviewer():
     from scripts.queue_scripts import request_reviewer_func
@@ -458,10 +452,6 @@ def summary_generator():
     data = json.dumps(data)
     return Response(response=data, status=200, mimetype="application/json")
 
-
-@app.route('/api/build_tags_model')
-def build_tags_model():
-    return 'YAY'
 
 # EXEC
 

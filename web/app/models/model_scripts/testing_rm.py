@@ -2,17 +2,9 @@ from ..model_scripts.preprocess import preprocess
 from ..model_scripts.requestsES import get_abstract
 from ..model_scripts.requestsES import get_authors_doi
 from ..model_scripts.requestsES import get_authors_name
-# from ..model_scripts.requestsES import get_authors_orcid
 from ..model_scripts.requestsES import get_authors_id
 import datetime
 import numpy as np
-
-
-def get_ids(es, id):
-    print(es)
-    print(id)
-    if id is not "":
-        temp = True
 
 
 def find(key, dictionary):
@@ -135,8 +127,8 @@ def getRev_v3(es, value, auth_input, dictionary, list_id, model):
         co = 0
         auth_last = [x.split()[-1] for x in auth_input]
         for auth in authors:
-            if len(auth["ids"]) > 0 and auth["name"].split()[-1].lower() not in auth_last and auth["name"].lower() not in auth_input:
-            # if len(auth["ids"]) > 0:
+            # if len(auth["ids"]) > 0 and auth["name"].split()[-1].lower() not in auth_last and auth["name"].lower() not in auth_input:
+            if len(auth["ids"]) > 0:
 
                 # Check if contact exist
                 if "contact" not in auth:
@@ -259,8 +251,11 @@ def getRev_v3(es, value, auth_input, dictionary, list_id, model):
                         res["scorePond"] += (newScore*0.8)
                         res["scorePond"] = round(res["scorePond"], 3)
 
+                        title = article["title"].replace('[', "")
+                        title = title.replace(']', "")
+
                         res["article"].append({
-                            "title": article["title"],
+                            "title": title,
                             "abstract": article["paperAbstract"],
                             "journal": article["venue"],
                             "year": str(year),
@@ -293,6 +288,11 @@ def getRev_v3(es, value, auth_input, dictionary, list_id, model):
                                         it += 1
                             if it > 1:
                                 conflit = round(conflit/(it-(it/4)), 3)
+                            else:
+                                conflit = round(conflit, 3)
+
+                        title = article["title"].replace('[', "")
+                        title = title.replace(']', "")
 
                         resultats.append(
                             {"verification": auth["verif"],
@@ -307,7 +307,7 @@ def getRev_v3(es, value, auth_input, dictionary, list_id, model):
                              "scorePond": round(newScore, 3),
                              "citations": cita,
                              "article": [{
-                                 "title": article["title"],
+                                 "title": title,
                                  "abstract": article["paperAbstract"],
                                  "journal": article["venue"],
                                  "year": str(year),
