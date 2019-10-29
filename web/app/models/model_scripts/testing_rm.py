@@ -135,8 +135,8 @@ def getRev_v3(es, value, auth_input, dictionary, list_id, model):
         co = 0
         auth_last = [x.split()[-1] for x in auth_input]
         for auth in authors:
-            # if len(auth["ids"]) > 0 and auth["name"].split()[-1].lower() not in auth_last and auth["name"].lower() not in auth_input:
-            if len(auth["ids"]) > 0:
+            if len(auth["ids"]) > 0 and auth["name"].split()[-1].lower() not in auth_last and auth["name"].lower() not in auth_input:
+            # if len(auth["ids"]) > 0:
 
                 # Check if contact exist
                 if "contact" not in auth:
@@ -292,7 +292,7 @@ def getRev_v3(es, value, auth_input, dictionary, list_id, model):
                                         conflit += x["auth_iter"]*(2/diff)
                                         it += 1
                             if it > 1:
-                                conflit = round(conflit/(it-(it/4)), 2)
+                                conflit = round(conflit/(it-(it/4)), 3)
 
                         resultats.append(
                             {"verification": auth["verif"],
