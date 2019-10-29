@@ -358,17 +358,6 @@ def get_results(job_key):
         return json.dumps(_result)
 
 
-@app.route('/api/request_reviewer_test')
-def request_reviewer_test():
-    from models.model import getReviewers_test
-
-    abstr = request.args.get('abstract')
-    _result = getReviewers_test(es, abstr)
-    free_memory()
-    
-    return json.dumps(_result)
-
-
 @app.route('/api/suggest_ae')
 def suggest_ae():
     id_article = request.args.get('id_article')

@@ -135,7 +135,8 @@ def getRev_v3(es, value, auth_input, dictionary, list_id, model):
         co = 0
         auth_last = [x.split()[-1] for x in auth_input]
         for auth in authors:
-            if len(auth["ids"]) > 0 and auth["name"].split()[-1].lower() not in auth_last and auth["name"].lower() not in auth_input:
+            # if len(auth["ids"]) > 0 and auth["name"].split()[-1].lower() not in auth_last and auth["name"].lower() not in auth_input:
+            if len(auth["ids"]) > 0:
 
                 # Check if contact exist
                 if "contact" not in auth:
@@ -275,9 +276,23 @@ def getRev_v3(es, value, auth_input, dictionary, list_id, model):
 
                         if "orig_id" not in auth:
                             auth["orig_id"] = auth["ids"]
-                        cita = get_authors_id(es, auth["orig_id"])
-                        if not cita:
+                        auth_id = get_authors_id(es, auth["orig_id"])
+                        if not auth_id:
                             cita = "Unknown"
+                            conflit = -1
+                        else:
+                            cita = str(auth_id[0]["_source"]["citations"]) + "+"
+                            conflit = 0
+                            it = 0
+                            now = datetime.datetime.now()
+                            for x in auth_id[0]["_source"]["auth_conflit"]:
+                                for y in auth_input:
+                                    if x['auth_name'].lower() == y.lower():
+                                        diff = now.year - int(x["auth_year"])
+                                        conflit += x["auth_iter"]*(2/diff)
+                                        it += 1
+                            if it > 1:
+                                conflit = round(conflit/(it-(it/4)), 2)
 
                         resultats.append(
                             {"verification": auth["verif"],
@@ -285,7 +300,7 @@ def getRev_v3(es, value, auth_input, dictionary, list_id, model):
                              "original_id": auth["orig_id"][0],
                              "id": auth["ids"][0],
                              "affiliation": auth["affiliation"],
-                             "conflit": "soon",
+                             "conflit": conflit,
                              "list_auth": authors,
                              "pos": co,
                              "score": round(score_temp, 3),

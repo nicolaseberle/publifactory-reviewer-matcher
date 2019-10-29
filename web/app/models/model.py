@@ -17,24 +17,6 @@ def getReviewers(es, abstract, authors):
     return result
 
 
-def getReviewers_test(es, abstract):
-
-    import pickle
-    from models.model_scripts.testing_rm import getRev_test
-
-    list_id = pickle.load(open("app/models/saves/list_id.p", "rb"))
-    dictionary = pickle.load(open("app/models/saves/dictionary.p", "rb"))
-    model = pickle.load(open("app/models/saves/lsi_model.p", "rb"))
-    
-    result = getRev_test(es, abstract, dictionary, list_id, model)
-
-    del model
-    del dictionary
-    del list_id
-    
-    return result
-
-
 def updateModel(es):
 
     # REQUEST ES
