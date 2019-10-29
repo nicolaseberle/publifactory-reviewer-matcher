@@ -19,7 +19,7 @@ for i in range(0, 10):
 
     from index_scripts.implementDB import authors2es
     authors2es(es, df)
-    i += 1
+    print(i)
 
 # from index_scripts.requestsES import get_authors
 
