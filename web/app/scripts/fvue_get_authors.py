@@ -151,7 +151,7 @@ def update_mail(id, mail):
     es = Elasticsearch(hosts=[es_host])
     index_name = 'authors_large'
 
-    es.update(index=index_name, id=id, body={"mail": mail})
+    es.update(index=index_name, id=id, body={"doc": {"mail": mail}})
 
     res = es.search(index=index_name, body={
         "query": {
