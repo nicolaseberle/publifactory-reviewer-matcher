@@ -453,6 +453,15 @@ def summary_generator():
     return Response(response=data, status=200, mimetype="application/json")
 
 
+@app.route('/api/get_mail_id', methods=['GET', 'POST'])
+def get_mail_id():
+    from scripts.fvue_get_authors import get_mail_id
+
+    id = request.args.get('id')
+    data = get_mail_id(id)
+    return json.dumps(data)
+
+
 # EXEC
 
 if __name__ == '__main__':

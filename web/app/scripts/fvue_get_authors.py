@@ -1,9 +1,6 @@
 # IMPORT
 
-import pandas as pd
 from elasticsearch import Elasticsearch
-from bson.json_util import dumps
-from json2xml import json2xml, readfromurl, readfromstring, readfromjson
 
 # REQUESTS ES
 
@@ -131,6 +128,22 @@ def get_author_es(orcid):
     return res
 
 
+def get_mail_id(id):
+    es_host = 'elasticsearch'
+    es = Elasticsearch(hosts=[es_host])
+    index_name = 'authors_large'
+
+    res = es.search(index=index_name, body={
+        "query": {
+            "match": {
+               "id": str(id)
+            }
+        },
+        "_source": ["mail"]
+    })
+    res = res["hits"]["hits"]
+
+    return res
 
 
 
