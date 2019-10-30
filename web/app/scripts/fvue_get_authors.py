@@ -145,6 +145,10 @@ def get_mail_id(id):
 
     return res
 
+def update_mail(id, mail):
+
+    return mail
+
 
 
 

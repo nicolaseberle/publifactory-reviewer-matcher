@@ -462,6 +462,16 @@ def get_mail_id():
     return json.dumps(data)
 
 
+@app.route('/api/update_mail', methods=['GET', 'POST'])
+def update_mail():
+    from scripts.fvue_get_authors import update_mail
+
+    id = request.args.get('id')
+    mail = request.args.get('mail')
+    data = update_mail(id, mail)
+    return json.dumps(data)
+
+
 # EXEC
 
 if __name__ == '__main__':
