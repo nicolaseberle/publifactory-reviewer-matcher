@@ -145,9 +145,25 @@ def get_mail_id(id):
 
     return res
 
-def update_mail(id, mail):
 
-    return mail
+def update_mail(id, mail):
+    es_host = 'elasticsearch'
+    es = Elasticsearch(hosts=[es_host])
+    index_name = 'authors_large'
+
+    es.update(index=index_name, id=id, body={"mail": mail})
+
+    res = es.search(index=index_name, body={
+        "query": {
+            "match": {
+                "id": str(id)
+            }
+        },
+        "_source": ["mail"]
+    })
+    res = res["hits"]["hits"]
+
+    return res
 
 
 
