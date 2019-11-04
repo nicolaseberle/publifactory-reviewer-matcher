@@ -134,3 +134,11 @@ def get_article_async(title, title_end):
     res = res["hits"]["hits"]
 
     return res
+
+
+def add_list_perti(data):
+    es_host = 'elasticsearch'
+    es = Elasticsearch(hosts=[es_host])
+    index_name = 'list_pertinence'
+
+    es.index(index=index_name, body=data)

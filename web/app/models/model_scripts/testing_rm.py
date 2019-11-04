@@ -263,7 +263,7 @@ def getRev_v3(es, value, auth_input, dictionary, list_id, model):
                             "score": round(score_temp, 3),
                             "doi": article["doiUrl"]})
 
-                        temp = True                
+                        temp = True
 
                 # Else we add a new author
                 if not temp:

@@ -472,6 +472,17 @@ def update_mail():
     return json.dumps(data)
 
 
+@app.route('/api/add_list_pertinence', methods=['GET', 'POST'])
+def add_list_pertinence():
+    from scripts.fvue_get_article import add_list_perti
+    data = json.loads(request.args.get('data'))
+
+    data["list_failed"] = [x for x in data["list_failed"] if x is not None]
+
+    add_list_perti(data)
+
+    return json.dumps(data)
+
 # EXEC
 
 if __name__ == '__main__':
