@@ -218,7 +218,7 @@ def getRev_v3(es, value, auth_input, dictionary, list_id, model):
 
                 # Calcul the ponderation
                 newScore = 0
-                year = "?"
+                year = "-1"
                 if "year" in article:
                     now = datetime.datetime.now()
                     year = article["year"]
