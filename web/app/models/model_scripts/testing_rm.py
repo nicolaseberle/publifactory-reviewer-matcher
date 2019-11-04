@@ -294,10 +294,15 @@ def getRev_v3(es, value, auth_input, dictionary, list_id, model):
                         title = article["title"].replace('[', "")
                         title = title.replace(']', "")
 
+                        if type([]) == type(auth["orig_id"]):
+                            original_id = auth["orig_id"][0]
+                        else:
+                            original_id = auth["orig_id"]
+
                         resultats.append(
                             {"verification": auth["verif"],
                              "name": auth["name"],
-                             "original_id": auth["orig_id"][0],
+                             "original_id": original_id,
                              "id": auth["ids"][0],
                              "affiliation": auth["affiliation"],
                              "conflit": conflit,
