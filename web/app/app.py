@@ -476,10 +476,11 @@ def update_mail():
 def add_list_pertinence():
     from scripts.fvue_get_article import add_list_perti
     data = json.loads(request.args.get('data'))
+    token = request.args.get('token')
 
     data["list_failed"] = [x for x in data["list_failed"] if x is not None]
 
-    add_list_perti(data)
+    add_list_perti(data, token)
 
     return json.dumps(data)
 

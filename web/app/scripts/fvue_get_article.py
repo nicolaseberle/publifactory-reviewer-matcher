@@ -1,6 +1,6 @@
 # IMPORT
 
-from elasticsearch import Elasticsearch
+from elasticsearch import Elasticsearch, helpers
 
 # REQUESTS ES
 
@@ -136,9 +136,33 @@ def get_article_async(title, title_end):
     return res
 
 
-def add_list_perti(data):
+def add_list_perti(data, token):
     es_host = 'elasticsearch'
     es = Elasticsearch(hosts=[es_host])
     index_name = 'list_pertinence'
 
-    es.index(index=index_name, body=data)
+    action = {
+        "_op_type": "update",
+        "_index": index_name,
+        "_id": token,
+        "_source": {
+            "script": {
+                "inline": "if (!ctx._source.list_failed.contains(params.list)) "
+                          "{ctx._source.list_failed = params.list}"
+,
+                "params": {
+                    "list": data["list_failed"]
+                }
+            },
+            "upsert": {
+                "abstract": data["abstract"],
+                "nb_suggestion": data["nb_suggestion"],
+                "ratio": data["ratio"],
+                "list_failed": data["list_failed"]
+            }
+        }
+    }
+
+    helpers.bulk(es, [action])
+
+    #es.index(index=index_name, body=data)
