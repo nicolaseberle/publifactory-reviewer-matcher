@@ -77,6 +77,10 @@ def getRev_v3(es, value, auth_input, dictionary, list_id, model):
                         else:
                             affil = []
 
+                country = list(find("address:country", a))
+                if not country:
+                    country = "N/A"
+
                 # Add the author
                 if orcid and name:
                     authors.append({
@@ -84,6 +88,7 @@ def getRev_v3(es, value, auth_input, dictionary, list_id, model):
                         "ids": [orcid],
                         "orig_id": -1,
                         "affiliation": affil,
+                        "country": country,
                         "contact": [{"Personal ORCID": "https://orcid.org/"+orcid}],
                         "verif": 2})
 
@@ -140,6 +145,9 @@ def getRev_v3(es, value, auth_input, dictionary, list_id, model):
                 if "verif" not in auth:
                     auth["verif"] = 0
 
+                if "country" not in auth:
+                    auth["country"] = "N/A"
+
                 # Check if the name exist in orcid
                 if get_authors_name(es, auth["name"]) and not is_doi:
                     au = get_authors_name(es, auth["name"])[0]
@@ -177,10 +185,15 @@ def getRev_v3(es, value, auth_input, dictionary, list_id, model):
                             else:
                                 affil = []
 
+                    country = list(find("address:country", au))
+                    if not country:
+                        country = "N/A"
+
                     auth["orig_id"] = auth["ids"]
                     auth["ids"] = [orc]
                     auth["name"] = name
                     auth["affiliation"] = affil
+                    auth["country"] = country
                     auth["verif"] = 1
                     auth["contact"] = [{"Personal ORCID": "https://orcid.org/"+orc}]
 
@@ -305,6 +318,7 @@ def getRev_v3(es, value, auth_input, dictionary, list_id, model):
                              "original_id": original_id,
                              "id": auth["ids"][0],
                              "affiliation": auth["affiliation"],
+                             "country": auth["country"],
                              "conflit": conflit,
                              "list_auth": authors,
                              "pos": co,
