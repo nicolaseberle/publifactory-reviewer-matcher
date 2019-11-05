@@ -280,62 +280,62 @@ def getRev_v3(es, value, auth_input, dictionary, list_id, model):
 
                 # Else we add a new author
                 if not temp:
-                    if int(year) > 2014:
+                    #if int(year) > 2014:
 
-                        if "orig_id" not in auth:
-                            auth["orig_id"] = auth["ids"]
-                        auth_id = get_authors_id(es, auth["orig_id"])
-                        if not auth_id:
-                            cita = "Unknown"
-                            conflit = -1
+                    if "orig_id" not in auth:
+                        auth["orig_id"] = auth["ids"]
+                    auth_id = get_authors_id(es, auth["orig_id"])
+                    if not auth_id:
+                        cita = "Unknown"
+                        conflit = -1
+                    else:
+                        cita = str(auth_id[0]["_source"]["citations"]) + "+"
+                        conflit = 0
+                        it = 0
+                        now = datetime.datetime.now()
+                        for x in auth_id[0]["_source"]["auth_conflit"]:
+                            for y in auth_input:
+                                if x['auth_name'].lower() == y.lower():
+                                    diff = now.year - int(x["auth_year"])
+                                    conflit += x["auth_iter"]*(2/diff)
+                                    it += 1
+                        if it > 1:
+                            conflit = round(conflit/(it-(it/4)), 3)
                         else:
-                            cita = str(auth_id[0]["_source"]["citations"]) + "+"
-                            conflit = 0
-                            it = 0
-                            now = datetime.datetime.now()
-                            for x in auth_id[0]["_source"]["auth_conflit"]:
-                                for y in auth_input:
-                                    if x['auth_name'].lower() == y.lower():
-                                        diff = now.year - int(x["auth_year"])
-                                        conflit += x["auth_iter"]*(2/diff)
-                                        it += 1
-                            if it > 1:
-                                conflit = round(conflit/(it-(it/4)), 3)
-                            else:
-                                conflit = round(conflit, 3)
+                            conflit = round(conflit, 3)
 
-                        title = article["title"].replace('[', "")
-                        title = title.replace(']', "")
+                    title = article["title"].replace('[', "")
+                    title = title.replace(']', "")
 
-                        if type([]) == type(auth["orig_id"]):
-                            original_id = auth["orig_id"][0]
-                        else:
-                            original_id = auth["orig_id"]
+                    if type([]) == type(auth["orig_id"]):
+                        original_id = auth["orig_id"][0]
+                    else:
+                        original_id = auth["orig_id"]
 
-                        resultats.append(
-                            {"verification": auth["verif"],
-                             "name": auth["name"],
-                             "original_id": original_id,
-                             "id": auth["ids"][0],
-                             "affiliation": auth["affiliation"],
-                             "country": auth["country"],
-                             "conflit": conflit,
-                             "list_auth": authors,
-                             "pos": co,
+                    resultats.append(
+                        {"verification": auth["verif"],
+                         "name": auth["name"],
+                         "original_id": original_id,
+                         "id": auth["ids"][0],
+                         "affiliation": auth["affiliation"],
+                         "country": auth["country"],
+                         "conflit": conflit,
+                         "list_auth": authors,
+                         "pos": co,
+                         "score": round(score_temp, 3),
+                         "scorePond": round(newScore, 3),
+                         "citations": cita,
+                         "article": [{
+                             "title": title,
+                             "abstract": article["paperAbstract"],
+                             "journal": article["venue"],
+                             "year": str(year),
+                             "co_auth": co_auth,
                              "score": round(score_temp, 3),
-                             "scorePond": round(newScore, 3),
-                             "citations": cita,
-                             "article": [{
-                                 "title": title,
-                                 "abstract": article["paperAbstract"],
-                                 "journal": article["venue"],
-                                 "year": str(year),
-                                 "co_auth": co_auth,
-                                 "score": round(score_temp, 3),
-                                 "doi": str(article["doiUrl"]),
-                                 "inCitations": len(article["inCitations"])
-                             }],
-                             "contact": auth["contact"]})
+                             "doi": str(article["doiUrl"]),
+                             "inCitations": len(article["inCitations"])
+                         }],
+                         "contact": auth["contact"]})
             co += 1
 
     del dictionary
