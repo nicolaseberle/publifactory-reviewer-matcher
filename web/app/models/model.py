@@ -1,11 +1,20 @@
-def getReviewers(es, abstract, authors):
+import pickle
+import logging
 
-    import pickle
-    #import pickletools
-    from models.model_scripts.testing_rm import getRev_v3
+from models.model_scripts.testing_rm import getRev_v3
+from models.model_scripts.requestsES import get_abstracts
+from models.model_scripts.preprocess import getCorpus, preprocess
+from models.model_scripts.lsi_model import getModel, updateModel
+
+
+def getReviewers(es, abstract, authors, dictionary):
+
+    # import pickle
+    # import pickletools
+    # from models.model_scripts.testing_rm import getRev_v3
 
     list_id = pickle.load(open("app/models/saves/list_id.p", "rb"))
-    dictionary = pickle.load(open("app/models/saves/dictionary.p", "rb"))
+    # dictionary = pickle.load(open("app/models/saves/dictionary.p", "rb"))
     model = pickle.load(open("app/models/saves/lsi_model.p", "rb"))
 
     result = getRev_v3(es, abstract, authors, dictionary, list_id, model)
@@ -20,14 +29,14 @@ def getReviewers(es, abstract, authors):
 def updateModel(es):
 
     # REQUEST ES
-    import pickle
-    from models.model_scripts.requestsES import get_abstracts
+    # import pickle
+    # from models.model_scripts.requestsES import get_abstracts
     start = pickle.load(open("app/models/saves_v2/start.p", "rb"))
     
     df_temp = get_abstracts(es, start, 200000)
     
     # PREPROCESS
-    from models.model_scripts.preprocess import preprocess
+    # from models.model_scripts.preprocess import preprocess
     corpus = []
     list_id = pickle.load(open("app/models/saves_v2/list_id.p", "rb"))
     temp = int(sorted(list_id.keys())[-1])+1
@@ -39,7 +48,7 @@ def updateModel(es):
     pickle.dump(list_id, open("app/models/saves_v2/list_id.p", "wb"), protocol=pickle.HIGHEST_PROTOCOL)
     
     # UPDATE MODEL
-    from models.model_scripts.lsi_model import updateModel
+    # from models.model_scripts.lsi_model import updateModel
     
     model = pickle.load(open("app/models/saves_v2/lsi_model.p", "rb"))
     dictionary = pickle.load(open("app/models/saves_v2/dictionary.p", "rb"))
@@ -59,17 +68,17 @@ def buildModel(es):
 
     # IMPORT
 
-    import pickle
-    import logging
+    # import pickle
+    # import logging
     logging.basicConfig(format='%(asctime)s : %(levelname)s : %(message)s', level=logging.INFO)
 
-    from models.model_scripts.requestsES import get_abstracts
-    from models.model_scripts.requestsES import get_abstract
-    from models.model_scripts.requestsES import add_value_es
-    from models.model_scripts.preprocess import getCorpus
-    from models.model_scripts.preprocess import preprocess
-    from models.model_scripts.lsi_model import getModel
-    from models.model_scripts.lsi_model import updateModel
+    # from models.model_scripts.requestsES import get_abstracts
+    # from models.model_scripts.requestsES import get_abstract
+    # from models.model_scripts.requestsES import add_value_es
+    # from models.model_scripts.preprocess import getCorpus
+    # from models.model_scripts.preprocess import preprocess
+    # from models.model_scripts.lsi_model import getModel
+    # from models.model_scripts.lsi_model import updateModel
 
 
     # REQUEST ES

@@ -84,6 +84,7 @@ def generate_summary(file_name, top_n=5):
     # Step 5 - Offcourse, output the summarize texr
     return summarize_text
 
+
 def multiple_summary(txt, nb_sent):
     txt = txt.replace('\n', '')
     txt = txt.replace('\r', '')

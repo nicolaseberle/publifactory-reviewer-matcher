@@ -1,8 +1,5 @@
 from ..model_scripts.preprocess import preprocess
-from ..model_scripts.requestsES import get_abstract
-from ..model_scripts.requestsES import get_authors_doi
-from ..model_scripts.requestsES import get_authors_name
-from ..model_scripts.requestsES import get_authors_id
+from ..model_scripts.requestsES import get_abstract, get_authors_doi, get_authors_name, get_authors_id
 import datetime
 import numpy as np
 

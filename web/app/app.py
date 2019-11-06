@@ -25,6 +25,16 @@ import pickle
 
 from waitress import serve
 
+from scripts.fvue_get_authors import get_authors_by_id, get_authors_es_v2, get_author_es, get_mail_id, update_mail
+from scripts.fvue_get_article import get_article_async, get_articles_es, add_list_perti
+from models.model import getReviewers, buildModel, updateModel
+from scripts.summarize_text import multiple_summary, generate_summary
+
+# from scripts.queue_scripts import request_reviewer_func
+# from scripts.queue_scripts import extract_pdf_func
+from scripts.upload_pdf import get_infos_pdf
+
+
 # APP CONFIG
 
 APP_ROOT = os.path.dirname(os.path.abspath(__file__))
@@ -49,9 +59,9 @@ q = Queue(connection=conn, is_async=False)
 
 # PRELOAD
 
-# list_id = pickle.load(open("app/models/saves/list_id.p", "rb"))
-# dictionary = pickle.load(open("app/models/saves/dictionary.p", "rb"))
 # model = pickle.load(open("app/models/saves/lsi_model.p", "rb"))
+# list_id = pickle.load(open("app/models/saves/list_id.p", "rb"))
+dictionary = pickle.load(open("app/models/saves/dictionary.p", "rb"))
 
 
 # CLASS (pour les formulaires)
@@ -141,7 +151,7 @@ def request_base():
     results = -1
     now = datetime.datetime.now()
 
-    from scripts.fvue_get_article import get_articles_es
+    # from scripts.fvue_get_article import get_articles_es
     if request.method == 'POST' and form1.validate() and form1.submit1.data:
         title = form1.title.data
         title_ord = form1.title_ord.data
@@ -173,7 +183,7 @@ def request_base():
         if file and allowed_file(file.filename):
             filename = secure_filename(file.filename)
             file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-            from scripts.upload_pdf import get_infos_pdf
+            # from scripts.upload_pdf import get_infos_pdf
             results = get_infos_pdf(filename, app.config['UPLOAD_FOLDER'])
             os.remove(os.path.join(app.config['UPLOAD_FOLDER'], filename))
 
@@ -193,7 +203,7 @@ def request_base():
 
     verified_auth = []
     if data != -1 :
-        from scripts.fvue_get_authors import get_authors_by_id
+        # from scripts.fvue_get_authors import get_authors_by_id
         for art in data :
             temp = get_authors_by_id(art["_source"]["doi"])
             verified_auth.append(temp)
@@ -206,7 +216,7 @@ def request_base():
 def request_base_authors():
     form = RequestESAuthors(request.form)
     data = -1
-    from scripts.fvue_get_authors import get_authors_es_v2
+    # from scripts.fvue_get_authors import get_authors_es_v2
     if request.method == 'POST' and form.validate():
         name = form.name.data
         keywords = form.keywords.data
@@ -222,7 +232,7 @@ def request_base_authors():
 def test_reviewer_matcher():
     form = RevMatcher(request.form)
     data = -1
-    from models.model import getReviewers
+    # from models.model import getReviewers
     if request.method == 'POST' and form.validate():            
         abstract = form.abstract.data
         data = getReviewers(es, abstract)
@@ -232,7 +242,7 @@ def test_reviewer_matcher():
 # Vue Show article
 @app.route('/get_one_article/<id_art>')
 def get_one_article(id_art):
-    from scripts.fvue_get_article import get_article_es
+    # from scripts.fvue_get_article import get_article_es
     data = get_article_es(id_art)
     return render_template('show_article.html', titre="Article", data=data, id_art=id_art)
 
@@ -240,7 +250,7 @@ def get_one_article(id_art):
 # Vue Show author
 @app.route('/get_one_author/<orcid>')
 def get_one_author(orcid):
-    from scripts.fvue_get_authors import get_author_es
+    # from scripts.fvue_get_authors import get_author_es
     data = get_author_es(orcid)
     return render_template('show_author.html', titre="Auteur", data=data, orcid=orcid)
 
@@ -250,7 +260,7 @@ def get_one_author(orcid):
 def summarize_text():
     form = SummarizeText(request.form)
     data = -1
-    from scripts.summarize_text import multiple_summary, generate_summary
+    # from scripts.summarize_text import multiple_summary, generate_summary
     if request.method == 'POST' and form.validate():
         text = form.text.data
         nb_sent = form.nb_sent.data
@@ -276,7 +286,7 @@ def synchro_ref():
 def sync_ref():
     data = request.args.get('title', '', type=str)
     if data != '':
-        from scripts.fvue_get_article import get_article_async
+        # from scripts.fvue_get_article import get_article_async
         temp = data.split(' ')
         if len(temp) > 1:
             last = temp[-1]
@@ -314,7 +324,7 @@ def clear_memory():
 # API Build Model
 @app.route('/api/buildModel/')
 def buildLSI():
-    from models.model import buildModel
+    # from models.model import buildModel
     buildModel(es)
 
     free_memory()
@@ -323,7 +333,7 @@ def buildLSI():
 
 @app.route('/api/updateModel/')
 def updateLSI():
-    from models.model import updateModel
+    # from models.model import updateModel
     for i in range(0, 10):
         updateModel(es)
         free_memory()
@@ -336,7 +346,7 @@ def request_reviewer():
     from scripts.queue_scripts import request_reviewer_func
     abstr = request.args.get('abstract')
     auth = request.args.getlist('authors')
-    _result = q.enqueue(request_reviewer_func, abstr, auth)
+    _result = q.enqueue(request_reviewer_func, abstr, auth, dictionary)
     free_memory()
     return json.dumps(_result.id)
 
@@ -391,7 +401,7 @@ def extract_infos_pdf():
     if file and allowed_file(file.filename):
         filename = secure_filename(file.filename)
         file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-        from scripts.upload_pdf import get_infos_pdf
+        # from scripts.upload_pdf import get_infos_pdf
         results = get_infos_pdf(filename, app.config['UPLOAD_FOLDER'])
         os.remove(os.path.join(app.config['UPLOAD_FOLDER'], filename))
 
@@ -414,7 +424,7 @@ def get_results_pdf(job_key):
 @app.route('/api/get_articles')
 def get_articles():
     now = datetime.datetime.now()
-    from scripts.fvue_get_article import get_articles_es
+    # from scripts.fvue_get_article import get_articles_es
     title = request.args.get('title')
     title_ord = request.args.get('title_ord')
     abstract = request.args.get('abstract')
@@ -438,7 +448,7 @@ def get_articles():
 
 @app.route('/api/summary_generator', methods=['GET', 'POST'])
 def summary_generator():
-    from scripts.summarize_text import multiple_summary
+    # from scripts.summarize_text import multiple_summary
     text = request.args.get('text')
     text = text.replace("{", " ")
     text = text.replace("}", " ")
@@ -455,7 +465,7 @@ def summary_generator():
 
 @app.route('/api/get_mail_id', methods=['GET', 'POST'])
 def get_mail_id():
-    from scripts.fvue_get_authors import get_mail_id
+    # from scripts.fvue_get_authors import get_mail_id
 
     id = request.args.get('id')
     data = get_mail_id(id)
@@ -464,7 +474,7 @@ def get_mail_id():
 
 @app.route('/api/update_mail', methods=['GET', 'POST'])
 def update_mail():
-    from scripts.fvue_get_authors import update_mail
+    # from scripts.fvue_get_authors import update_mail
 
     id = request.args.get('id')
     mail = request.args.get('mail')
@@ -474,7 +484,7 @@ def update_mail():
 
 @app.route('/api/add_list_pertinence', methods=['GET', 'POST'])
 def add_list_pertinence():
-    from scripts.fvue_get_article import add_list_perti
+    # from scripts.fvue_get_article import add_list_perti
     data = json.loads(request.args.get('data'))
     token = request.args.get('token')
 
