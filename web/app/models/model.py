@@ -92,9 +92,9 @@ def buildModel(es):
     pickle.dump(dictionary, open("app/models/saves_v2/dictionary.p", "wb"), protocol=pickle.HIGHEST_PROTOCOL)
     pickle.dump(list_id, open("app/models/saves_v2/list_id.p", "wb"), protocol=pickle.HIGHEST_PROTOCOL)
 
-    index = pickle.load(open("app/models/saves_v2/index.p", "rb"))
-    dictionary = pickle.load(open("app/models/saves_v2/dictionary.p", "rb"))
-    list_id = pickle.load(open("app/models/saves_v2/list_id.p", "rb"))
+    # index = pickle.load(open("app/models/saves_v2/index.p", "rb"))
+    # dictionary = pickle.load(open("app/models/saves_v2/dictionary.p", "rb"))
+    # list_id = pickle.load(open("app/models/saves_v2/list_id.p", "rb"))
     print("Corpus Done")
 
     
@@ -102,7 +102,7 @@ def buildModel(es):
     model = getModel(corpus, index, dictionary)
     pickle.dump(model, open("app/models/saves_v2/lsi_model.p", "wb"), protocol=pickle.HIGHEST_PROTOCOL)
 
-    model = pickle.load(open("app/models/saves_v2/lsi_model.p", "rb"))
+    # model = pickle.load(open("app/models/saves_v2/lsi_model.p", "rb"))
     print("Model Done")
 
     del corpus

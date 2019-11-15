@@ -20,3 +20,4 @@ temp.csv
 
 *.zip
 *~
+/web/app/models/w2v/*
