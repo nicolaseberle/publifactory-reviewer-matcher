@@ -9,8 +9,45 @@ from gensim.models.doc2vec import TaggedDocument, Doc2Vec
 import pickle
 import numpy as np
 import multiprocessing
+import pandas as pd
+
+from gensim import utils
+import gensim.parsing.preprocessing as gsp
+
+from sklearn.preprocessing import MultiLabelBinarizer
+from gensim.models.doc2vec import TaggedDocument, Doc2Vec
+from sklearn.base import BaseEstimator
+from sklearn import utils as skl_utils
+from tqdm import tqdm
+
+
+from skmultilearn.problem_transform import ClassifierChain
+from sklearn.model_selection import train_test_split
+from sklearn.pipeline import FeatureUnion
+
+
+from sklearn.pipeline import Pipeline
+from skmultilearn.problem_transform import BinaryRelevance
+from sklearn.ensemble import RandomForestClassifier
 
 # MAIN
+
+def clean_text(s):
+    s = s.lower()
+    s = utils.to_unicode(s)
+    for f in filters:
+        s = f(s)
+    return s
+
+filters = [
+           gsp.strip_tags,
+           gsp.strip_punctuation,
+           gsp.strip_multiple_whitespaces,
+           gsp.strip_numeric,
+           gsp.remove_stopwords,
+           gsp.strip_short,
+           gsp.stem_text
+          ]
 
 class Doc2VecTransformer(BaseEstimator):
     def __init__(self, vector_size=100, learning_rate=0.02, epochs=20, field=None):
@@ -46,9 +83,10 @@ class Doc2VecTransformer(BaseEstimator):
                                      for index, row in df_x.iterrows()]))
 
 
-multi_label_rf_br_model = joblib.load('w2v/model.joblib', 'r+')
+multi_label_rf_br_model = joblib.load('w2v/model_classif_abstract2fields.joblib')
 
-test_x = [["In 6 dogs the influence of consecutively a selective proximal vagotomy (SPV) and a truncal vagotomy (TV) on gallbladder bile composition was studied. Following SPV no significant changes in biliary lipids were observed. On the other hand, after TV an increase of deoxycholic acid (D) and a concomitant decrease of cholic acid (C) occurred, resulting in a marked increase of the D/C ratio. Although a positive correlation was found between the D/C ratio and the lithogenic index of bile, the change in bile acid composition after TV was accompanied with only a slight, statistically not significant increase of the lithogenic index. It is concluded that in the dog neither SPV nor TV is a definitely lithogenic procedure."]]
+test_x = {'abstract':["The phenomenological early dark energy (EDE) provides a promising solution to the Hubble tension in the form of an extra beyond-ΛCDM component that acts like a cosmological constant at early times (z ≥ 3000) and then dilutes away as radiation or faster. We show that a rolling axion coupled to a non-Abelian gauge group, which we call the ‘dissipative axion’ (DA), mimics this phenomenological EDE at the background level and presents a particle-physics model solution to the Hubble tension, while also eliminating fine-tuning in the choice of scalar-field potential. We compare the DA model to the EDE fluid approximation at the background level and comment on their similarities and differences. We determine that CMB observables sensitive only to the background evolution of the Universe are expected to be similar in the two models, strengthening the case for exploring the perturbations of the DA as well as for this model to provide a viable solution to the Hubble tension"]}
+df_test = pd.DataFrame(data=test_x)
+print(df_test)
 
-
-print('TEST ', multi_label_rf_br_model.predict(test_x))
+print('Classe prediction ', multi_label_rf_br_model.predict(df_test))

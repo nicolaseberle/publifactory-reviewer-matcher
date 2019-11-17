@@ -3,7 +3,7 @@
 
 import pandas as pd
 from wordcloud import WordCloud
-import matplotlib.pyplot as plt 
+import matplotlib.pyplot as plt
 
 from gensim import utils
 import gensim.parsing.preprocessing as gsp
@@ -37,7 +37,7 @@ from sklearn.externals import joblib
 from sklearn.linear_model import RidgeClassifier
 
 print("open json")
-input_df = pd.read_csv('w2v/abstract_fields.csv')
+input_df = pd.read_csv('w2v/abstract_fields_subcat_200K.csv')
 input_df = input_df
 
 ## Data Exploration and Visualization
@@ -58,25 +58,25 @@ input_df = input_df
 
 
 def plot_word_cloud(text):
-    wordcloud_instance = WordCloud(width = 800, height = 800, 
-                background_color ='black', 
+    wordcloud_instance = WordCloud(width = 800, height = 800,
+                background_color ='black',
                 stopwords=None,
-                min_font_size = 10).generate(text) 
-             
-    plt.figure(figsize = (8, 8), facecolor = None) 
-    plt.imshow(wordcloud_instance) 
-    plt.axis("off") 
-    plt.tight_layout(pad = 0) 
-    plt.show() 
+                min_font_size = 10).generate(text)
+
+    plt.figure(figsize = (8, 8), facecolor = None)
+    plt.imshow(wordcloud_instance)
+    plt.axis("off")
+    plt.tight_layout(pad = 0)
+    plt.show()
 
 
 filters = [
-           gsp.strip_tags, 
+           gsp.strip_tags,
            gsp.strip_punctuation,
            gsp.strip_multiple_whitespaces,
            gsp.strip_numeric,
-           gsp.remove_stopwords, 
-           gsp.strip_short, 
+           gsp.remove_stopwords,
+           gsp.strip_short,
            gsp.stem_text
           ]
 
@@ -86,11 +86,6 @@ def clean_text(s):
     for f in filters:
         s = f(s)
     return s
-
-#input_df.iloc[0,0]
-#clean_text(input_df.iloc[0,0])
-#input_df.iloc[0,1]
-#clean_text(input_df.iloc[0,1])
 
 
 df_x = input_df['abstract']
@@ -127,12 +122,13 @@ for index, row in df_y.iterrows():
     y.append(set(r))
 
 mlb = MultiLabelBinarizer(sparse_output=True)
-print("nb of keywords to binarize",len(y))
+print("Labels to binarize",len(y))
 encoded_y = mlb.fit_transform(y)
+
 
 class Doc2VecTransformer(BaseEstimator):
 
-    def __init__(self, vector_size=100, learning_rate=0.02, epochs=20, field=None):
+    def __init__(self, vector_size=512, learning_rate=0.02, epochs=20, field=None):
         self.learning_rate = learning_rate
         self.epochs = epochs
         self._model = None
@@ -153,21 +149,22 @@ class Doc2VecTransformer(BaseEstimator):
         return self
 
     def save(self):
-        filename = 'w2v/finalized_random_forest_model.sav'
+        filename = 'w2v/finalized_RidgeClassifier_model.sav'
         pickle.dump(self._model, open(filename, 'wb'))
-        
+
     def load(self):
-        filename = 'w2v/finalized_random_forest_model.sav'
+        filename = 'w2v/finalized_RidgeClassifier_model.sav'
         self._model = pickle.load(open(filename, 'rb'))
-        
+
     def transform(self, df_x):
         return np.asmatrix(np.array([self._model.infer_vector(clean_text(row[str(self.field)]).split())
                                      for index, row in df_x.iterrows()]))
 
 print("train_test_split")
-train_x, test_x, train_y, test_y = train_test_split(df_x, encoded_y)
+train_x, test_x, train_y, test_y = train_test_split(df_x, encoded_y,test_size=0.40, random_state=42)
 print("nb train samples: ",len(train_x))
 print("nb test samples: ",len(test_x))
+
 
 fu = FeatureUnion(transformer_list=[('abstract_doc2vec',Doc2VecTransformer(field='abstract'))])
 
@@ -180,6 +177,7 @@ multi_label_rf_br_model = Pipeline(steps=[
 
 def hamming_loss(multi_label_model_pipeline,train_x, train_y, test_x, test_y):
     predictions_test_y = multi_label_model_pipeline.predict(test_x)
+    print(predictions_test_y)
     return metrics.hamming_loss(y_true=test_y, y_pred=predictions_test_y)
 
 print("multi_label_rf_br_model")
