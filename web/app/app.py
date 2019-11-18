@@ -286,7 +286,7 @@ def synchro_ref():
 def sync_ref():
     data = request.args.get('title', '', type=str)
     if data != '':
-        # from scripts.fvue_get_article import get_article_async
+        from scripts.fvue_get_article import get_article_async
         temp = data.split(' ')
         if len(temp) > 1:
             last = temp[-1]
