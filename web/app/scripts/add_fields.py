@@ -11,7 +11,7 @@ es_host = 'localhost:9200'
 es = Elasticsearch(hosts=[es_host])
 index_name = 'articles_large'
 
-journal_classif = pd.read_csv("../models/w2v/journal_classif.csv")
+journal_classif = pd.read_csv("journal_classif.csv")
 
 # MAIN
 
