@@ -25,6 +25,11 @@ def add_cats(size):
                     "exists": {
                         "field": "fields"
                     }
+                },
+                "must": {
+                    "wildcard": {
+                       "journalName": "*"
+                    }
                 }
             }
         },
@@ -93,6 +98,8 @@ def add_cats(size):
         })
 
 
+
 size = 100000
+#for e in range(0, 10):
 for x in range(0, 1):
     add_cats(size)
