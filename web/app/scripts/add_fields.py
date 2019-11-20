@@ -11,15 +11,23 @@ es_host = 'localhost:9200'
 es = Elasticsearch(hosts=[es_host])
 index_name = 'articles_large'
 
-journal_classif = pd.read_csv("w2v/journal_classif.csv")
+journal_classif = pd.read_csv("../models/w2v/journal_classif.csv")
 
 # MAIN
 
 
 def add_cats(size):
-    data = es.search(index=index_name, request_timeout=200, body={
+    data = es.search(index=index_name, request_timeout=600, body={
         "size": size,
-        "query": {"match_all": {}},
+        "query": {
+            "bool": {
+                "must_not": {
+                    "exists": {
+                        "field": "fields"
+                    }
+                }
+            }
+        },
         "_source": ["id", "title", "journalName"],
     })
 
@@ -65,6 +73,11 @@ def add_cats(size):
             sub_cat = ast.literal_eval(sub_cat)
         if type(fields) == type('str'):
             fields = ast.literal_eval(fields)
+
+        if sub_cat == []:
+            sub_cat = [-1]
+        if fields == []:
+            fields = [-1]
 
         #print(val["_id"], sub_cat)
 
