@@ -2,7 +2,6 @@
 
 import pandas as pd
 import numpy as np
-import re
 import pickle
 
 
@@ -17,8 +16,7 @@ from sklearn.multiclass import OneVsRestClassifier
 from sklearn.metrics import hamming_loss
 
 from sklearn.model_selection import train_test_split
-
-from imblearn.combine import SMOTETomek
+from sklearn.neural_network import MLPClassifier
 
 import gensim.parsing.preprocessing as gsp
 
@@ -68,8 +66,8 @@ def print_score(y_pred, clf):
 # LOADING & CLEANING
 
 print("open json")
-input_df = pd.read_csv('../w2v/abstract_fields_subcat_200K.csv')
-input_df = input_df[:20000]
+input_df = pd.read_csv('../w2v/abstract_fields_subcat_500K.csv')
+#input_df = input_df[:20000]
 
 input_df['abstract'] = input_df['abstract'].apply(strip_html_tags)
 input_df['fields2'] = input_df['fields']
@@ -96,36 +94,15 @@ print("split")
 x_train_tfidf, x_test_tfidf, y_train_tfidf, y_test_tfidf = train_test_split(X_tfidf, Y, test_size=0.1, random_state=0)
 
 
-# OVER/UNDER sampling
+mlp = MLPClassifier(solver='lbfgs', alpha=1e-5,
+                    hidden_layer_sizes=(10, 2), random_state=1)
 
-print("smote")
-smt = SMOTETomek(ratio='auto')
-x_train_smt, y_train_smt = smt.fit_sample(x_train_tfidf, y_train_tfidf)
-
-print(len(x_train_tfidf))
-print(len(x_train_smt))
-
-exit(0)
-
-
-nb_clf = MultinomialNB()
-sgd = SGDClassifier(loss='hinge', penalty='l2', alpha=1e-3, random_state=42, max_iter=6, tol=None)
-lr = LogisticRegression()
-mn = MultinomialNB()
-
-i = 0
-names = ["SGDClassifier", "LogisticRegression", "MultinomialNB"]
-
-for classifier in [sgd, lr, mn]:
-#for classifier in [lr]:
+for classifier in [mlp]:
     clf = OneVsRestClassifier(classifier)
     clf.fit(x_train_tfidf, y_train_tfidf)
     y_pred = clf.predict(x_test_tfidf)
     print_score(y_pred, classifier)
-    #pickle.dump(clf, open("models_saves/"+names[i]+"_v3.pkl", 'wb'), protocol=pickle.HIGHEST_PROTOCOL)
-    i += 1
-
-exit(0)
+    pickle.dump(clf, open("models_saves/mlpclassifier.pkl", 'wb'), protocol=pickle.HIGHEST_PROTOCOL)
 
 pickle.dump(count_vect, open("models_saves/count_vect_v3.pkl", 'wb'), protocol=pickle.HIGHEST_PROTOCOL)
 pickle.dump(multilabel_binarizer, open("models_saves/multilabel_binarizer_v3.pkl", 'wb'), protocol=pickle.HIGHEST_PROTOCOL)
