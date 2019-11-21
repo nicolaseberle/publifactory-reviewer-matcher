@@ -103,7 +103,7 @@ def add_cats(size):
     journal_classif['Title'] = [x.lower() for x in journal_classif['Title']]
     journal_classif['Categories'] = [x.lower() for x in journal_classif['Categories']]
 
-    Parallel(n_jobs=6, prefer="threads")(delayed(parallel_func)(val) for val in data)
+    Parallel(n_jobs=60, prefer="threads")(delayed(parallel_func)(val) for val in data)
 
 
 size = 100000
