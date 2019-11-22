@@ -65,6 +65,8 @@ print("train")
 
 model.train_model(train_df)
 
+pickle.dump(model, open("models_saves/bert_model.pkl", 'wb'), protocol=pickle.HIGHEST_PROTOCOL)
+
 print("eval")
 
 '''result, model_outputs, wrong_predictions = model.eval_model(eval_df)
