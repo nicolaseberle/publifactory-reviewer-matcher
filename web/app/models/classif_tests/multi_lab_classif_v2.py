@@ -5,6 +5,7 @@ import numpy as np
 import re
 import pickle
 
+from io import StringIO
 
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.feature_extraction.text import TfidfTransformer
@@ -15,9 +16,11 @@ from sklearn.linear_model import SGDClassifier
 from sklearn.linear_model import LogisticRegression
 from sklearn.multiclass import OneVsRestClassifier
 from sklearn.metrics import hamming_loss
+from sklearn.feature_selection import chi2
 
 from sklearn.model_selection import train_test_split
 from imblearn.over_sampling import RandomOverSampler
+from sklearn.feature_extraction.text import TfidfVectorizer
 
 
 from ast import literal_eval
@@ -63,6 +66,47 @@ input_df['fields'] = [literal_eval(x) for x in input_df['fields']]
 
 print(input_df.head(10))
 
+df_temp = pd.DataFrame(columns=['Fields', 'Abstract'])
+
+for val in input_df.values:
+    for x in val[1]:
+        df_temp = df_temp.append({"Fields": x, "Abstract": val[0]}, ignore_index=True)
+
+print(df_temp.head(10))
+
+col = ['Fields', 'Abstract']
+df = df_temp[col]
+df = df[pd.notnull(df['Abstract'])]
+df.columns = ['Fields', 'Abstract']
+
+
+df['fields_id'] = df['Fields'].factorize()[0]
+fields_id_df = df[['Fields', 'fields_id']].drop_duplicates().sort_values('fields_id')
+fields_to_id = dict(fields_id_df.values)
+id_to_fields = dict(fields_id_df[['fields_id', 'Fields']].values)
+
+print(df.head(10))
+
+
+tfidf = TfidfVectorizer(sublinear_tf=True, min_df=5, norm='l2', encoding='latin-1', ngram_range=(1, 2), stop_words='english')
+features = tfidf.fit_transform(df.Abstract).toarray()
+labels = df.fields_id
+print(features.shape)
+
+
+N = 2
+for Fields, fields_id in sorted(fields_to_id.items()):
+  features_chi2 = chi2(features, labels == fields_id)
+  indices = np.argsort(features_chi2[0])
+  feature_names = np.array(tfidf.get_feature_names())[indices]
+  unigrams = [v for v in feature_names if len(v.split(' ')) == 1]
+  bigrams = [v for v in feature_names if len(v.split(' ')) == 2]
+  print("# '{}':".format(Fields))
+  print("  . Most correlated unigrams:\n. {}".format('\n. '.join(unigrams[-N:])))
+  print("  . Most correlated bigrams:\n. {}".format('\n. '.join(bigrams[-N:])))
+
+exit(0)
+
 print("tf-idf")
 
 multilabel_binarizer = MultiLabelBinarizer()
@@ -76,10 +120,10 @@ X_counts = count_vect.transform(input_df.abstract)
 tfidf_transformer = TfidfTransformer()
 X_tfidf = tfidf_transformer.fit_transform(X_counts)
 
-ros = RandomOverSampler(random_state=1000)
-X_tfidf_resampled, Y_tfidf_resampled = ros.fit_sample(X_tfidf, input_df.fields2)
+#ros = RandomOverSampler(random_state=1000)
+#X_tfidf_resampled, Y_tfidf_resampled = ros.fit_sample(X_tfidf, input_df.fields2)
 
-x_train_tfidf, x_test_tfidf, y_train_tfidf, y_test_tfidf = train_test_split(X_tfidf_resampled, Y_tfidf_resampled, test_size=0.2, random_state=9000)
+x_train_tfidf, x_test_tfidf, y_train_tfidf, y_test_tfidf = train_test_split(X_tfidf, Y, test_size=0.2, random_state=9000)
 
 nb_clf = MultinomialNB()
 sgd = SGDClassifier(loss='hinge', penalty='l2', alpha=1e-3, random_state=42, max_iter=6, tol=None)
