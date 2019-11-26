@@ -320,7 +320,12 @@ def clear_memory():
     result = free_memory()
     return result
 
-    
+@app.route('/api/read_pickle/')
+def read_pickle():
+    temp = pickle.load(open("app/models/similarities/art_and_humanities/start.pkl", "rb"))
+    return temp
+
+
 # API Build Model
 @app.route('/api/buildModel/<field>')
 def buildLSI(field):
