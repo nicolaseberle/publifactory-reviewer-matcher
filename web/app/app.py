@@ -331,11 +331,11 @@ def buildLSI(field):
     return "YAY"
 
 
-@app.route('/api/updateModel/')
-def updateLSI():
+@app.route('/api/updateModel/<field>')
+def updateLSI(field):
     # from models.model import updateModel
     for i in range(0, 10):
-        updateModel(es)
+        updateModel(es, field)
         free_memory()
     
     return "YAY"
@@ -346,7 +346,8 @@ def request_reviewer():
     from scripts.queue_scripts import request_reviewer_func
     abstr = request.args.get('abstract')
     auth = request.args.getlist('authors')
-    _result = q.enqueue(request_reviewer_func, abstr, auth, dictionary)
+    fields = request.args.getlist('fields')
+    _result = q.enqueue(request_reviewer_func, abstr, auth, fields, dictionary)
     free_memory()
     return json.dumps(_result.id)
 

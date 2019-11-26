@@ -5,12 +5,10 @@ from models.model import getReviewers
 from app import es, app, secure_filename
 
 
-def request_reviewer_func(abstr, auth, dictionary):
+def request_reviewer_func(abstr, auth, fields, dictionary):
     # from models.model import getReviewers
     auth = auth[0].split(",")
     auth = [x.lower() for x in auth]
-    # title = request.args.get('title')
-    # keywords = request.args.get('keywords')
 
     data = getReviewers(es, abstr, auth, dictionary)
     result = sorted(data, key=lambda i: i['score'], reverse=True)

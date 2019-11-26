@@ -26,37 +26,35 @@ def getReviewers(es, abstract, authors, dictionary):
     return result
 
 
-def updateModel(es):
+def updateModel(es, field):
 
     # REQUEST ES
-    # import pickle
-    # from models.model_scripts.requestsES import get_abstracts
-    start = pickle.load(open("app/models/saves_v2/start.p", "rb"))
+    start = pickle.load(open("app/models/similarities/"+field+"/start.pkl", "rb"))
     
-    df_temp = get_abstracts(es, start, 200000)
+    df_temp = get_abstracts_field(es, start, 200000, field)
     
     # PREPROCESS
     # from models.model_scripts.preprocess import preprocess
     corpus = []
-    list_id = pickle.load(open("app/models/saves_v2/list_id.p", "rb"))
+    list_id = pickle.load(open("app/models/similarities/"+field+"/list_id.pkl", "rb"))
     temp = int(sorted(list_id.keys())[-1])+1
     
     for index, row in df_temp.iterrows():
         corpus.append(preprocess(row["_source"]["paperAbstract"]))
         list_id[temp + index] = row["_id"]
 
-    pickle.dump(list_id, open("app/models/saves_v2/list_id.p", "wb"), protocol=pickle.HIGHEST_PROTOCOL)
+    pickle.dump(list_id, open("app/models/similarities/"+field+"/list_id.pkl", "wb"), protocol=pickle.HIGHEST_PROTOCOL)
     
     # UPDATE MODEL
     # from models.model_scripts.lsi_model import updateModel
     
-    model = pickle.load(open("app/models/saves_v2/lsi_model.p", "rb"))
-    dictionary = pickle.load(open("app/models/saves_v2/dictionary.p", "rb"))
+    model = pickle.load(open("app/models/similarities/"+field+"/lsi_model.pkl", "rb"))
+    dictionary = pickle.load(open("app/models/similarities/"+field+"/dictionary.pkl", "rb"))
     
     model, dictionary = updateModel(model, corpus, dictionary)
     
-    pickle.dump(dictionary, open("app/models/saves_v2/dictionary.p", "wb"), protocol=pickle.HIGHEST_PROTOCOL)
-    pickle.dump(model, open("app/models/saves_v2/lsi_model.p", "wb"), protocol=pickle.HIGHEST_PROTOCOL)
+    pickle.dump(dictionary, open("app/models/similarities/"+field+"/dictionary.pkl", "wb"), protocol=pickle.HIGHEST_PROTOCOL)
+    pickle.dump(model, open("app/models/similarities/"+field+"/lsi_model.pkl", "wb"), protocol=pickle.HIGHEST_PROTOCOL)
 
     del start
     del list_id
