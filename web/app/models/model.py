@@ -23,7 +23,7 @@ def getReviewers(es, abstract, authors, dictionary):
 
 def getReviewersField(es, abstract, authors, dictionary, field):
     list_id = pickle.load(open("app/models/similarities/"+field+"/list_id.pkl", "rb"))
-    model = pickle.load(open("app/models/similarities/"+field+"/lsi_model.pkl", "rb"))
+    model = pickle.load(open("app/models/similarities/"+field+"/lsi_model_"+field+".pkl", "rb"))
 
     result = getRev_v3(es, abstract, authors, dictionary, list_id, model)
 
@@ -56,13 +56,13 @@ def updateModel(es, field):
     # UPDATE MODEL
 
     
-    model = pickle.load(open("app/models/similarities/"+field+"/lsi_model.pkl", "rb"))
+    model = pickle.load(open("app/models/similarities/"+field+"/lsi_model_"+field+".pkl", "rb"))
     dictionary = pickle.load(open("app/models/similarities/"+field+"/dictionary.pkl", "rb"))
     
     model, dictionary = updateModel(model, corpus, dictionary)
     
     pickle.dump(dictionary, open("app/models/similarities/"+field+"/dictionary.pkl", "wb"), protocol=pickle.HIGHEST_PROTOCOL)
-    pickle.dump(model, open("app/models/similarities/"+field+"/lsi_model.pkl", "wb"), protocol=pickle.HIGHEST_PROTOCOL)
+    pickle.dump(model, open("app/models/similarities/"+field+"/lsi_model_"+field+".pkl", "wb"), protocol=pickle.HIGHEST_PROTOCOL)
 
     del start
     del list_id
