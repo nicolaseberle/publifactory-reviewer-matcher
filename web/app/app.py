@@ -322,10 +322,10 @@ def clear_memory():
 
     
 # API Build Model
-@app.route('/api/buildModel/')
-def buildLSI():
+@app.route('/api/buildModel/<field>')
+def buildLSI(field):
     # from models.model import buildModel
-    buildModel(es)
+    buildModel(es, field)
 
     free_memory()
     return "YAY"

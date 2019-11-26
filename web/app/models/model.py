@@ -64,7 +64,7 @@ def updateModel(es):
     del dictionary
     
     
-def buildModel(es):
+def buildModel(es, field):
 
     # IMPORT
 
@@ -82,27 +82,27 @@ def buildModel(es):
 
 
     # REQUEST ES
-    df_temp = get_abstracts(es, 0, 200000)
+    df_temp = get_abstracts(es, 0, 200000, field)
     print("Requests ES Done")
 
 
     # PREPROCESS
-    corpus, index, dictionary, list_id = getCorpus(df_temp)
-    pickle.dump(index, open("app/models/saves_v2/index.p", "wb"), protocol=pickle.HIGHEST_PROTOCOL)
-    pickle.dump(dictionary, open("app/models/saves_v2/dictionary.p", "wb"), protocol=pickle.HIGHEST_PROTOCOL)
-    pickle.dump(list_id, open("app/models/saves_v2/list_id.p", "wb"), protocol=pickle.HIGHEST_PROTOCOL)
+    corpus, index, dictionary, list_id = getCorpus(df_temp, field)
+    pickle.dump(index, open("app/models/similarities/"+field+"/index.pkl", "wb"), protocol=pickle.HIGHEST_PROTOCOL)
+    pickle.dump(dictionary, open("app/models/similarities/"+field+"/dictionary.pkl", "wb"), protocol=pickle.HIGHEST_PROTOCOL)
+    pickle.dump(list_id, open("app/models/similarities/"+field+"/list_id.pkl", "wb"), protocol=pickle.HIGHEST_PROTOCOL)
 
-    # index = pickle.load(open("app/models/saves_v2/index.p", "rb"))
-    # dictionary = pickle.load(open("app/models/saves_v2/dictionary.p", "rb"))
-    # list_id = pickle.load(open("app/models/saves_v2/list_id.p", "rb"))
+    # index = pickle.load(open("app/models/saves_v2/index.pkl", "rb"))
+    # dictionary = pickle.load(open("app/models/saves_v2/dictionary.pkl", "rb"))
+    # list_id = pickle.load(open("app/models/saves_v2/list_id.pkl", "rb"))
     print("Corpus Done")
 
     
     # LSI Model
-    model = getModel(corpus, index, dictionary)
-    pickle.dump(model, open("app/models/saves_v2/lsi_model.p", "wb"), protocol=pickle.HIGHEST_PROTOCOL)
+    model = getModel(corpus, index)
+    pickle.dump(model, open("app/models/similarities/"+field+"/lsi_model_"+field+".pkl", "wb"), protocol=pickle.HIGHEST_PROTOCOL)
 
-    # model = pickle.load(open("app/models/saves_v2/lsi_model.p", "rb"))
+    # model = pickle.load(open("app/models/saves_v2/lsi_model.pkl", "rb"))
     print("Model Done")
 
     del corpus

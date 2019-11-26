@@ -37,6 +37,27 @@ def get_abstracts(es, from_value, size_value):
     df_temp = pd.DataFrame(res)
     return df_temp
 
+## REQUESTS FIELD
+
+def get_abstracts_field(es, from_value, size_value, field):
+    res = es.search(index=INDEX_NAME, body={
+        "query": {
+            "match": {
+                "fields": field
+            }
+        },
+        "from": from_value,
+        "size": size_value,
+        "_source": ["paperAbstract"]
+    }, request_timeout=1000)
+    res = res['hits']['hits']
+
+    start = from_value + size_value
+    pickle.dump(start, open("app/models/similarities/"+field+"/start.pkl", "wb"))
+
+    df_temp = pd.DataFrame(res)
+    return df_temp
+
 
 ## GET ABSTRACT WITH ID
 

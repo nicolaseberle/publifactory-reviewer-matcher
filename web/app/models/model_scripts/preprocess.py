@@ -25,9 +25,9 @@ def preprocess(text):
     return doc
 
 
-def getCorpus(df):
+def getCorpus(df, field):
 
-    index_temp = "app/models/saves_v2/indices/index"
+    index_temp = "app/models/similarities/"+field+"/indices/index"
     corpus = []
     y = {}
 
