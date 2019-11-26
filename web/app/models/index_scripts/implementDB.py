@@ -40,7 +40,7 @@ def authors2es(es, df):
                 final_name = dict(author)['name']
                 action = {
                     "_op_type": "update",
-                    "_index": "authors_large",
+                    "_index": "authors_total",
                     "_id": final_ids,
                     "_source": {
                         "script": {

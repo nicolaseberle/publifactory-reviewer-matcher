@@ -32,7 +32,7 @@ def get_abstracts(es, from_value, size_value):
     res = res['hits']['hits']
 
     start = from_value + size_value
-    pickle.dump(start, open("app/models/saves_v2/start.p", "wb"))
+    pickle.dump(start, open("app/models/saves_v2/start.p", "wb"), protocol=pickle.HIGHEST_PROTOCOL)
     
     df_temp = pd.DataFrame(res)
     return df_temp
@@ -53,7 +53,7 @@ def get_abstracts_field(es, from_value, size_value, field):
     res = res['hits']['hits']
 
     start = from_value + size_value
-    pickle.dump(start, open("app/models/similarities/"+field+"/start.pkl", "wb"))
+    pickle.dump(start, open("app/models/similarities/"+field+"/start.pkl", "wb"), protocol=pickle.HIGHEST_PROTOCOL)
 
     df_temp = pd.DataFrame(res)
     return df_temp

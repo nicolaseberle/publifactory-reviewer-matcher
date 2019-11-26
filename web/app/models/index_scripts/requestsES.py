@@ -20,7 +20,7 @@ def get_abstracts(es, from_value, size_value):
     res = res['hits']['hits']
 
     start = from_value + size_value
-    pickle.dump(start, open("saves_index/start.p", "wb"))
+    pickle.dump(start, open("saves_index/start2.pkl", "wb"))
     
     df_temp = pd.DataFrame(res)
     return df_temp
