@@ -369,8 +369,7 @@ def request_reviewer_multi():
     from scripts.queue_scripts import request_reviewer_multi_func
     abstr = request.args.get('abstract')
     auth = request.args.getlist('authors')
-    fields = request.args.getlist('fields')
-    return json.dumps({"abstr": abstr, "auth": auth, "fields": fields})
+    fields = request.args.getlist('fields')[0]
     dictionary = pickle.load(open("app/models/similarities/"+fields+"/dictionary.pkl", "rb"))
     _result = q.enqueue(request_reviewer_multi_func, abstr, auth, fields, dictionary)
     free_memory()
