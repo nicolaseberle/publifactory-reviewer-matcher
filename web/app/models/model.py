@@ -2,7 +2,7 @@ import pickle
 import logging
 
 from models.model_scripts.testing_rm import getRev_v3
-from models.model_scripts.requestsES import get_abstracts
+from models.model_scripts.requestsES import get_abstracts, get_abstracts_field
 from models.model_scripts.preprocess import getCorpus, preprocess
 from models.model_scripts.lsi_model import getModel, updateModel
 
@@ -82,7 +82,7 @@ def buildModel(es, field):
 
 
     # REQUEST ES
-    df_temp = get_abstracts(es, 0, 200000, field)
+    df_temp = get_abstracts_field(es, 0, 200000, field)
     print("Requests ES Done")
 
 
