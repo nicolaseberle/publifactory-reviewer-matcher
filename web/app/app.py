@@ -363,6 +363,29 @@ def get_results(job_key):
         return json.dumps(_result)
 
 
+## NEW VERSION MULTIFIELDS
+@app.route('/api/request_reviewer_multi')
+def request_reviewer_multi():
+    from scripts.queue_scripts import request_reviewer_multi_func
+    abstr = request.args.get('abstract')
+    auth = request.args.getlist('authors')
+    fields = request.args.getlist('fields')
+    dictionary = pickle.load(open("app/models/similarities/"+fields+"/dictionary.pkl", "rb"))
+    _result = q.enqueue(request_reviewer_multi_func, abstr, auth, fields, dictionary)
+    free_memory()
+    return json.dumps(_result.id)
+
+@app.route("/api/results_rev_multi/<job_key>", methods=['GET'])
+def get_results_multi(job_key):
+    if conn:
+        job = Job.fetch(job_key, connection=conn)
+        while not job.is_finished:
+            time.sleep(1)
+        _result = job.result
+        free_memory()
+        return json.dumps(_result)
+
+
 @app.route('/api/suggest_ae')
 def suggest_ae():
     id_article = request.args.get('id_article')

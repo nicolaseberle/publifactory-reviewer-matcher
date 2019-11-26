@@ -9,12 +9,7 @@ from models.model_scripts.lsi_model import getModel, updateModel
 
 def getReviewers(es, abstract, authors, dictionary):
 
-    # import pickle
-    # import pickletools
-    # from models.model_scripts.testing_rm import getRev_v3
-
     list_id = pickle.load(open("app/models/saves/list_id.p", "rb"))
-    # dictionary = pickle.load(open("app/models/saves/dictionary.p", "rb"))
     model = pickle.load(open("app/models/saves/lsi_model.p", "rb"))
 
     result = getRev_v3(es, abstract, authors, dictionary, list_id, model)
@@ -26,6 +21,19 @@ def getReviewers(es, abstract, authors, dictionary):
     return result
 
 
+def getReviewersField(es, abstract, authors, dictionary, field):
+    list_id = pickle.load(open("app/models/similarities/"+field+"/list_id.pkl", "rb"))
+    model = pickle.load(open("app/models/similarities/"+field+"/lsi_model.pkl", "rb"))
+
+    result = getRev_v3(es, abstract, authors, dictionary, list_id, model)
+
+    del model
+    del list_id
+    del dictionary
+
+    return result
+
+
 def updateModel(es, field):
 
     # REQUEST ES
@@ -34,7 +42,7 @@ def updateModel(es, field):
     df_temp = get_abstracts_field(es, start, 200000, field)
     
     # PREPROCESS
-    # from models.model_scripts.preprocess import preprocess
+
     corpus = []
     list_id = pickle.load(open("app/models/similarities/"+field+"/list_id.pkl", "rb"))
     temp = int(sorted(list_id.keys())[-1])+1
@@ -46,7 +54,7 @@ def updateModel(es, field):
     pickle.dump(list_id, open("app/models/similarities/"+field+"/list_id.pkl", "wb"), protocol=pickle.HIGHEST_PROTOCOL)
     
     # UPDATE MODEL
-    # from models.model_scripts.lsi_model import updateModel
+
     
     model = pickle.load(open("app/models/similarities/"+field+"/lsi_model.pkl", "rb"))
     dictionary = pickle.load(open("app/models/similarities/"+field+"/dictionary.pkl", "rb"))
@@ -64,20 +72,7 @@ def updateModel(es, field):
     
 def buildModel(es, field):
 
-    # IMPORT
-
-    # import pickle
-    # import logging
     logging.basicConfig(format='%(asctime)s : %(levelname)s : %(message)s', level=logging.INFO)
-
-    # from models.model_scripts.requestsES import get_abstracts
-    # from models.model_scripts.requestsES import get_abstract
-    # from models.model_scripts.requestsES import add_value_es
-    # from models.model_scripts.preprocess import getCorpus
-    # from models.model_scripts.preprocess import preprocess
-    # from models.model_scripts.lsi_model import getModel
-    # from models.model_scripts.lsi_model import updateModel
-
 
     # REQUEST ES
     df_temp = get_abstracts_field(es, 0, 200000, field)
@@ -90,9 +85,6 @@ def buildModel(es, field):
     pickle.dump(dictionary, open("app/models/similarities/"+field+"/dictionary.pkl", "wb"), protocol=pickle.HIGHEST_PROTOCOL)
     pickle.dump(list_id, open("app/models/similarities/"+field+"/list_id.pkl", "wb"), protocol=pickle.HIGHEST_PROTOCOL)
 
-    # index = pickle.load(open("app/models/saves_v2/index.pkl", "rb"))
-    # dictionary = pickle.load(open("app/models/saves_v2/dictionary.pkl", "rb"))
-    # list_id = pickle.load(open("app/models/saves_v2/list_id.pkl", "rb"))
     print("Corpus Done")
 
     
@@ -100,7 +92,6 @@ def buildModel(es, field):
     model = getModel(corpus, index)
     pickle.dump(model, open("app/models/similarities/"+field+"/lsi_model_"+field+".pkl", "wb"), protocol=pickle.HIGHEST_PROTOCOL)
 
-    # model = pickle.load(open("app/models/saves_v2/lsi_model.pkl", "rb"))
     print("Model Done")
 
     del corpus

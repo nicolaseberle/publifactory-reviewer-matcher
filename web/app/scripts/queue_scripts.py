@@ -1,7 +1,7 @@
 import os
 import json
 
-from models.model import getReviewers
+from models.model import getReviewers, getReviewersField
 from app import es, app, secure_filename
 
 
@@ -11,6 +11,15 @@ def request_reviewer_func(abstr, auth, fields, dictionary):
     auth = [x.lower() for x in auth]
 
     data = getReviewers(es, abstr, auth, dictionary)
+    result = sorted(data, key=lambda i: i['score'], reverse=True)
+    return result
+
+def request_reviewer_multi_func(abstr, auth, field, dictionary):
+    # from models.model import getReviewers
+    auth = auth[0].split(",")
+    auth = [x.lower() for x in auth]
+
+    data = getReviewersField(es, abstr, auth, dictionary, field)
     result = sorted(data, key=lambda i: i['score'], reverse=True)
     return result
 
