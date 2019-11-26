@@ -66,7 +66,7 @@ def parallel_func(val):
 
     # print(val["_id"], sub_cat)
 
-    es.update(index=index_name, id=val["_id"], body={
+    es.update(index=index_name, request_timeout=100, id=val["_id"], body={
         "script": {
             "source": "ctx._source.fields = params.fields; ctx._source.sub_cat = params.sub",
             "lang": "painless",
@@ -103,7 +103,7 @@ def add_cats(size):
     journal_classif['Title'] = [x.lower() for x in journal_classif['Title']]
     journal_classif['Categories'] = [x.lower() for x in journal_classif['Categories']]
 
-    Parallel(n_jobs=60, prefer="threads")(delayed(parallel_func)(val) for val in data)
+    Parallel(n_jobs=6, prefer="threads")(delayed(parallel_func)(val) for val in data)
 
 
 size = 100000
