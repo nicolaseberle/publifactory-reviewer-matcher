@@ -4,7 +4,7 @@ import logging
 from models.model_scripts.testing_rm import getRev_v3
 from models.model_scripts.requestsES import get_abstracts, get_abstracts_field
 from models.model_scripts.preprocess import getCorpus, preprocess
-from models.model_scripts.lsi_model import getModel, updateModel
+from models.model_scripts.lsi_model import getModel, updateModelLSI
 
 
 def getReviewers(es, abstract, authors, dictionary):
@@ -59,7 +59,7 @@ def updateModel(es, field):
     model = pickle.load(open("app/models/similarities/"+field+"/lsi_model_"+field+".pkl", "rb"))
     dictionary = pickle.load(open("app/models/similarities/"+field+"/dictionary.pkl", "rb"))
     
-    model, dictionary = updateModel(model, corpus, dictionary)
+    model, dictionary = updateModelLSI(model, corpus, dictionary)
     
     pickle.dump(dictionary, open("app/models/similarities/"+field+"/dictionary.pkl", "wb"), protocol=pickle.HIGHEST_PROTOCOL)
     pickle.dump(model, open("app/models/similarities/"+field+"/lsi_model_"+field+".pkl", "wb"), protocol=pickle.HIGHEST_PROTOCOL)

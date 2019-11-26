@@ -2,7 +2,6 @@
 
 from gensim.similarities import Similarity
 
-
 # FUNCTIONS
 
 ## CREATE NEW LSI MODEL
@@ -14,7 +13,7 @@ def getModel(corpus, index):
 
 ## ADDING NEW DOCS AND UPDATE MODEL
 
-def updateModel(model, value, dictionary):
+def updateModelLSI(model, value, dictionary):
     if type([]) != type(value):
         value = [value]
     dictionary.add_documents(value, prune_at=None)
