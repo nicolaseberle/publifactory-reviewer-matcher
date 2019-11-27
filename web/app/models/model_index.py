@@ -101,18 +101,21 @@ def authors2es(source):
                     }
                 }
             }
-            helpers.bulk(es, [action])
+            try:
+                helpers.bulk(es, [action])
+            except:
+                continue
         i += 1
 
 
 # GET ABSTRACTS
 
-for i in range(0, 10):
+for i in range(0, 100):
     print("iter ::", i)
 
     start = pickle.load(open("saves_index/start2.pkl", "rb"))
 
-    df = get_abstracts(es, start, 1000)
+    df = get_abstracts(es, start, 100000)
 
-    Parallel(n_jobs=4, prefer="threads")(delayed(authors2es)(source) for source in df["_source"])
+    Parallel(n_jobs=62, prefer="threads")(delayed(authors2es)(source) for source in df["_source"])
 
