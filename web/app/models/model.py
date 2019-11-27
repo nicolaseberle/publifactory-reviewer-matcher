@@ -2,7 +2,7 @@ import pickle
 import logging
 
 from models.model_scripts.testing_rm import getRev_v3
-from models.model_scripts.requestsES import get_abstracts, get_abstracts_field
+from models.model_scripts.requestsES import get_abstracts, get_abstracts_field, get_abstracts_field_big
 from models.model_scripts.preprocess import getCorpus, preprocess
 from models.model_scripts.lsi_model import getModel, updateModelLSI
 
@@ -68,7 +68,44 @@ def updateModel(es, field):
     del list_id
     del model
     del dictionary
-    
+
+
+def updateModelbig(es, field):
+    # REQUEST ES
+    start = pickle.load(open("app/models/similarities/" + field + "/start.pkl", "rb"))
+
+    df_temp = get_abstracts_field_big(es, start, 200000, field)
+
+    # PREPROCESS
+
+    corpus = []
+    list_id = pickle.load(open("app/models/similarities/" + field + "/list_id.pkl", "rb"))
+    temp = int(sorted(list_id.keys())[-1]) + 1
+
+    for index, row in df_temp.iterrows():
+        corpus.append(preprocess(row["_source"]["paperAbstract"]))
+        list_id[temp + index] = row["_id"]
+
+    pickle.dump(list_id, open("app/models/similarities/" + field + "/list_id.pkl", "wb"),
+                protocol=pickle.HIGHEST_PROTOCOL)
+
+    # UPDATE MODEL
+
+    model = pickle.load(open("app/models/similarities/" + field + "/lsi_model_" + field + ".pkl", "rb"))
+    dictionary = pickle.load(open("app/models/similarities/" + field + "/dictionary.pkl", "rb"))
+
+    model, dictionary = updateModelLSI(model, corpus, dictionary)
+
+    pickle.dump(dictionary, open("app/models/similarities/" + field + "/dictionary.pkl", "wb"),
+                protocol=pickle.HIGHEST_PROTOCOL)
+    pickle.dump(model, open("app/models/similarities/" + field + "/lsi_model_" + field + ".pkl", "wb"),
+                protocol=pickle.HIGHEST_PROTOCOL)
+
+    del start
+    del list_id
+    del model
+    del dictionary
+
     
 def buildModel(es, field):
 
