@@ -27,7 +27,7 @@ from waitress import serve
 
 from scripts.fvue_get_authors import get_authors_by_id, get_authors_es_v2, get_author_es, get_mail_id, update_mail
 from scripts.fvue_get_article import get_article_async, get_articles_es, add_list_perti
-from models.model import getReviewers, buildModel, updateModel
+from models.model import getReviewers, buildModel, updateModel, updateModelbig
 from scripts.summarize_text import multiple_summary, generate_summary
 
 # from scripts.queue_scripts import request_reviewer_func
@@ -320,10 +320,10 @@ def clear_memory():
     result = free_memory()
     return result
 
-@app.route('/api/read_pickle/')
-def read_pickle():
-    temp = pickle.load(open("app/models/similarities/art_and_humanities/start.pkl", "rb"))
-    return temp
+@app.route('/api/read_pickle/<field>')
+def read_pickle(field):
+    temp = pickle.load(open("app/models/similarities/"+field+"/start.pkl", "rb"))
+    return str(temp)
 
 
 # API Build Model
@@ -339,10 +339,20 @@ def buildLSI(field):
 @app.route('/api/updateModel/<field>')
 def updateLSI(field):
     # from models.model import updateModel
-    for i in range(0, 10):
+    for i in range(0, 1):
         updateModel(es, field)
         free_memory()
     
+    return "YAY"
+
+
+@app.route('/api/updateModelBig/<field>')
+def updateLSIbig(field):
+    # from models.model import updateModel
+    for i in range(0, 1):
+        updateModelbig(es, field)
+        free_memory()
+
     return "YAY"
 
 
