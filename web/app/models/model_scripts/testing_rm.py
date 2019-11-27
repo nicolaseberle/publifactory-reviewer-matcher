@@ -273,6 +273,8 @@ def getRev_v3(es, value, auth_input, dictionary, list_id, model, field):
                             "journal": article["venue"],
                             "year": str(year),
                             "co_auth": co_auth,
+                            "fields": article["fields"],
+                            "sub_cat": article["sub_cat"],
                             "score": round(score_temp, 3),
                             "doi": article["doiUrl"]})
 
@@ -332,7 +334,8 @@ def getRev_v3(es, value, auth_input, dictionary, list_id, model, field):
                              "journal": article["venue"],
                              "year": str(year),
                              "co_auth": co_auth,
-                             "field": field,
+                             "fields": article["fields"],
+                             "sub_cat": article["sub_cat"],
                              "score": round(score_temp, 3),
                              "doi": str(article["doiUrl"]),
                              "inCitations": len(article["inCitations"])

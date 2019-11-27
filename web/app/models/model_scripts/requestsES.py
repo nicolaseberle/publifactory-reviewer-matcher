@@ -100,7 +100,7 @@ def get_abstract(es, id):
     #es = Elasticsearch(hosts=[ES_HOST])
     value = es.search(index=INDEX_NAME, body={
         "query": {"terms": {"_id": [id]}},
-        "_source": ["paperAbstract", "authors", "title", "doi", "doiUrl", "year", "venue", "inCitations"]
+        "_source": ["paperAbstract", "authors", "title", "doi", "doiUrl", "year", "venue", "inCitations", "fields", "sub_cat"]
     })
     value = value['hits']['hits']
 
