@@ -395,7 +395,7 @@ def request_reviewer_multi():
     free_memory()
     return json.dumps(_results)
 
-@app.route("/api/results_rev_multi/<job_key>", methods=['GET'])
+@app.route("/api/results_rev_multi/<job_keys>", methods=['GET'])
 def get_results_multi(job_keys):
     if conn:
         _results = []
