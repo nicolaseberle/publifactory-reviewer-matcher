@@ -17,7 +17,7 @@ def find(key, dictionary):
                     yield result
 
 
-def getRev_v3(es, value, auth_input, dictionary, list_id, model):
+def getRev_v3(es, value, auth_input, dictionary, list_id, model, field):
     preprocess_value = [preprocess(value)]
     new_dict = [dictionary.doc2bow(doc) for doc in preprocess_value]
 
@@ -322,6 +322,7 @@ def getRev_v3(es, value, auth_input, dictionary, list_id, model):
                          "conflit": conflit,
                          "list_auth": authors,
                          "pos": co,
+                         "fields": [field],
                          "score": round(score_temp, 3),
                          "scorePond": round(newScore, 3),
                          "citations": cita,
@@ -345,4 +346,4 @@ def getRev_v3(es, value, auth_input, dictionary, list_id, model):
     del new_dict
     del result
 
-    return resultats[0:30]
+    return resultats[0:50]

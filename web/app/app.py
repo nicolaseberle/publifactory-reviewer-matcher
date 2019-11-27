@@ -407,6 +407,53 @@ def get_results_multi(job_keys):
             result = job.result
             _results.append(result)
 
+        if len(_results) == 1:
+            _results = _results[0]
+        else:
+            temp = _results[0]
+            for x in range(1, len(_results)):
+                for auth in _results[x]:
+                    duplic = False
+                    for res in temp:
+                        if auth["original_id"] == res["original_id"]:
+                            duplic = True
+
+                            # articles
+                            for art in auth["article"]:
+                                res["article"].append(art)
+
+                            # affiliation
+                            if res["affiliation"] == "":
+                                res["affiliation"] = auth["affiliation"]
+
+                            # contact
+                            if len(res["contact"]) < len(auth["contact"]):
+                                res["contact"] = auth["contact"]
+
+                            # country
+                            if res["country"] == "":
+                                res["country"] = auth["country"]
+
+                            # id
+                            if len(res["id"]) < len(auth["id"]):
+                                res["id"] = auth["id"]
+
+                            # score
+                            res["score"] += auth["score"]
+                            res["scorePond"] += ["auth.scorePond"]
+
+                            # verification
+                            if res["verification"] < auth["verification"]:
+                                res["verification"] = auth["verification"]
+
+                            # fields
+                            res["fields"].append(auth["fields"][0])
+
+                    if not duplic:
+                        temp.append(auth)
+
+            _results = temp
+
         free_memory()
         return json.dumps(_results)
 

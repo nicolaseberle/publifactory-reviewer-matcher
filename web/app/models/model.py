@@ -25,7 +25,7 @@ def getReviewersField(es, abstract, authors, dictionary, field):
     list_id = pickle.load(open("app/models/similarities/"+field+"/list_id.pkl", "rb"))
     model = pickle.load(open("app/models/similarities/"+field+"/lsi_model_"+field+".pkl", "rb"))
 
-    result = getRev_v3(es, abstract, authors, dictionary, list_id, model)
+    result = getRev_v3(es, abstract, authors, dictionary, list_id, model, field)
 
     del model
     del list_id
