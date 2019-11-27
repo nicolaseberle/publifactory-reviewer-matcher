@@ -455,7 +455,7 @@ def get_results_multi(job_keys):
             _results = temp
 
         free_memory()
-        return json.dumps(_results)
+        return json.dumps(sorted(_results, key=lambda i: i['score'], reverse=True))
 
 
 @app.route('/api/suggest_ae')
