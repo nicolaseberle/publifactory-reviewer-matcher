@@ -440,7 +440,7 @@ def get_results_multi(job_keys):
 
                             # score
                             res["score"] += auth["score"]
-                            res["scorePond"] += ["auth.scorePond"]
+                            res["scorePond"] += auth["scorePond"]
 
                             # verification
                             if res["verification"] < auth["verification"]:
