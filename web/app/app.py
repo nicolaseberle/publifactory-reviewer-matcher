@@ -384,21 +384,29 @@ def request_reviewer_multi():
     from scripts.queue_scripts import request_reviewer_multi_func
     abstr = request.args.get('abstract')
     auth = request.args.getlist('authors')
-    fields = request.args.getlist('fields')[0]
-    dictionary = pickle.load(open("app/models/similarities/"+fields+"/dictionary.pkl", "rb"))
-    _result = q.enqueue(request_reviewer_multi_func, abstr, auth, fields, dictionary)
+    fields = request.args.getlist('fields')
+    _results = []
+    for field in fields:
+        dictionary = pickle.load(open("app/models/similarities/"+field+"/dictionary.pkl", "rb"))
+        result = q.enqueue(request_reviewer_multi_func, abstr, auth, field, dictionary)
+        _results.append(result.id)
+
     free_memory()
-    return json.dumps(_result.id)
+    return json.dumps(_results)
 
 @app.route("/api/results_rev_multi/<job_key>", methods=['GET'])
-def get_results_multi(job_key):
+def get_results_multi(job_keys):
     if conn:
-        job = Job.fetch(job_key, connection=conn)
-        while not job.is_finished:
-            time.sleep(1)
-        _result = job.result
+        _results = []
+        for key in job_keys:
+            job = Job.fetch(key, connection=conn)
+            while not job.is_finished:
+                time.sleep(1)
+            result = job.result
+            _results.append(result)
+
         free_memory()
-        return json.dumps(_result)
+        return json.dumps(_results)
 
 
 @app.route('/api/suggest_ae')
