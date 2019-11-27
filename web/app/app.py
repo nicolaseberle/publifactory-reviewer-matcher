@@ -419,7 +419,7 @@ def get_results_multi(job_keys):
                             duplic = True
 
                             # name
-                            res["name"] += auth["name"]
+                            res["name"] += str(auth["original_id"])
 
                             # articles
                             for art in auth["article"]:

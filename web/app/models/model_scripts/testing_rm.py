@@ -308,7 +308,10 @@ def getRev_v3(es, value, auth_input, dictionary, list_id, model, field):
                     title = title.replace(']', "")
 
                     if type([]) == type(auth["orig_id"]):
-                        original_id = auth["orig_id"][0]
+                        if len(auth["orig_id"][0]) > 1:
+                            original_id = auth["orig_id"][0]
+                        else:
+                            original_id = auth["orig_id"]
                     else:
                         original_id = auth["orig_id"]
 
