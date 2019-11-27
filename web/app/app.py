@@ -415,42 +415,40 @@ def get_results_multi(job_keys):
                 for auth in _results[x]:
                     duplic = False
                     for res in temp:
-                        if str(auth["original_id"]) == str(res["original_id"]) or str(auth["id"]) == str(res["id"]):
-                            duplic = True
+                        if auth["original_id"] != -1:
+                            if str(auth["original_id"]) == str(res["original_id"]) or str(auth["id"]) == str(res["id"]):
+                                duplic = True
 
-                            # name
-                            res["name"] += str(auth["original_id"])
+                                # articles
+                                for art in auth["article"]:
+                                    res["article"].append(art)
 
-                            # articles
-                            for art in auth["article"]:
-                                res["article"].append(art)
+                                # affiliation
+                                if res["affiliation"] == "":
+                                    res["affiliation"] = auth["affiliation"]
 
-                            # affiliation
-                            if res["affiliation"] == "":
-                                res["affiliation"] = auth["affiliation"]
+                                # contact
+                                if len(res["contact"]) < len(auth["contact"]):
+                                    res["contact"] = auth["contact"]
 
-                            # contact
-                            if len(res["contact"]) < len(auth["contact"]):
-                                res["contact"] = auth["contact"]
+                                # country
+                                if res["country"] == "":
+                                    res["country"] = auth["country"]
 
-                            # country
-                            if res["country"] == "":
-                                res["country"] = auth["country"]
+                                # id
+                                if len(res["id"]) < len(auth["id"]):
+                                    res["id"] = auth["id"]
 
-                            # id
-                            if len(res["id"]) < len(auth["id"]):
-                                res["id"] = auth["id"]
+                                # score
+                                res["score"] += auth["score"]
+                                res["scorePond"] += auth["scorePond"]
 
-                            # score
-                            res["score"] += auth["score"]
-                            res["scorePond"] += auth["scorePond"]
+                                # verification
+                                if res["verification"] < auth["verification"]:
+                                    res["verification"] = auth["verification"]
 
-                            # verification
-                            if res["verification"] < auth["verification"]:
-                                res["verification"] = auth["verification"]
-
-                            # fields
-                            res["fields"].append(auth["fields"][0])
+                                # fields
+                                res["fields"].append(auth["fields"][0])
 
                     if not duplic:
                         temp.append(auth)
