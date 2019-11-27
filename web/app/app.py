@@ -399,7 +399,8 @@ def request_reviewer_multi():
 def get_results_multi(job_keys):
     if conn:
         _results = []
-        for index, key in job_keys:
+        job_keys = job_keys.split(",")
+        for key in job_keys:
             job = Job.fetch(key, connection=conn)
             while not job.is_finished:
                 time.sleep(1)
