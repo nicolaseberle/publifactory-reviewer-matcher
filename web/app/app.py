@@ -415,7 +415,7 @@ def get_results_multi(job_keys):
                 for auth in _results[x]:
                     duplic = False
                     for res in temp:
-                        if str(auth["original_id"]) == str(res["original_id"]) or str(auth["id"]) == str(res["id"]):
+                        if (str(auth["original_id"]) == str(res["original_id"]) or str(auth["id"]) == str(res["id"])) and auth["name"] != "Unknown":
                             duplic = True
 
                             # articles
