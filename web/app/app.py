@@ -385,7 +385,7 @@ def request_reviewer_multi():
     abstr = request.args.get('abstract')
     auth = request.args.getlist('authors')
     fields = request.args.getlist('fields')
-    fields = fields.split(",")
+    fields = fields[0].split(",")
     _results = []
     for field in fields:
         dictionary = pickle.load(open("app/models/similarities/"+field+"/dictionary.pkl", "rb"))
