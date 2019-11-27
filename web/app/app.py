@@ -418,6 +418,9 @@ def get_results_multi(job_keys):
                         if str(auth["original_id"]) == str(res["original_id"]) or str(auth["id"]) == str(res["id"]):
                             duplic = True
 
+                            # name
+                            res["name"] += auth["name"]
+
                             # articles
                             for art in auth["article"]:
                                 res["article"].append(art)
