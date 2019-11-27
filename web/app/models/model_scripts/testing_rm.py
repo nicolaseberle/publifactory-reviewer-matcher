@@ -49,8 +49,11 @@ def getRev_v3(es, value, auth_input, dictionary, list_id, model):
                 if not name:
                     name1 = list(find("personal-details:given-names", a))
                     name2 = list(find("personal-details:family-name", a))
-                    if name1[0] and name2[0]:
-                        name = name1[0]+" "+name2[0]
+                    if name1 and name2:
+                        if name1[0] and name2[0]:
+                            name = name1[0]+" "+name2[0]
+                        else:
+                            name = "Unknown"
                     else:
                         name = "Unknown"
 
