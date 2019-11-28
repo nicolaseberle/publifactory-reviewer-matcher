@@ -258,10 +258,10 @@ def getRev_v3(es, value, auth_input, dictionary, list_id, model, field):
 
                     # If true, we add score and article
                     if res["id"] == auth["ids"][0]:
-                        res["score"] += (score_temp*0.8)
+                        res["score"] += (score_temp*0.2)
                         res["score"] = round(res["score"], 3)
 
-                        res["scorePond"] += (newScore*0.8)
+                        res["scorePond"] += (newScore*0.2)
                         res["scorePond"] = round(res["scorePond"], 3)
 
                         title = article["title"].replace('[', "")
