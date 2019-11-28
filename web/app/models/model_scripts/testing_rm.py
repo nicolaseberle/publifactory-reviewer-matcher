@@ -17,7 +17,7 @@ def find(key, dictionary):
                     yield result
 
 
-def getRev_v3(es, value, auth_input, dictionary, list_id, model, field):
+def getRev_v3(es, value, auth_input, dictionary, list_id, model, field, sub_cat):
     preprocess_value = [preprocess(value)]
     new_dict = [dictionary.doc2bow(doc) for doc in preprocess_value]
 
@@ -247,12 +247,19 @@ def getRev_v3(es, value, auth_input, dictionary, list_id, model, field):
 
                     newScore = (np.exp(i[1])*pondYear)/np.exp(1)
 
+                # impact author on score
                 if co > 0:
-                    score_temp = i[1]*0.8
+                    score_temp = i[1]*0.7
                     co_auth = "Co-author"
                 else :
                     score_temp = i[1]
                     co_auth = "Author"
+
+                # impact sub_cat on score
+                for cat in sub_cat:
+                    for x in article["sub_cat"]:
+                        if cat.lower() == x.lower():
+                            score_temp *= 1.2
 
                 for res in resultats:
 

@@ -386,10 +386,12 @@ def request_reviewer_multi():
     auth = request.args.getlist('authors')
     fields = request.args.getlist('fields')
     fields = fields[0].split(",")
+    sub_cat = request.args.getlist('sub_cat')
+    sub_cat = sub_cat[0].split(",")
     _results = []
     for field in fields:
         dictionary = pickle.load(open("app/models/similarities/"+field+"/dictionary.pkl", "rb"))
-        result = q.enqueue(request_reviewer_multi_func, abstr, auth, field, dictionary)
+        result = q.enqueue(request_reviewer_multi_func, abstr, auth, field, sub_cat, dictionary)
         _results.append(result.id)
 
     free_memory()
