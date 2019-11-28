@@ -259,7 +259,7 @@ def getRev_v3(es, value, auth_input, dictionary, list_id, model, field, sub_cat)
                 for cat in sub_cat:
                     for x in article["sub_cat"]:
                         if cat.lower() == x.lower():
-                            score_temp *= 1.2
+                            score_temp *= 1.1
 
                 for res in resultats:
 
