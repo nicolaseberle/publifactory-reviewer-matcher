@@ -17,7 +17,7 @@ temp.csv
 
 /web/app/models/saves/*
 /web/app/models/saves_index/*
-/web/app/models/w2v/*
+/web/app/models/classif_tests/w2v/*
 /web/app/models/classif_tests/models_saves/*
 /web/app/models/classif_tests/cache_dir
 /web/app/models/classif_tests/outputs

@@ -74,7 +74,7 @@ def get_abstracts_field_big(es, from_value, size_value, field):
                    {
                        "range": {
                           "year": {
-                             "from": 2000
+                             "from": 2005
                           }
                        }
                    }

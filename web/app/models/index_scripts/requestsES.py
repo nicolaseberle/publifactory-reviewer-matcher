@@ -15,7 +15,7 @@ def get_abstracts(es, from_value, size_value):
         "query": {"match_all": {}},
         "from": from_value,
         "size": size_value,
-        "_source": ["entities", "year", "inCitations", "authors", "doi"]
+        "_source": ["entities", "year", "inCitations", "authors", "doi", "fields", "sub_cat"]
     }, request_timeout=1000)
     res = res['hits']['hits']
 

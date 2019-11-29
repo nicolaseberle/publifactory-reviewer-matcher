@@ -26,13 +26,11 @@ import pickle
 from waitress import serve
 
 from scripts.fvue_get_authors import get_authors_by_id, get_authors_es_v2, get_author_es, get_mail_id, update_mail
-from scripts.fvue_get_article import get_article_async, get_articles_es, add_list_perti
+from scripts.fvue_get_article import get_article_async, get_articles_es, add_list_perti, get_article_es
 from models.model import getReviewers, buildModel, updateModel, updateModelbig
 from scripts.summarize_text import multiple_summary, generate_summary
-
-# from scripts.queue_scripts import request_reviewer_func
-# from scripts.queue_scripts import extract_pdf_func
 from scripts.upload_pdf import get_infos_pdf
+from scripts.queue_scripts import extract_pdf_func
 
 
 # APP CONFIG
@@ -216,7 +214,6 @@ def request_base():
 def request_base_authors():
     form = RequestESAuthors(request.form)
     data = -1
-    # from scripts.fvue_get_authors import get_authors_es_v2
     if request.method == 'POST' and form.validate():
         name = form.name.data
         keywords = form.keywords.data
@@ -232,7 +229,6 @@ def request_base_authors():
 def test_reviewer_matcher():
     form = RevMatcher(request.form)
     data = -1
-    # from models.model import getReviewers
     if request.method == 'POST' and form.validate():            
         abstract = form.abstract.data
         data = getReviewers(es, abstract)
@@ -242,7 +238,6 @@ def test_reviewer_matcher():
 # Vue Show article
 @app.route('/get_one_article/<id_art>')
 def get_one_article(id_art):
-    # from scripts.fvue_get_article import get_article_es
     data = get_article_es(id_art)
     return render_template('show_article.html', titre="Article", data=data, id_art=id_art)
 
@@ -250,7 +245,6 @@ def get_one_article(id_art):
 # Vue Show author
 @app.route('/get_one_author/<orcid>')
 def get_one_author(orcid):
-    # from scripts.fvue_get_authors import get_author_es
     data = get_author_es(orcid)
     return render_template('show_author.html', titre="Auteur", data=data, orcid=orcid)
 
@@ -260,7 +254,6 @@ def get_one_author(orcid):
 def summarize_text():
     form = SummarizeText(request.form)
     data = -1
-    # from scripts.summarize_text import multiple_summary, generate_summary
     if request.method == 'POST' and form.validate():
         text = form.text.data
         nb_sent = form.nb_sent.data
@@ -286,7 +279,6 @@ def synchro_ref():
 def sync_ref():
     data = request.args.get('title', '', type=str)
     if data != '':
-        from scripts.fvue_get_article import get_article_async
         temp = data.split(' ')
         if len(temp) > 1:
             last = temp[-1]
@@ -329,7 +321,6 @@ def read_pickle(field):
 # API Build Model
 @app.route('/api/buildModel/<field>')
 def buildLSI(field):
-    # from models.model import buildModel
     buildModel(es, field)
 
     free_memory()
@@ -338,7 +329,6 @@ def buildLSI(field):
 
 @app.route('/api/updateModel/<field>')
 def updateLSI(field):
-    # from models.model import updateModel
     for i in range(0, 1):
         updateModel(es, field)
         free_memory()
@@ -348,8 +338,7 @@ def updateLSI(field):
 
 @app.route('/api/updateModelBig/<field>')
 def updateLSIbig(field):
-    # from models.model import updateModel
-    for i in range(0, 1):
+    for i in range(0, 10):
         updateModelbig(es, field)
         free_memory()
 
@@ -493,14 +482,13 @@ def suggest_pertient_art():
 
 @app.route('/api/extract_infos_pdf', methods=['GET', 'POST'])
 def extract_infos_pdf():
-    from scripts.queue_scripts import extract_pdf_func
+
     file = request.files['pdf_file']
     if file.filename == '':
         return "empty file"
     if file and allowed_file(file.filename):
         filename = secure_filename(file.filename)
         file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-        # from scripts.upload_pdf import get_infos_pdf
         results = get_infos_pdf(filename, app.config['UPLOAD_FOLDER'])
         os.remove(os.path.join(app.config['UPLOAD_FOLDER'], filename))
 
@@ -523,7 +511,6 @@ def get_results_pdf(job_key):
 @app.route('/api/get_articles')
 def get_articles():
     now = datetime.datetime.now()
-    # from scripts.fvue_get_article import get_articles_es
     title = request.args.get('title')
     title_ord = request.args.get('title_ord')
     abstract = request.args.get('abstract')
@@ -532,6 +519,7 @@ def get_articles():
     keywords = request.args.get('keywords')
     keywords_ord = request.args.get('keywords_ord')
     journal = request.args.get('journal')
+
     if request.args.get('year_alone'):
         year1 = request.args.get('year_alone')
         year2 = request.args.get('year_alone')
@@ -541,13 +529,13 @@ def get_articles():
     else:
         year1 = 1800
         year2 = now.year
+
     data = get_articles_es(title, title_ord, abstract, abstract_ord, authors, keywords, keywords_ord, journal, year1, year2)
     return json.dumps(data)
 
 
 @app.route('/api/summary_generator', methods=['GET', 'POST'])
 def summary_generator():
-    # from scripts.summarize_text import multiple_summary
     text = request.args.get('text')
     text = text.replace("{", " ")
     text = text.replace("}", " ")
@@ -564,8 +552,6 @@ def summary_generator():
 
 @app.route('/api/get_mail_id', methods=['GET', 'POST'])
 def get_mail_id():
-    from scripts.fvue_get_authors import get_mail_id
-
     id = request.args.get('id')
     data = get_mail_id(id)
     return json.dumps(data)
@@ -573,8 +559,6 @@ def get_mail_id():
 
 @app.route('/api/update_mail', methods=['GET', 'POST'])
 def update_mail():
-    # from scripts.fvue_get_authors import update_mail
-
     id = request.args.get('id')
     mail = request.args.get('mail')
     data = update_mail(id, mail)
@@ -583,7 +567,6 @@ def update_mail():
 
 @app.route('/api/add_list_pertinence', methods=['GET', 'POST'])
 def add_list_pertinence():
-    # from scripts.fvue_get_article import add_list_perti
     data = json.loads(request.args.get('data'))
     token = request.args.get('token')
 
@@ -595,9 +578,10 @@ def add_list_pertinence():
 
 # EXEC
 
+
 if __name__ == '__main__':
     app.run("0.0.0.0", port=5000, debug=True)
-    #serve(app, host='0.0.0.0', port=5000)
+    # serve(app, host='0.0.0.0', port=5000)
     with Connection(conn):
         worker = Worker(list(map(Queue, listen)))
         worker.work()
