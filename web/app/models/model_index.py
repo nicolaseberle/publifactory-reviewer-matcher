@@ -22,10 +22,20 @@ def authors2es(source):
         year = -1
     citations = len(source["inCitations"])
     keywords = source["entities"]
-    if "fields" in source:
-        fields = source["fields"]
+    if source["fields"]:
+        if source["fields"] != [-1]:
+            fields = source["fields"]
+        else:
+            fields = []
     else:
         fields = []
+    if source["sub_cat"]:
+        if source["sub_cat"] != [-1]:
+            sub_cat = source["sub_cat"]
+        else:
+            sub_cat = []
+    else:
+        sub_cat = []
     i = 0
     final_conflit = []
     for auth in list(authors):
@@ -53,11 +63,18 @@ def authors2es(source):
             final_keys.append(final_key)
         final_fields = []
         for field in list(fields):
-            final_key = {
+            final_field = {
                 "field_name": str(field),
                 "field_score": 1
             }
-            final_keys.append(final_key)
+            final_fields.append(final_field)
+        final_sub_cat = []
+        for cat in list(sub_cat):
+            final_cat = {
+                "sub_cat_name": str(cat),
+                "sub_cat_score": 1
+            }
+            final_sub_cat.append(final_cat)
         if dict(author)['ids']:
             final_ids = int(dict(author)['ids'][0])
             #print("id ::", final_ids)
@@ -90,10 +107,20 @@ def authors2es(source):
                                     "def temp2 = 0;"
                                     "for (fie2 in ctx._source.fields){"
                                         "if (fie.field_name == fie2.field_name){"
-                                            "fie2.fie_score += 1; temp2 = 1;"
+                                            "fie2.field_score += 1; temp2 = 1;"
                                         "}"
                                     "}"
                                     "if (temp2 == 0){ctx._source.fields.add(fie)}"
+                                  "}"
+                                  ""
+                                  "for (cat in params.cats){"
+                                    "def temp3 = 0;"
+                                    "for (cat2 in ctx._source.sub_cat){"
+                                        "if (cat.sub_cat_name == cat2.sub_cat_name){"
+                                            "cat2.sub_cat_score += 1; temp3 = 1;"
+                                        "}"
+                                    "}"
+                                    "if (temp3 == 0){ctx._source.sub_cat.add(cat)}"
                                   "}"
                                   ""
                                   "for (auth in params.conf){"
@@ -110,6 +137,7 @@ def authors2es(source):
                             "cits": citations,
                             "keys": final_keys,
                             "fie": final_fields,
+                            "cats": final_sub_cat,
                             "conf": final_conflit
                         }
                     },
@@ -120,6 +148,7 @@ def authors2es(source):
                         "citations": citations,
                         "keywords": final_keys,
                         "fields": final_fields,
+                        "sub_cat": final_sub_cat,
                         "auth_conflit": final_conflit
                     }
                 }
@@ -141,4 +170,3 @@ for i in range(0, 100):
     df = get_abstracts(es, start, 100000)
 
     Parallel(n_jobs=62, prefer="threads")(delayed(authors2es)(source) for source in df["_source"])
-
