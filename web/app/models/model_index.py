@@ -22,23 +22,19 @@ def authors2es(source):
         year = -1
     citations = len(source["inCitations"])
     keywords = source["entities"]
-    try:
-        if source["fields"]:
-            if source["fields"] != [-1]:
-                fields = source["fields"]
-            else:
-                fields = []
+    if source["fields"]:
+        if source["fields"] != [-1]:
+            fields = source["fields"]
         else:
             fields = []
-        if source["sub_cat"]:
-            if source["sub_cat"] != [-1]:
-                sub_cat = source["sub_cat"]
-            else:
-                sub_cat = []
+    else:
+        fields = []
+    if source["sub_cat"]:
+        if source["sub_cat"] != [-1]:
+            sub_cat = source["sub_cat"]
         else:
             sub_cat = []
-    except:
-        fields = []
+    else:
         sub_cat = []
     i = 0
     final_conflit = []
