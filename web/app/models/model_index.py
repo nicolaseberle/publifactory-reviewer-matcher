@@ -22,6 +22,10 @@ def authors2es(source):
         year = -1
     citations = len(source["inCitations"])
     keywords = source["entities"]
+    if "fields" in source:
+        fields = source["fields"]
+    else:
+        fields = []
     i = 0
     final_conflit = []
     for auth in list(authors):
@@ -45,6 +49,13 @@ def authors2es(source):
                 "key_year": int(year),
                 "key_role": status,
                 "key_score": 1
+            }
+            final_keys.append(final_key)
+        final_fields = []
+        for field in list(fields):
+            final_key = {
+                "field_name": str(field),
+                "field_score": 1
             }
             final_keys.append(final_key)
         if dict(author)['ids']:
@@ -75,6 +86,16 @@ def authors2es(source):
                                     "if (temp == 0){ctx._source.keywords.add(key)}"
                                   "}"
                                   ""
+                                  "for (fie in params.fie){"
+                                    "def temp2 = 0;"
+                                    "for (fie2 in ctx._source.fields){"
+                                        "if (fie.field_name == fie2.field_name){"
+                                            "fie2.fie_score += 1; temp2 = 1;"
+                                        "}"
+                                    "}"
+                                    "if (temp2 == 0){ctx._source.fields.add(fie)}"
+                                  "}"
+                                  ""
                                   "for (auth in params.conf){"
                                     "def test = 0;"
                                     "for (auth2 in ctx._source.auth_conflit){"
@@ -88,6 +109,7 @@ def authors2es(source):
                         "params": {
                             "cits": citations,
                             "keys": final_keys,
+                            "fie": final_fields,
                             "conf": final_conflit
                         }
                     },
@@ -97,6 +119,7 @@ def authors2es(source):
                         "mail": '',
                         "citations": citations,
                         "keywords": final_keys,
+                        "fields": final_fields,
                         "auth_conflit": final_conflit
                     }
                 }
