@@ -5,7 +5,6 @@ from elasticsearch import helpers
 import pickle
 from joblib import Parallel, delayed
 from index_scripts.requestsES import get_abstracts
-from collections import defaultdict
 
 ES_HOST = 'localhost'
 ES_PORT = '9200'
@@ -15,7 +14,7 @@ es = Elasticsearch(hosts=[ES_HOST])
 # FUNCTIONS
 
 def authors2es(source):
-    source = defaultdict(source)
+    print(type(source))
     authors = source["authors"]
     if "year" in source:
         year = str(source['year'])
@@ -23,12 +22,18 @@ def authors2es(source):
         year = -1
     citations = len(source["inCitations"])
     keywords = source["entities"]
-    if source["fields"] != [-1] and source["fields"]:
-        fields = source["fields"]
+    if source["fields"]:
+        if source["fields"] != [-1]:
+            fields = source["fields"]
+        else:
+            fields = []
     else:
         fields = []
-    if source["sub_cat"] != [-1] and source["sub_cat"]:
-        sub_cat = source["sub_cat"]
+    if source["sub_cat"]:
+        if source["sub_cat"] != [-1]:
+            sub_cat = source["sub_cat"]
+        else:
+            sub_cat = []
     else:
         sub_cat = []
     i = 0
