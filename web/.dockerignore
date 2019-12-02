@@ -1,0 +1,5 @@
+.dockerignore
+.git
+
+app/models/classif_tests/*
+app/models/similarities/*
