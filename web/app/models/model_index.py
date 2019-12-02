@@ -152,10 +152,10 @@ def authors2es(source):
                     }
                 }
             }
-            #try:
-            helpers.bulk(es, [action])
-            #except:
-            #    continue
+            try:
+                helpers.bulk(es, [action])
+            except:
+                continue
         i += 1
 
 
