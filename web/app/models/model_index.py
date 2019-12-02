@@ -14,7 +14,6 @@ es = Elasticsearch(hosts=[ES_HOST])
 # FUNCTIONS
 
 def authors2es(source):
-    print(type(source))
     authors = source["authors"]
     if "year" in source:
         year = str(source['year'])
@@ -22,14 +21,14 @@ def authors2es(source):
         year = -1
     citations = len(source["inCitations"])
     keywords = source["entities"]
-    if source["fields"]:
+    if "fields" in source:
         if source["fields"] != [-1]:
             fields = source["fields"]
         else:
             fields = []
     else:
         fields = []
-    if source["sub_cat"]:
+    if "sub_cat" in source:
         if source["sub_cat"] != [-1]:
             sub_cat = source["sub_cat"]
         else:
