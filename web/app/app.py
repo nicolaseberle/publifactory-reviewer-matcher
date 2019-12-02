@@ -32,6 +32,9 @@ from scripts.summarize_text import multiple_summary, generate_summary
 from scripts.upload_pdf import get_infos_pdf
 
 
+from joblib import Parallel, delayed
+
+
 # APP CONFIG
 
 APP_ROOT = os.path.dirname(os.path.abspath(__file__))
@@ -369,6 +372,12 @@ def get_results(job_key):
 ## NEW VERSION MULTIFIELDS
 @app.route('/api/request_reviewer_multi')
 def request_reviewer_multi():
+
+    def para_simi(field):
+        dictionary = pickle.load(open("app/models/similarities/" + field + "/dictionary.pkl", "rb"))
+        result = q.enqueue(request_reviewer_multi_func, abstr, auth, field, sub_cat, dictionary)
+        _results.append(result.id)
+
     from scripts.queue_scripts import request_reviewer_multi_func
     abstr = request.args.get('abstract')
     auth = request.args.getlist('authors')
@@ -377,10 +386,13 @@ def request_reviewer_multi():
     sub_cat = request.args.getlist('sub_cat')
     sub_cat = sub_cat[0].split(",")
     _results = []
-    for field in fields:
+    nb_paral = len(fields)
+    Parallel(n_jobs=nb_paral, prefer="threads")(delayed(para_simi)(field) for field in fields)
+
+    '''for field in fields:
         dictionary = pickle.load(open("app/models/similarities/"+field+"/dictionary.pkl", "rb"))
         result = q.enqueue(request_reviewer_multi_func, abstr, auth, field, sub_cat, dictionary)
-        _results.append(result.id)
+        _results.append(result.id)'''
 
     free_memory()
     return json.dumps(_results)
