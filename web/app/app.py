@@ -30,7 +30,6 @@ from scripts.fvue_get_article import get_article_async, get_articles_es, add_lis
 from models.model import getReviewers, buildModel, updateModel, updateModelbig
 from scripts.summarize_text import multiple_summary, generate_summary
 from scripts.upload_pdf import get_infos_pdf
-from scripts.queue_scripts import extract_pdf_func
 
 
 # APP CONFIG
@@ -482,7 +481,7 @@ def suggest_pertient_art():
 
 @app.route('/api/extract_infos_pdf', methods=['GET', 'POST'])
 def extract_infos_pdf():
-
+    from scripts.queue_scripts import extract_pdf_func
     file = request.files['pdf_file']
     if file.filename == '':
         return "empty file"
