@@ -15,6 +15,7 @@ es = Elasticsearch(hosts=[ES_HOST])
 # FUNCTIONS
 
 def authors2es(source):
+    source = defaultdict(source)
     authors = source["authors"]
     if "year" in source:
         year = str(source['year'])
@@ -163,4 +164,4 @@ for i in range(0, 100):
 
     df = get_abstracts(es, start, 100000)
 
-    Parallel(n_jobs=62, prefer="threads")(delayed(authors2es)(defaultdict(source)) for source in df["_source"])
+    Parallel(n_jobs=62, prefer="threads")(delayed(authors2es)(source) for source in df["_source"])
