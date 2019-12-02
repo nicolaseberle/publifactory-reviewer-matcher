@@ -31,7 +31,6 @@ from models.model import getReviewers, buildModel, updateModel, updateModelbig
 from scripts.summarize_text import multiple_summary, generate_summary
 from scripts.upload_pdf import get_infos_pdf
 
-
 from joblib import Parallel, delayed
 
 
@@ -62,7 +61,31 @@ q = Queue(connection=conn, is_async=False)
 # model = pickle.load(open("app/models/saves/lsi_model.p", "rb"))
 # list_id = pickle.load(open("app/models/saves/list_id.p", "rb"))
 dictionary = pickle.load(open("app/models/saves/dictionary.p", "rb"))
-
+list_fields = [
+    "art_and_humanities",
+    "biology",
+    "business_and_economics",
+    "chemistry",
+    "computer_science",
+    "earth_and_planetary_sciences",
+    "engineering",
+    "environmental_science",
+    "health_profession",
+    "materials_science",
+    "mathematics",
+    "medicine",
+    "neuroscience",
+    "nursing",
+    "physics",
+    "psychology",
+    "sociology"
+]
+dictionaries = {}
+for field in list_fields:
+    try:
+        dictionaries[field] = pickle.load(open("app/models/similarities/" + field + "/dictionary.pkl", "rb"))
+    except:
+        continue
 
 # CLASS (pour les formulaires)
 
@@ -374,7 +397,8 @@ def get_results(job_key):
 def request_reviewer_multi():
 
     def para_simi(field):
-        dictionary = pickle.load(open("app/models/similarities/" + field + "/dictionary.pkl", "rb"))
+        dictionary = dictionaries[field]
+        # dictionary = pickle.load(open("app/models/similarities/" + field + "/dictionary.pkl", "rb"))
         result = q.enqueue(request_reviewer_multi_func, abstr, auth, field, sub_cat, dictionary)
         _results.append(result.id)
 
