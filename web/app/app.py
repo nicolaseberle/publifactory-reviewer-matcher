@@ -511,7 +511,7 @@ def request_reviewer_multi_cits():
     _result = q.enqueue(request_reviewer_cits, auth)
 
     free_memory()
-    return json.dumps(_result)
+    return json.dumps(_result.id)
 
 @app.route("/api/results_rev_multi/<job_key>", methods=['GET'])
 def get_results_multi_cits(job_key):
