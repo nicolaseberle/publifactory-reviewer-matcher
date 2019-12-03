@@ -187,6 +187,7 @@ def getReviewersCits(es, abstract, authors, sub_cat):
 
         result = getRev_v3(es, abstract, authors, dictionary, list_id, model, "Citations", sub_cat)
 
+        os.remove("app/models/similarities/simi_temps/temp_" + result[0] + ".0")
         del corpus
         del index
         del dictionary
