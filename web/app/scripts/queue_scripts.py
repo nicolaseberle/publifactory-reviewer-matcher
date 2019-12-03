@@ -25,8 +25,8 @@ def request_reviewer_cits(abstr, auth, sub_cat):
     auth = auth[0].split(",")
     auth = [x.lower() for x in auth]
 
-    result = getReviewersCits(es, abstr, auth, sub_cat)
-    #result = sorted(data, key=lambda i: i['score'], reverse=True)
+    data = getReviewersCits(es, abstr, auth, sub_cat)
+    result = sorted(data, key=lambda i: i['score'], reverse=True)
     return result
 
 

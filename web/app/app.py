@@ -540,7 +540,8 @@ def get_results_multi_cits(job_keys):
 
                                 # articles
                                 for art in auth["article"]:
-                                    res["article"].append(art)
+                                    if art not in res["article"]:
+                                        res["article"].append(art)
 
                                 # affiliation
                                 if res["affiliation"] == "":
