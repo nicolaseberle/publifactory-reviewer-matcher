@@ -513,7 +513,7 @@ def request_reviewer_multi_cits():
     free_memory()
     return json.dumps(_result.id)
 
-@app.route("/api/results_rev_multi/<job_key>", methods=['GET'])
+@app.route("/api/results_rev_multi_cits/<job_key>", methods=['GET'])
 def get_results_multi_cits(job_key):
     job = Job.fetch(job_key, connection=conn)
     while not job.is_finished:
