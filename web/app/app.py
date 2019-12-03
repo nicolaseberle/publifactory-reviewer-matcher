@@ -87,6 +87,14 @@ for field in list_fields:
     except:
         continue
 
+lists_id = {}
+for field in list_fields:
+    try:
+        lists_id[field] = pickle.load(open("app/models/similarities/" + field + "/list_id.pkl", "rb"))
+    except:
+        continue
+
+
 # CLASS (pour les formulaires)
 
 
@@ -497,7 +505,8 @@ def request_reviewer_multi_cits():
             result = q.enqueue(request_reviewer_cits, abstr, auth, sub_cat)
         else:
             dictionary = dictionaries[field]
-            result = q.enqueue(request_reviewer_multi_func, abstr, auth, field, sub_cat, dictionary)
+            list_id = lists_id[field]
+            result = q.enqueue(request_reviewer_multi_func, abstr, auth, field, sub_cat, dictionary, list_id)
         _results.append(result.id)
 
     abstr = request.args.get('abstract')

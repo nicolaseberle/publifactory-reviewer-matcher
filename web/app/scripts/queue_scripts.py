@@ -13,11 +13,11 @@ def request_reviewer_func(abstr, auth, fields, dictionary):
     result = sorted(data, key=lambda i: i['score'], reverse=True)
     return result
 
-def request_reviewer_multi_func(abstr, auth, field, sub_cat, dictionary):
+def request_reviewer_multi_func(abstr, auth, field, sub_cat, dictionary, list_id):
     auth = auth[0].split(",")
     auth = [x.lower() for x in auth]
 
-    data = getReviewersField(es, abstr, auth, dictionary, field, sub_cat)
+    data = getReviewersField(es, abstr, auth, dictionary, list_id, field, sub_cat)
     result = sorted(data, key=lambda i: i['score'], reverse=True)
     return result
 
