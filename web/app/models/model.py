@@ -39,11 +39,10 @@ def getReviewersCits(es, authors):
     result = []
     for auth in authors:
         data = get_citations_auth(es, auth)
-        '''for citation in data['_source']['outCitations']:
-            if citation not in result:
-                result.append(citation)'''
         for art in data:
-            result.append(art['_source'])
+            for citation in art['_source']['outCitations']:
+                if citation not in result:
+                    result.append(citation)
 
     return result
 
