@@ -38,3 +38,18 @@ def getCorpus(df, field):
     dictionary = corpora.Dictionary(corpus, prune_at=None)
     corpus_gensim = [dictionary.doc2bow(doc) for doc in corpus]
     return corpus_gensim, index_temp, dictionary, y
+
+
+def getCorpus2(df, field):
+
+    index_temp = "app/temp_"+str(field)
+    corpus = []
+    y = {}
+
+    for index, row in df.iterrows():
+        corpus.append(preprocess(row["_source"]["paperAbstract"]))
+        y[index] = row["_id"]
+
+    dictionary = corpora.Dictionary(corpus, prune_at=None)
+    corpus_gensim = [dictionary.doc2bow(doc) for doc in corpus]
+    return corpus_gensim, index_temp, dictionary, y

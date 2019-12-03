@@ -5,7 +5,7 @@ import os
 
 from models.model_scripts.testing_rm import getRev_v3
 from models.model_scripts.requestsES import get_abstracts, get_abstracts_field, get_abstracts_field_big, get_citations_auth, get_citations_id, get_abstract_id
-from models.model_scripts.preprocess import getCorpus, preprocess
+from models.model_scripts.preprocess import getCorpus, getCorpus2, preprocess
 from models.model_scripts.lsi_model import getModel, updateModelLSI
 
 
@@ -168,7 +168,7 @@ def getReviewersCits(es, abstract, authors, sub_cat):
 
     if result != []:
 
-        os.mkdir('/models/similarities/' + str(result[0]))
+        os.mkdir('/temp_' + str(result[0]))
 
         # REQUEST ES
         df_temp = pd.DataFrame(columns=["_id", "_index", "_score", "_source", "_type"])
@@ -177,7 +177,7 @@ def getReviewersCits(es, abstract, authors, sub_cat):
                 df_temp = df_temp.append(get_abstract_id(es, id)[0], ignore_index=True)
 
         # PREPROCESS
-        corpus, index, dictionary, list_id = getCorpus(df_temp, result[0])
+        corpus, index, dictionary, list_id = getCorpus2(df_temp, result[0])
 
         print("Corpus Done")
 
