@@ -172,11 +172,14 @@ def getReviewersCits(es, abstract, authors, sub_cat):
         for id in result:
             res.append(get_abstract_id(es, id))
 
+        df_temp = pd.DataFrame(res)
+
+        for index, row in df_temp.iterrows():
+            res = row["_source"]
+
         return res
 
-        '''df_temp = pd.DataFrame(res)
-
-        # PREPROCESS
+        '''# PREPROCESS
         corpus, index, dictionary, list_id = getCorpus(df_temp, result[0])
 
         print("Corpus Done")
