@@ -168,7 +168,7 @@ def getReviewersCits(es, abstract, authors, sub_cat):
 
     if result != []:
 
-        os.mkdir('/app/models/similarities/' + str(result[0]))
+        os.mkdir('/models/similarities/' + str(result[0]))
 
         # REQUEST ES
         df_temp = pd.DataFrame(columns=["_id", "_index", "_score", "_source", "_type"])
