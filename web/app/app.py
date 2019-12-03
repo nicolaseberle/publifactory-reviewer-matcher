@@ -485,6 +485,44 @@ def get_results_multi(job_keys):
         return json.dumps(sorted(_results, key=lambda i: i['score'], reverse=True))
 
 
+## NEW VERSION MULTIFIELDS + CITATION
+@app.route('/api/request_reviewer_multi_cits')
+def request_reviewer_multi_cits():
+
+    '''def para_simi(field):
+        dictionary = dictionaries[field]
+        result = q.enqueue(request_reviewer_multi_func, abstr, auth, field, sub_cat, dictionary)
+        _results.append(result.id)
+
+    from scripts.queue_scripts import request_reviewer_multi_func
+    abstr = request.args.get('abstract')
+    auth = request.args.getlist('authors')
+    fields = request.args.getlist('fields')
+    fields = fields[0].split(",")
+    sub_cat = request.args.getlist('sub_cat')
+    sub_cat = sub_cat[0].split(",")
+    _results = []
+    nb_paral = len(fields)
+    Parallel(n_jobs=nb_paral, prefer="threads")(delayed(para_simi)(field) for field in fields)'''
+
+    from scripts.queue_scripts import request_reviewer_cits
+
+    auth = request.args.getlist('authors')
+    _result = q.enqueue(request_reviewer_cits, auth)
+
+    free_memory()
+    return json.dumps(_result)
+
+@app.route("/api/results_rev_multi/<job_key>", methods=['GET'])
+def get_results_multi_cits(job_key):
+    job = Job.fetch(job_key, connection=conn)
+    while not job.is_finished:
+        time.sleep(1)
+    _result = job.result
+    free_memory()
+    return json.dumps(_result)
+
+
 @app.route('/api/suggest_ae')
 def suggest_ae():
     id_article = request.args.get('id_article')

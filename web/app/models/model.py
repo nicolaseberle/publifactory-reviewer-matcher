@@ -2,7 +2,7 @@ import pickle
 import logging
 
 from models.model_scripts.testing_rm import getRev_v3
-from models.model_scripts.requestsES import get_abstracts, get_abstracts_field, get_abstracts_field_big
+from models.model_scripts.requestsES import get_abstracts, get_abstracts_field, get_abstracts_field_big, get_citations_auth
 from models.model_scripts.preprocess import getCorpus, preprocess
 from models.model_scripts.lsi_model import getModel, updateModelLSI
 
@@ -30,6 +30,16 @@ def getReviewersField(es, abstract, authors, dictionary, field, sub_cat):
     del model
     del list_id
     del dictionary
+
+    return result
+
+
+def getReviewersCits(es, authors):
+
+    result = []
+    for auth in authors:
+        data = get_citations_auth(es, auth)
+        result.append(data)
 
     return result
 

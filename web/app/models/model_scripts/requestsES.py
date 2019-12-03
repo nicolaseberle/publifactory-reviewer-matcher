@@ -94,6 +94,30 @@ def get_abstracts_field_big(es, from_value, size_value, field):
     return df_temp
 
 
+## GET OUT-CITATIONS
+
+def get_citations_auth(es, auth):
+    res = es.search(index=INDEX_NAME, body={
+        "query": {
+            "bool": {
+                "must": [
+                    {
+                        "match": {
+                            "authors.name": auth
+                        }
+                    }
+                ]
+            }
+        },
+        "size": 10,
+        "_source": ["paperAbstract"]
+    }, request_timeout=200)
+    res = res['hits']['hits']
+
+    df_temp = pd.DataFrame(res)
+    return df_temp
+
+
 ## GET ABSTRACT WITH ID
 
 def get_abstract(es, id):
