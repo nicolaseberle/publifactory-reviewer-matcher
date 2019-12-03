@@ -114,8 +114,8 @@ def get_citations_auth(es, auth):
     }, request_timeout=200)
     res = res['hits']['hits']
 
-    df_temp = pd.DataFrame(res)
-    return df_temp
+    #df_temp = pd.DataFrame(res)
+    return res
 
 
 ## GET ABSTRACT WITH ID
