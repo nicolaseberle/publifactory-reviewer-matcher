@@ -1,6 +1,7 @@
 import pickle
 import logging
 import pandas as pd
+import os
 
 from models.model_scripts.testing_rm import getRev_v3
 from models.model_scripts.requestsES import get_abstracts, get_abstracts_field, get_abstracts_field_big, get_citations_auth, get_citations_id, get_abstract_id
@@ -179,11 +180,16 @@ def getReviewersCits(es, abstract, authors, sub_cat):
         print("Corpus Done")
 
         # LSI Model
+
+        os.makedirs('models/similarities/' + str(result[0]) + '/indices', 0o753)
         model = getModel(corpus, index)
 
         print("Model Done")
 
         result = getRev_v3(es, abstract, authors, dictionary, list_id, model, "Citations", sub_cat)
+
+        os.rmdir('models/similarities/' + str(result[0]) + '/indices')
+        os.rmdir('models/similarities/' + str(result[0]))
 
         del corpus
         del index
