@@ -21,11 +21,11 @@ def request_reviewer_multi_func(abstr, auth, field, sub_cat, dictionary):
     result = sorted(data, key=lambda i: i['score'], reverse=True)
     return result
 
-def request_reviewer_cits(auth):
+def request_reviewer_cits(abstr, auth, sub_cat):
     auth = auth[0].split(",")
     auth = [x.lower() for x in auth]
 
-    result = getReviewersCits(es, auth)
+    result = getReviewersCits(es, abstr, auth, sub_cat)
     #result = sorted(data, key=lambda i: i['score'], reverse=True)
     return result
 

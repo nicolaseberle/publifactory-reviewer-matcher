@@ -1,8 +1,9 @@
 import pickle
 import logging
+import pandas as pd
 
 from models.model_scripts.testing_rm import getRev_v3
-from models.model_scripts.requestsES import get_abstracts, get_abstracts_field, get_abstracts_field_big, get_citations_auth, get_citations_id
+from models.model_scripts.requestsES import get_abstracts, get_abstracts_field, get_abstracts_field_big, get_citations_auth, get_citations_id, get_abstracts_id
 from models.model_scripts.preprocess import getCorpus, preprocess
 from models.model_scripts.lsi_model import getModel, updateModelLSI
 
@@ -30,35 +31,6 @@ def getReviewersField(es, abstract, authors, dictionary, field, sub_cat):
     del model
     del list_id
     del dictionary
-
-    return result
-
-
-def getReviewersCits(es, authors):
-
-    result = []
-    for auth in authors:
-        data = get_citations_auth(es, auth)
-        for art in data:
-            for citation in art['_source']['outCitations']:
-                if citation not in result:
-                    result.append(citation)
-
-    if len(result) < 1000 and len(result) != 0:
-        for id in result:
-            check = False
-            if get_citations_id(es, id):
-                temp = get_citations_id(es, id)[0]['_source']['outCitations']
-                for res in temp[:50]:
-                    if len(result) >= 1000:
-                        check = True
-                        break
-                    else:
-                        result.append(res)
-            if check:
-                break
-    else:
-        result = result[:1000]
 
     return result
 
@@ -165,3 +137,59 @@ def buildModel(es, field):
     del dictionary
     del list_id
     del model
+
+
+def getReviewersCits(es, abstract, authors, sub_cat):
+
+    result = []
+    for auth in authors:
+        data = get_citations_auth(es, auth)
+        for art in data:
+            for citation in art['_source']['outCitations']:
+                if citation not in result:
+                    result.append(citation)
+
+    if len(result) < 1000 and len(result) != 0:
+        for id in result:
+            check = False
+            if get_citations_id(es, id):
+                temp = get_citations_id(es, id)[0]['_source']['outCitations']
+                for res in temp[:50]:
+                    if len(result) >= 1000:
+                        check = True
+                        break
+                    else:
+                        result.append(res)
+            if check:
+                break
+    else:
+        result = result[:1000]
+
+    if result != []:
+
+        # REQUEST ES
+        res = []
+        for id in result:
+            res.append(get_abstracts_id(es, id))
+
+        df_temp = pd.DataFrame(res)
+
+        # PREPROCESS
+        corpus, index, dictionary, list_id = getCorpus(df_temp, result[0])
+
+        print("Corpus Done")
+
+        # LSI Model
+        model = getModel(corpus, index)
+
+        print("Model Done")
+
+        result = getRev_v3(es, abstract, authors, dictionary, list_id, model, "Citations", sub_cat)
+
+        del corpus
+        del index
+        del dictionary
+        del list_id
+        del model
+
+    return result

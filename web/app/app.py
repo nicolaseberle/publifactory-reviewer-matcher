@@ -507,8 +507,11 @@ def request_reviewer_multi_cits():
 
     from scripts.queue_scripts import request_reviewer_cits
 
+    abstr = request.args.get('abstract')
     auth = request.args.getlist('authors')
-    _result = q.enqueue(request_reviewer_cits, auth)
+    sub_cat = request.args.getlist('sub_cat')
+    sub_cat = sub_cat[0].split(",")
+    _result = q.enqueue(request_reviewer_cits, abstr, auth, sub_cat)
 
     free_memory()
     return json.dumps(_result.id)

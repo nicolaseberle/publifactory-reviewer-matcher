@@ -136,6 +136,26 @@ def get_citations_id(es, id):
     return res
 
 
+def get_abstract_id(es, id):
+    res = es.search(index=INDEX_NAME, body={
+        "query": {
+            "bool": {
+                "must": [
+                    {
+                        "match": {
+                            "id": id
+                        }
+                    }
+                ]
+            }
+        },
+        "_source": ["paperAbstract"]
+    }, request_timeout=200)
+    res = res['hits']['hits']
+
+    return res
+
+
 ## GET ABSTRACT WITH ID
 
 def get_abstract(es, id):
