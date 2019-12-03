@@ -170,14 +170,14 @@ def getReviewersCits(es, abstract, authors, sub_cat):
         # REQUEST ES
         df_temp = pd.DataFrame()
         for id in result:
-            df_temp.append(get_abstract_id(es, id))
+            df_temp.append("yay")
 
         res = ""
         for index, row in df_temp.iterrows():
             res = row.tolist()
             break
 
-        return res
+        return get_abstract_id(es, id)
 
         '''# PREPROCESS
         corpus, index, dictionary, list_id = getCorpus(df_temp, result[0])
