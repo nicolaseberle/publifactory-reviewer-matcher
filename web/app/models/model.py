@@ -168,7 +168,7 @@ def getReviewersCits(es, abstract, authors, sub_cat):
     if result != []:
 
         # REQUEST ES
-        df_temp = pd.DataFrame()
+        df_temp = pd.DataFrame(columns=["_id", "_index", "_score", "_source", "_type"])
         for id in result:
             if get_abstract_id(es, id):
                 df_temp = df_temp.append(get_abstract_id(es, id)[0], ignore_index=True)
