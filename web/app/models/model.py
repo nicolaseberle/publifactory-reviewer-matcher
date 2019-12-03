@@ -177,7 +177,7 @@ def getReviewersCits(es, abstract, authors, sub_cat):
         for index, row in df_temp.iterrows():
             res = row
 
-        return res
+        return res.tolist()
 
         '''# PREPROCESS
         corpus, index, dictionary, list_id = getCorpus(df_temp, result[0])
