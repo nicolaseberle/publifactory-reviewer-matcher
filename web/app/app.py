@@ -489,41 +489,93 @@ def get_results_multi(job_keys):
 @app.route('/api/request_reviewer_multi_cits')
 def request_reviewer_multi_cits():
 
-    '''def para_simi(field):
-        dictionary = dictionaries[field]
-        result = q.enqueue(request_reviewer_multi_func, abstr, auth, field, sub_cat, dictionary)
+    from scripts.queue_scripts import request_reviewer_multi_func
+    from scripts.queue_scripts import request_reviewer_cits
+
+    def para_simi(field):
+        if field == "citations":
+            result = q.enqueue(request_reviewer_cits, abstr, auth, sub_cat)
+        else:
+            dictionary = dictionaries[field]
+            result = q.enqueue(request_reviewer_multi_func, abstr, auth, field, sub_cat, dictionary)
         _results.append(result.id)
 
-    from scripts.queue_scripts import request_reviewer_multi_func
     abstr = request.args.get('abstract')
     auth = request.args.getlist('authors')
     fields = request.args.getlist('fields')
     fields = fields[0].split(",")
+    fields.append("citations")
     sub_cat = request.args.getlist('sub_cat')
     sub_cat = sub_cat[0].split(",")
     _results = []
     nb_paral = len(fields)
-    Parallel(n_jobs=nb_paral, prefer="threads")(delayed(para_simi)(field) for field in fields)'''
-
-    from scripts.queue_scripts import request_reviewer_cits
-
-    abstr = request.args.get('abstract')
-    auth = request.args.getlist('authors')
-    sub_cat = request.args.getlist('sub_cat')
-    sub_cat = sub_cat[0].split(",")
-    _result = q.enqueue(request_reviewer_cits, abstr, auth, sub_cat)
+    Parallel(n_jobs=nb_paral, prefer="threads")(delayed(para_simi)(field) for field in fields)
 
     free_memory()
-    return json.dumps(_result.id)
+    return json.dumps(_results)
 
-@app.route("/api/results_rev_multi_cits/<job_key>", methods=['GET'])
-def get_results_multi_cits(job_key):
-    job = Job.fetch(job_key, connection=conn)
-    while not job.is_finished:
-        time.sleep(1)
-    _result = job.result
-    free_memory()
-    return json.dumps(sorted(_result, key=lambda i: i['score'], reverse=True))
+@app.route("/api/results_rev_multi_cits/<job_keys>", methods=['GET'])
+def get_results_multi_cits(job_keys):
+    if conn:
+        _results = []
+        job_keys = job_keys.split(",")
+        for key in job_keys:
+            job = Job.fetch(key, connection=conn)
+            while not job.is_finished:
+                time.sleep(1)
+            result = job.result
+            _results.append(result)
+
+        if len(_results) == 1:
+            _results = _results[0]
+        else:
+            temp = _results[0]
+            for x in range(1, len(_results)):
+                for auth in _results[x]:
+                    duplic = False
+                    for res in temp:
+                        if auth["original_id"] != -1:
+                            if str(auth["original_id"]) == str(res["original_id"]) or str(auth["id"]) == str(res["id"]):
+                                duplic = True
+
+                                # articles
+                                for art in auth["article"]:
+                                    res["article"].append(art)
+
+                                # affiliation
+                                if res["affiliation"] == "":
+                                    res["affiliation"] = auth["affiliation"]
+
+                                # contact
+                                if len(res["contact"]) < len(auth["contact"]):
+                                    res["contact"] = auth["contact"]
+
+                                # country
+                                if res["country"] == "":
+                                    res["country"] = auth["country"]
+
+                                # id
+                                if len(res["id"]) < len(auth["id"]):
+                                    res["id"] = auth["id"]
+
+                                # score
+                                res["score"] += auth["score"]
+                                res["scorePond"] += auth["scorePond"]
+
+                                # verification
+                                if res["verification"] < auth["verification"]:
+                                    res["verification"] = auth["verification"]
+
+                                # fields
+                                res["fields"].append(auth["fields"][0])
+
+                    if not duplic:
+                        temp.append(auth)
+
+            _results = temp
+
+        free_memory()
+        return json.dumps(sorted(_results, key=lambda i: i['score'], reverse=True))
 
 
 @app.route('/api/suggest_ae')
