@@ -2,7 +2,7 @@ import pickle
 import logging
 
 from models.model_scripts.testing_rm import getRev_v3
-from models.model_scripts.requestsES import get_abstracts, get_abstracts_field, get_abstracts_field_big, get_citations_auth
+from models.model_scripts.requestsES import get_abstracts, get_abstracts_field, get_abstracts_field_big, get_citations_auth, get_citations_id
 from models.model_scripts.preprocess import getCorpus, preprocess
 from models.model_scripts.lsi_model import getModel, updateModelLSI
 
@@ -43,6 +43,17 @@ def getReviewersCits(es, authors):
             for citation in art['_source']['outCitations']:
                 if citation not in result:
                     result.append(citation)
+
+    if len(result) < 1000 and len(result) != 0:
+        for id in result:
+            temp = get_citations_id(es, id)[0]['_source']['outCitations']
+            for res in temp:
+                if len(result) >= 1000:
+                    break
+                else:
+                    result.append(res)
+    else:
+        result = result[:1000]
 
     return result
 

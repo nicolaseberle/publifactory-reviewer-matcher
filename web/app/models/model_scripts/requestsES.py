@@ -114,7 +114,25 @@ def get_citations_auth(es, auth):
     }, request_timeout=200)
     res = res['hits']['hits']
 
-    #df_temp = pd.DataFrame(res)
+    return res
+
+def get_citations_id(es, id):
+    res = es.search(index=INDEX_NAME, body={
+        "query": {
+            "bool": {
+                "must": [
+                    {
+                        "match": {
+                            "id": id
+                        }
+                    }
+                ]
+            }
+        },
+        "_source": ["outCitations"]
+    }, request_timeout=200)
+    res = res['hits']['hits']
+
     return res
 
 
