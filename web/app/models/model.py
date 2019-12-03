@@ -3,7 +3,7 @@ import logging
 import pandas as pd
 
 from models.model_scripts.testing_rm import getRev_v3
-from models.model_scripts.requestsES import get_abstracts, get_abstracts_field, get_abstracts_field_big, get_citations_auth, get_citations_id, get_abstracts_id
+from models.model_scripts.requestsES import get_abstracts, get_abstracts_field, get_abstracts_field_big, get_citations_auth, get_citations_id, get_abstract_id
 from models.model_scripts.preprocess import getCorpus, preprocess
 from models.model_scripts.lsi_model import getModel, updateModelLSI
 
@@ -170,7 +170,7 @@ def getReviewersCits(es, abstract, authors, sub_cat):
         # REQUEST ES
         res = []
         for id in result:
-            res.append(get_abstracts_id(es, id))
+            res.append(get_abstract_id(es, id))
 
         df_temp = pd.DataFrame(res)
 
