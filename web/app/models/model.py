@@ -42,7 +42,8 @@ def getReviewersCits(es, authors):
         '''for citation in data['_source']['outCitations']:
             if citation not in result:
                 result.append(citation)'''
-        result.append(data['_source'])
+        for art in data:
+            result.append(art['_source'])
 
     return result
 
