@@ -110,7 +110,7 @@ def get_citations_auth(es, auth):
             }
         },
         "size": 10,
-        "_source": ["paperAbstract"]
+        "_source": ["outCitations"]
     }, request_timeout=200)
     res = res['hits']['hits']
 
