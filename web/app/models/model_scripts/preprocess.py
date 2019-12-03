@@ -42,7 +42,7 @@ def getCorpus(df, field):
 
 def getCorpus2(df, field):
 
-    index_temp = "app/temp_"+str(field)
+    index_temp = "app/models/similarities/simi_temps/temp_"+str(field)
     corpus = []
     y = {}
 

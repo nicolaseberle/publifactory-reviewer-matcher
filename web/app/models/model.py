@@ -168,8 +168,6 @@ def getReviewersCits(es, abstract, authors, sub_cat):
 
     if result != []:
 
-        os.mkdir('/temp_' + str(result[0]))
-
         # REQUEST ES
         df_temp = pd.DataFrame(columns=["_id", "_index", "_score", "_source", "_type"])
         for id in result:
@@ -188,9 +186,6 @@ def getReviewersCits(es, abstract, authors, sub_cat):
         print("Model Done")
 
         result = getRev_v3(es, abstract, authors, dictionary, list_id, model, "Citations", sub_cat)
-
-        # os.rmdir('models/similarities/' + str(result[0]) + '/indices')
-        # os.rmdir('models/similarities/' + str(result[0]))
 
         del corpus
         del index

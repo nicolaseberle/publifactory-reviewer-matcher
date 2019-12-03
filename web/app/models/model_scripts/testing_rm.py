@@ -258,8 +258,9 @@ def getRev_v3(es, value, auth_input, dictionary, list_id, model, field, sub_cat)
                 # impact sub_cat on score
                 for cat in sub_cat:
                     for x in article["sub_cat"]:
-                        if cat.lower() == x.lower():
-                            score_temp *= 1.1
+                        if cat != -1 and x != -1:
+                            if cat.lower() == x.lower():
+                                score_temp *= 1.1
 
                 for res in resultats:
 
@@ -280,8 +281,8 @@ def getRev_v3(es, value, auth_input, dictionary, list_id, model, field, sub_cat)
                             "journal": article["venue"],
                             "year": str(year),
                             "co_auth": co_auth,
-                            "fields": article["fields"],
-                            "sub_cat": article["sub_cat"],
+                            "fields": str(article["fields"]),
+                            "sub_cat": str(article["sub_cat"]),
                             "score": round(score_temp, 3),
                             "doi": article["doiUrl"]})
 
@@ -341,8 +342,8 @@ def getRev_v3(es, value, auth_input, dictionary, list_id, model, field, sub_cat)
                              "journal": article["venue"],
                              "year": str(year),
                              "co_auth": co_auth,
-                             "fields": article["fields"],
-                             "sub_cat": article["sub_cat"],
+                             "fields": str(article["fields"]),
+                             "sub_cat": str(article["sub_cat"]),
                              "score": round(score_temp, 3),
                              "doi": str(article["doiUrl"]),
                              "inCitations": len(article["inCitations"])
