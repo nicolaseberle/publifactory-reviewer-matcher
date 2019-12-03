@@ -160,13 +160,15 @@ def getReviewersCits(es, abstract, authors, sub_cat):
                         check = True
                         break
                     else:
-                        result.append(res)
+                        result.append(str(res))
             if check:
                 break
     else:
         result = result[:1000]
 
     if result != []:
+
+        token = result[0]
 
         # REQUEST ES
         df_temp = pd.DataFrame(columns=["_id", "_index", "_score", "_source", "_type"])
@@ -175,7 +177,7 @@ def getReviewersCits(es, abstract, authors, sub_cat):
                 df_temp = df_temp.append(get_abstract_id(es, id)[0], ignore_index=True)
 
         # PREPROCESS
-        corpus, index, dictionary, list_id = getCorpus2(df_temp, result[0])
+        corpus, index, dictionary, list_id = getCorpus2(df_temp, token)
 
         print("Corpus Done")
 
@@ -187,7 +189,7 @@ def getReviewersCits(es, abstract, authors, sub_cat):
 
         result = getRev_v3(es, abstract, authors, dictionary, list_id, model, "Citations", sub_cat)
 
-        os.remove("app/models/similarities/simi_temps/temp_" + str(result[0]) + ".0")
+        os.remove("app/models/similarities/simi_temps/temp_" + token + ".0")
         del corpus
         del index
         del dictionary

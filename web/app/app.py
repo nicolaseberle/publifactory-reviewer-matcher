@@ -523,7 +523,7 @@ def get_results_multi_cits(job_key):
         time.sleep(1)
     _result = job.result
     free_memory()
-    return json.dumps(_result)
+    return json.dumps(sorted(_result, key=lambda i: i['score'], reverse=True))
 
 
 @app.route('/api/suggest_ae')
