@@ -175,7 +175,7 @@ def getReviewersCits(es, abstract, authors, sub_cat):
 
         res = ""
         for index, row in df_temp.iterrows():
-            res = row.tolist()
+            res = row.to_dict()
             break
 
         return res
