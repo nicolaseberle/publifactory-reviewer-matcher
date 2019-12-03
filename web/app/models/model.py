@@ -46,13 +46,17 @@ def getReviewersCits(es, authors):
 
     if len(result) < 1000 and len(result) != 0:
         for id in result:
+            check = False
             if get_citations_id(es, id):
                 temp = get_citations_id(es, id)[0]['_source']['outCitations']
                 for res in temp[:50]:
                     if len(result) >= 1000:
+                        check = True
                         break
                     else:
                         result.append(res)
+            if check:
+                break
     else:
         result = result[:1000]
 
