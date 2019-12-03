@@ -256,6 +256,13 @@ def getRev_v3(es, value, auth_input, dictionary, list_id, model, field, sub_cat)
                     co_auth = "Author"
 
                 # impact sub_cat on score
+
+                if not "fields" in article:
+                    article["fields"] = []
+
+                if not "sub_cat" in article:
+                    article["sub_cat"] = []
+
                 for cat in sub_cat:
                     for x in article["sub_cat"]:
                         if cat != -1 and x != -1:
