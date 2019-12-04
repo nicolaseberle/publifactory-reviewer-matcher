@@ -574,7 +574,9 @@ def get_results_multi_cits(job_keys):
 
                                 # score
                                 res["score"] += auth["score"]
+                                res["score"] = round(res["score"], 3)
                                 res["scorePond"] += auth["scorePond"]
+                                res["scorePond"] = round(res["scorePond"], 3)
 
                                 # verification
                                 if res["verification"] < auth["verification"]:
