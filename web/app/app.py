@@ -548,9 +548,13 @@ def get_results_multi_cits(job_keys):
                                 duplic = True
 
                                 # articles
-                                for art in auth["article"]:
-                                    if art not in res["article"]:
-                                        res["article"].append(art)
+                                for art1 in auth["article"]:
+                                    exist = False
+                                    for art2 in res["article"]:
+                                        if art1["title"] == art2["title"]:
+                                            exist = True
+                                    if not exist:
+                                        res["article"].append(art1)
 
                                 # affiliation
                                 if res["affiliation"] == "":
