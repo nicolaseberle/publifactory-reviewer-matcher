@@ -273,25 +273,30 @@ def getRev_v3(es, value, auth_input, dictionary, list_id, model, field, sub_cat)
 
                     # If true, we add score and article
                     if res["id"] == auth["ids"][0]:
-                        res["score"] += (score_temp*0.2)
-                        res["score"] = round(res["score"], 3)
+                        for art1 in res["article"]:
+                            exist = False
+                            if art1["title"] == article["title"]:
+                                exist = True
+                        if not exist:
+                            res["score"] += (score_temp*0.2)
+                            res["score"] = round(res["score"], 3)
 
-                        res["scorePond"] += (newScore*0.2)
-                        res["scorePond"] = round(res["scorePond"], 3)
+                            res["scorePond"] += (newScore*0.2)
+                            res["scorePond"] = round(res["scorePond"], 3)
 
-                        title = article["title"].replace('[', "")
-                        title = title.replace(']', "")
+                            title = article["title"].replace('[', "")
+                            title = title.replace(']', "")
 
-                        res["article"].append({
-                            "title": title,
-                            "abstract": article["paperAbstract"],
-                            "journal": article["venue"],
-                            "year": str(year),
-                            "co_auth": co_auth,
-                            "fields": article["fields"],
-                            "sub_cat": article["sub_cat"],
-                            "score": round(score_temp, 3),
-                            "doi": article["doiUrl"]})
+                            res["article"].append({
+                                "title": title,
+                                "abstract": article["paperAbstract"],
+                                "journal": article["venue"],
+                                "year": str(year),
+                                "co_auth": co_auth,
+                                "fields": article["fields"],
+                                "sub_cat": article["sub_cat"],
+                                "score": round(score_temp, 3),
+                                "doi": article["doiUrl"]})
 
                         temp = True
 
