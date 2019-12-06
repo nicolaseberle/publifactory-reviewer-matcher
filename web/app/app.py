@@ -25,7 +25,7 @@ import pickle
 
 from waitress import serve
 
-from scripts.fvue_get_authors import get_authors_by_id, get_authors_es_v2, get_author_es, get_mail_with_id, update_mail
+from scripts.fvue_get_authors import get_authors_by_id, get_authors_es_v2, get_author_es, get_mail, update_mail
 from scripts.fvue_get_article import get_article_async, get_articles_es, add_list_perti, get_article_es
 from models.model import getReviewers, buildModel, updateModel, updateModelbig
 from scripts.summarize_text import multiple_summary, generate_summary
@@ -697,7 +697,7 @@ def summary_generator():
 @app.route('/api/get_mail_id', methods=['GET', 'POST'])
 def get_mail_id():
     id = request.args.get('id')
-    data = get_mail_with_id(id)
+    data = get_mail(id)
     return json.dumps(data)
 
 
