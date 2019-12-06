@@ -80,8 +80,8 @@ def getRev_v3(es, value, auth_input, dictionary, list_id, model, field, sub_cat)
 
                 if not affil:
                     scho_request = next(scholarly.search_author(name))
-                    if name == scho_request["name"]:
-                        affil = scho_request["affiliation"]
+                    if name == scho_request.name:
+                        affil = scho_request.affiliation
 
 
 
@@ -195,8 +195,8 @@ def getRev_v3(es, value, auth_input, dictionary, list_id, model, field, sub_cat)
 
                     if not affil:
                         scho_request = next(scholarly.search_author(name))
-                        if name == scho_request["name"]:
-                            affil = scho_request["affiliation"]
+                        if name == scho_request.name:
+                            affil = scho_request.affiliation
 
                     country = list(find("address:country", au))
                     if not country:
