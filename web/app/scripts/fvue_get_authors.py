@@ -128,7 +128,7 @@ def get_author_es(orcid):
     return res
 
 
-def get_mail_id(id):
+def get_mail_with_id(id):
     es_host = 'elasticsearch'
     es = Elasticsearch(hosts=[es_host])
     index_name = 'authors_large'
