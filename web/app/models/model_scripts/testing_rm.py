@@ -78,13 +78,13 @@ def getRev_v3(es, value, auth_input, dictionary, list_id, model, field, sub_cat)
                         else:
                             affil = []
 
-                if not affil:
+                '''if not affil:
                     try:
                         scho_request = next(scholarly.search_author(name))
                         if name == scho_request.name:
                             affil = scho_request.affiliation
                     except:
-                        continue
+                        continue'''
 
 
 
@@ -196,13 +196,13 @@ def getRev_v3(es, value, auth_input, dictionary, list_id, model, field, sub_cat)
                             else:
                                 affil = []
 
-                    if not affil:
+                    '''if not affil:
                         try:
                             scho_request = next(scholarly.search_author(name))
                             if name == scho_request.name:
                                 affil = scho_request.affiliation
                         except:
-                            continue
+                            continue'''
 
                     country = list(find("address:country", au))
                     if not country:
