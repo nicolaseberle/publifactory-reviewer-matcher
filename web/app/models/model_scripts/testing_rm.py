@@ -382,11 +382,11 @@ def getRev_v3(es, value, auth_input, dictionary, list_id, model, field, sub_cat)
                          "contact": auth["contact"]})
             co += 1
 
-    del dictionary
-    del list_id
-    del model
-    del preprocess_value
-    del new_dict
-    del result
+    #del dictionary
+    #del list_id
+    #del model
+    #del preprocess_value
+    #del new_dict
+    #del result
 
     return resultats[0:50]

@@ -16,9 +16,9 @@ def getReviewers(es, abstract, authors, dictionary):
 
     result = getRev_v3(es, abstract, authors, dictionary, list_id, model)
 
-    del model
-    del list_id
-    del dictionary
+    #del model
+    #del list_id
+    #del dictionary
     
     return result
 
@@ -28,9 +28,9 @@ def getReviewersField(es, abstract, authors, dictionary, list_id, field, sub_cat
 
     result = getRev_v3(es, abstract, authors, dictionary, list_id, model, field, sub_cat)
 
-    del model
-    del list_id
-    del dictionary
+    #del model
+    #del list_id
+    #del dictionary
 
     return result
 
@@ -189,10 +189,10 @@ def getReviewersCits(es, abstract, authors, sub_cat):
         result = getRev_v3(es, abstract, authors, dictionary, list_id, model, "Citations", sub_cat)
 
         os.remove("app/models/similarities/simi_temps/temp_" + token + ".0")
-        del corpus
-        del index
-        del dictionary
-        del list_id
-        del model
+        #del corpus
+        #del index
+        #del dictionary
+        #del list_id
+        #del model
 
     return result

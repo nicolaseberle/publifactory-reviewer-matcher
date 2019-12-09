@@ -520,7 +520,7 @@ def request_reviewer_multi_cits():
     nb_paral = len(fields)
     Parallel(n_jobs=nb_paral, prefer="threads")(delayed(para_simi)(field) for field in fields)
 
-    free_memory()
+    #free_memory()
     return json.dumps(_results)
 
 @app.route("/api/results_rev_multi_cits/<job_keys>", methods=['GET'])
@@ -590,7 +590,7 @@ def get_results_multi_cits(job_keys):
 
             _results = temp
 
-        free_memory()
+        #free_memory()
         return json.dumps(sorted(_results, key=lambda i: i['score'], reverse=True))
 
 
