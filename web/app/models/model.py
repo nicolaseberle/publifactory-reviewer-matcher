@@ -65,10 +65,10 @@ def updateModel(es, field):
     pickle.dump(dictionary, open("app/models/similarities/"+field+"/dictionary.pkl", "wb"), protocol=pickle.HIGHEST_PROTOCOL)
     pickle.dump(model, open("app/models/similarities/"+field+"/lsi_model_"+field+".pkl", "wb"), protocol=pickle.HIGHEST_PROTOCOL)
 
-    del start
-    del list_id
-    del model
-    del dictionary
+    #del start
+    #del list_id
+    #del model
+    #del dictionary
 
 
 def updateModelbig(es, field):
@@ -102,10 +102,10 @@ def updateModelbig(es, field):
     pickle.dump(model, open("app/models/similarities/" + field + "/lsi_model_" + field + ".pkl", "wb"),
                 protocol=pickle.HIGHEST_PROTOCOL)
 
-    del start
-    del list_id
-    del model
-    del dictionary
+    #del start
+    #del list_id
+    #del model
+    #del dictionary
 
     
 def buildModel(es, field):
@@ -132,11 +132,11 @@ def buildModel(es, field):
 
     print("Model Done")
 
-    del corpus
-    del index
-    del dictionary
-    del list_id
-    del model
+    #del corpus
+    #del index
+    #del dictionary
+    #del list_id
+    #del model
 
 
 def getReviewersCits(es, abstract, authors, sub_cat):
