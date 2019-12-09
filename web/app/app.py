@@ -151,7 +151,7 @@ def allowed_file(filename):
 
 # Libérer de la RAM
 def free_memory():
-    for name in dir():
+    '''for name in dir():
         if not name.startswith('_'):
             del globals()[name]
 
@@ -160,7 +160,7 @@ def free_memory():
             del locals()[name]
                         
     gc.collect()
-    gc.garbage[:]
+    gc.garbage[:]'''
     return "YAY"
 
 
