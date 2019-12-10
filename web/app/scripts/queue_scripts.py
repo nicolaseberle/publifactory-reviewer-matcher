@@ -1,7 +1,7 @@
 import os
 import json
 
-from models.model import getReviewers, getReviewersField, getReviewersCits, getReviewersCitsMed
+from models.model import getReviewers, getReviewersField, getReviewersCits
 from app import es, app, secure_filename
 
 
