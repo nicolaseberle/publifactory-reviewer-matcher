@@ -74,6 +74,8 @@ list_fields = [
     "materials_science",
     "mathematics",
     "medicine",
+    "medicine1",
+    "medicine2",
     "neuroscience",
     "nursing",
     "physics",
@@ -514,6 +516,10 @@ def request_reviewer_multi_cits():
     fields = request.args.getlist('fields')
     fields = fields[0].split(",")
     fields.append("citations")
+    if "medicine" in fields:
+        fields.remove("medicine")
+        fields.append("medicine1")
+        fields.append("medicine2")
     sub_cat = request.args.getlist('sub_cat')
     sub_cat = sub_cat[0].split(",")
     _results = []

@@ -1,7 +1,7 @@
 import os
 import json
 
-from models.model import getReviewers, getReviewersField, getReviewersCits
+from models.model import getReviewers, getReviewersField, getReviewersCits, getReviewersCitsMed
 from app import es, app, secure_filename
 
 
@@ -13,6 +13,7 @@ def request_reviewer_func(abstr, auth, fields, dictionary):
     result = sorted(data, key=lambda i: i['score'], reverse=True)
     return result
 
+
 def request_reviewer_multi_func(abstr, auth, field, sub_cat, dictionary, list_id):
     auth = auth[0].split(",")
     auth = [x.lower() for x in auth]
@@ -20,6 +21,7 @@ def request_reviewer_multi_func(abstr, auth, field, sub_cat, dictionary, list_id
     data = getReviewersField(es, abstr, auth, dictionary, list_id, field, sub_cat)
     result = sorted(data, key=lambda i: i['score'], reverse=True)
     return result
+
 
 def request_reviewer_cits(abstr, auth, sub_cat):
     auth = auth[0].split(",")
