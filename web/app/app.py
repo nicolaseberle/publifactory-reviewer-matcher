@@ -579,7 +579,9 @@ def get_results_multi_cits(job_keys):
                                     res["id"] = auth["id"]
 
                                 # score
-                                if auth["fields"][0] != "medicine1" and auth["fields"][0] != "medicine2":
+                                if (auth["fields"][0] == "medicine1" and "medicine2" in res["fields"]) or (auth["fields"][0] == "medicine2" and "medicine1" in res["fields"]):
+                                    res["score"] = res["score"]
+                                else:
                                     res["score"] += auth["score"]
                                     res["score"] = round(res["score"], 3)
                                     res["scorePond"] += auth["scorePond"]
