@@ -384,7 +384,7 @@ def updateLSIbig(field):
 def add_nb_use():
     from scripts.number_use import update_nb_use
     total = update_nb_use()
-    return int(total)
+    return str(total)
 
 
 @app.route('/api/request_reviewer')
