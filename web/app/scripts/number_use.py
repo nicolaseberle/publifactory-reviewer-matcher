@@ -28,7 +28,7 @@ def update_nb_use():
                           "}"
                           ""
                           "if (test == 0){"
-                            "ctx._source.months.add(months)"
+                            "ctx._source.months.add(params.months)"
                           "}"
                           ,
                 "params": {
