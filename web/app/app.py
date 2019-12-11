@@ -380,13 +380,6 @@ def updateLSIbig(field):
     return "YAY"
 
 
-@app.route('/api/add_nb_use')
-def add_nb_use():
-    from scripts.number_use import update_nb_use
-    total = update_nb_use()
-    return str(total)
-
-
 @app.route('/api/request_reviewer')
 def request_reviewer():
     from scripts.queue_scripts import request_reviewer_func
