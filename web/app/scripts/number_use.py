@@ -43,3 +43,5 @@ def update_nb_use():
         }
     }
     helpers.bulk(es, [action])
+
+    return 123
