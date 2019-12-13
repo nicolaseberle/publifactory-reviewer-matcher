@@ -99,7 +99,7 @@ for field in list_fields:
 
 # CLASS (pour les formulaires)
 
-
+'''
 class RequestESForm(Form):
     title = StringField('Titre Non Ordonné', (validators.Optional(),))
     title_ord = StringField('Titre Ordonné', (validators.Optional(),))
@@ -141,6 +141,8 @@ class RevMatcher(Form):
     abstract = TextAreaField('Abstract', [validators.DataRequired()])
     submit = SubmitField('Envoyer')
 
+'''
+
     
 # FUNCTIONS
 
@@ -174,7 +176,7 @@ def free_memory():
 def index():
     return render_template('index.html', titre="Reviewer Matcher !")
 
-
+'''
 # Vue Get Abstract
 @app.route('/request_base/', methods=['GET', 'POST'])
 def request_base():
@@ -305,7 +307,7 @@ def synchro_ref():
     data = -1
     
     return render_template('synchro_ref.html', titre="Synchro References", form=form, data=data)
-
+'''
 
 # ASYNC FONCTIONS
 
