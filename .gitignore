@@ -26,3 +26,7 @@ temp.csv
 /web/app/static/images/*
 /web/app/uploads_pdf/*
 /web/app/venv/
+
+!/web/app/models/saves/README.md
+!/web/app/models/saves_index/README.md
+!/web/app/models/similarities/README.md
