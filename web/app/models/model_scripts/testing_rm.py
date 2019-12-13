@@ -2,7 +2,6 @@ from ..model_scripts.preprocess import preprocess
 from ..model_scripts.requestsES import get_abstract, get_authors_doi, get_authors_name, get_authors_id
 import datetime
 import numpy as np
-import scholarly
 
 
 def find(key, dictionary):
@@ -77,16 +76,6 @@ def getRev_v3(es, value, auth_input, dictionary, list_id, model, field, sub_cat)
                                     affil["employment:organization"]["common:address"]["common:country"]
                         else:
                             affil = []
-
-                '''if not affil:
-                    try:
-                        scho_request = next(scholarly.search_author(name))
-                        if name == scho_request.name:
-                            affil = scho_request.affiliation
-                    except:
-                        continue'''
-
-
 
                 country = list(find("address:country", a))
                 if not country:
@@ -195,14 +184,6 @@ def getRev_v3(es, value, auth_input, dictionary, list_id, model, field, sub_cat)
                                         affil["employment:organization"]["common:address"]["common:country"]
                             else:
                                 affil = []
-
-                    '''if not affil:
-                        try:
-                            scho_request = next(scholarly.search_author(name))
-                            if name == scho_request.name:
-                                affil = scho_request.affiliation
-                        except:
-                            continue'''
 
                     country = list(find("address:country", au))
                     if not country:

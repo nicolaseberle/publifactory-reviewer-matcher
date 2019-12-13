@@ -4,21 +4,26 @@
 *~
 __pycache__
 l.log
-
 .DS_Store
 .idea
 
-/elasticsearch/esdata/
+node_modules/
+/init-letsencrypt.sh
+/certbot/
+/data/
 
+/elasticsearch/esdata/
 /elasticsearch/es_implement/corpus/*
 /elasticsearch/es_implement/orcid/*
-/web/app/scripts/side_dev/
+
 temp.csv
 
+/web/app/models/bazar/
 /web/app/models/saves/*
 /web/app/models/saves_index/*
-/web/app/models/classif_tests/w2v/*
-/web/app/models/classif_tests/models_saves/*
-/web/app/models/classif_tests/cache_dir
-/web/app/models/classif_tests/outputs
-/web/app/models/classif_tests/runs
+/web/app/models/classif_tests/*
+/web/app/models/similarities/*
+/web/app/scripts/side_dev/
+/web/app/static/images/*
+/web/app/uploads_pdf/*
+/web/app/venv/
